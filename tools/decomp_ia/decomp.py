@@ -540,10 +540,13 @@ def cmd_essai(args):
 
 
 def fonctions_texte(objet: Path) -> list[elfmod.Symbole]:
-    """Fonctions de l'objet dans l'ordre où l'éditeur de liens les placera (mwccarm fait une section par fonction)."""
+    """Fonctions de l'objet dans l'ordre où l'éditeur de liens les placera (mwccarm fait une section par fonction).
+    Les fonctions faibles ou « multidef » (liaison 2 ou 13 : opérateurs implicites, inline non intégrées)
+    sont ignorées : l'éditeur de liens garde une seule copie, celle du module principal."""
     e = elfmod.lire(str(objet), avec_donnees=False)
     textes = [i for i, sec in enumerate(e.sections) if sec.nom == ".text"]
-    return sorted((x for x in e.symboles if x.type == 2 and x.section in textes and not x.nom.startswith("$")),
+    return sorted((x for x in e.symboles if x.type == 2 and x.section in textes and not x.nom.startswith("$")
+                   and x.lien in (0, 1)),
                   key=lambda x: (x.section, x.valeur))
 
 

@@ -122,8 +122,6 @@ extern "C"
 
 // Vector3i's implicit copy assignment (main, 0x02013b54). Called under its
 // symbol name so that this file does not emit a weak copy of it.
-extern "C" Vector3i* _ZN8Vector3iaSERKS_(Vector3i* dst, const Vector3i* src);
-#define Vector3iAssign _ZN8Vector3iaSERKS_
 
 #define REG_DISPCNT (*(volatile unsigned int*)0x4000000)
 #define REG_BG0CNT (*(volatile u16*)0x4000008)
@@ -343,7 +341,7 @@ void BestiaryViewer::Update()
             Vector3i rot;
             if (rotating)
             {
-                Vector3iAssign(&rot, &m->rotation_);
+                rot = m->rotation_;
                 int d = base - rot.y;
                 if (rot.y >= base + 0x3243)
                     d = base + 0x6487 - rot.y;
@@ -354,7 +352,7 @@ void BestiaryViewer::Update()
             if (manual || rotating)
             {
                 speed = speed * GameState::GetInstance()->GetTickCount();
-                Vector3iAssign(&rot2, &m->rotation_);
+                rot2 = m->rotation_;
                 rot2.y += speed;
                 if (rotating)
                 {
@@ -370,7 +368,7 @@ void BestiaryViewer::Update()
                     rot2.y += 0x6487;
                 if (rot2.y >= 0x6487)
                     rot2.y -= 0x6487;
-                Vector3iAssign(&m->rotation_, &rot2);
+                m->rotation_ = rot2;
             }
         }
         autoRotating_ = keep;
@@ -468,8 +466,8 @@ void BestiaryViewer::ApplyPlacement()
     scale.x = (int)(4096.0f * p->scale[0]);
     scale.y = (int)(4096.0f * p->scale[1]);
     scale.z = (int)(4096.0f * p->scale[2]);
-    Vector3iAssign(&model_->position_, &pos);
-    Vector3iAssign(&model_->rotation_, &rot);
+    model_->position_ = pos;
+    model_->rotation_ = rot;
     model_->SetScale(&scale);
 }
 
