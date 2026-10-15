@@ -30,14 +30,23 @@ def charger():
         essais.setdefault(e["fonction"], []).append(e)
     agents = {}
     if (ia / "agents.jsonl").exists():
-        for l in (ia / "agents.jsonl").read_text().splitlines():
-            a = json.loads(l)
-            # un agent relancé sur la même fonction s'additionne
-            prec = agents.get(a["fonction"])
-            if prec:
+        lignes_agents = [json.loads(l) for l in (ia / "agents.jsonl").read_text().splitlines()]
+        # un agent peut notifier deux fois (il reprend après un arrêt) : son dernier relevé, cumulé, fait foi
+        derniere = {a["tache"]: i for i, a in enumerate(lignes_agents) if a.get("tache")}
+        lignes_agents = [a for i, a in enumerate(lignes_agents) if not a.get("tache") or derniere[a["tache"]] == i]
+        for lot in lignes_agents:
+            # un agent qui a traité un lot de fonctions : jetons et durée partagés à parts égales
+            noms = lot.get("fonctions") or [lot["fonction"]]
+            for nom in noms:
+                a = dict(lot, fonction=nom)
                 for k in ("jetons", "duree_ms", "outils"):
-                    a[k] = a.get(k, 0) + prec.get(k, 0)
-            agents[a["fonction"]] = a
+                    a[k] = lot.get(k, 0) / len(noms)
+                # un agent relancé sur la même fonction s'additionne
+                prec = agents.get(nom)
+                if prec:
+                    for k in ("jetons", "duree_ms", "outils"):
+                        a[k] = a.get(k, 0) + prec.get(k, 0)
+                agents[nom] = a
     lignes = []
     for fn in sorted(set(essais) | set(agents)):
         if fn not in agents:

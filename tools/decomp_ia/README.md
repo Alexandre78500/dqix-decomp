@@ -36,16 +36,31 @@ decomp.py journal                    tries logged so far
 
 ## `integrer.py`
 
-`integrer.py src/X.cpp ov014:0x021842a0` runs `verifier`, renames the functions of the range
+`integrer.py src/X.cpp ov014:0x021842a0 [src/Y.cpp ADDR ...]` runs `verifier`, renames the functions of the range
 in `symbols.txt` with the names of the compiled file, and adds the file to `delinks.txt`
 (marked `complete`, `.text` range only). Then `python tools/configure.py usa && ninja`.
-When two files call each other, integrate one, run `ninja` (the delinked objects then use
-the new names), then integrate the other.
+Files that call each other are integrated together, in one command: they are verified
+together, then each one is renamed and added to `delinks.txt`.
+
+After `ninja rom check`, a missing game function in `check symbols` usually means the linker
+dropped it as dead code: its only callers are in other overlays and go through a relocation that
+dsd could not resolve (`module:overlays(1,6)`). List it in `config/usa/arm9/force_active.txt`.
+
+## `lots.py`
+
+`lots.py ov006` groups the undecompiled functions of a module into lots for agents: neighbouring
+small functions together (up to `--octets` bytes and `--max` functions), large ones alone.
+
+## `rescorer.py`
+
+`rescorer.py ov006 ov008` recompiles the final proposal of every function of the modules and
+prints its real score. Agent reports are not reliable on their own (see the campaign 2 report):
+only the files in `build/ia/` count.
 
 ## `mesures.py`
 
-Aggregates `journal.jsonl`, `agents.jsonl` (one line per agent: tokens, duration, written by
-the orchestrator from the agent usage report) and each `resultat.json` into a table per size
+Aggregates `journal.jsonl`, `agents.jsonl` (one line per agent or lot of functions: tokens,
+duration, written by the orchestrator from the agent usage report, split evenly over the lot) and each `resultat.json` into a table per size
 range: success rate, tries, duration, tokens.
 
 ## Agent instructions
