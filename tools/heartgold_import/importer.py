@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Intègre dans DQ9 les fichiers de bibliothèque HeartGold validés par planifier.py.
 
-Usage : importer.py <racine pokeheartgold> <plan.json> <worktree DQ9> [fichier_a_exclure ...]
+Usage : importer.py <racine pokeheartgold> <plan.json> <worktree DQ9> [--essai] [fichier_a_exclure ...]
 Écrit libs/ (sources, en-têtes, réglages de compilation), complète delinks.txt et
 renomme les symboles DQ9 avec les noms Nintendo. Rien n'est écrit si le plan est incohérent.
 """
@@ -9,8 +9,12 @@ import fnmatch, json, os, re, shutil, subprocess, sys
 from collections import defaultdict
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from decoupe import couper
+
 hg, planf, wt = Path(sys.argv[1]).resolve(), Path(sys.argv[2]), Path(sys.argv[3]).resolve()
-exclus = set(sys.argv[4:])
+essai = "--essai" in sys.argv  # analyse seulement, rien n'est écrit
+exclus = set(a for a in sys.argv[4:] if a != "--essai")
 cfgdir = wt / "config/usa/arm9"
 plan = [p for p in json.load(open(planf)) if p["fichier"] not in exclus]
 AUTO = re.compile(r"^(func|data|\.L)_")
@@ -54,17 +58,19 @@ while True:
     def owner(mod, a):
         for f, rs in ranges.items():
             if any(m == mod and lo <= a < hi for m, lo, hi in rs): return f
-    nom_vers_adr, adr_vers_nom, mauvais = {}, {}, set()
+    nom_vers_adr, adr_vers_nom, mauvais = {}, {}, defaultdict(set)
     for p in plan:
         for d in p["definis"]:
             k = (p["module"], d["adresse"])
-            if adr_vers_nom.setdefault(k, d["nom"]) != d["nom"]: mauvais.add(p["fichier"])
-            if not d["local"] and nom_vers_adr.setdefault(d["nom"], k) != k: mauvais.add(p["fichier"])
+            if adr_vers_nom.setdefault(k, d["nom"]) != d["nom"]: mauvais[p["fichier"]].add(f"deux noms à 0x{k[1]:x} : {d['nom']}/{adr_vers_nom[k]}")
+            if not d["local"] and nom_vers_adr.setdefault(d["nom"], k) != k: mauvais[p["fichier"]].add(f"{d['nom']} défini à deux adresses")
     for p in plan:
         for nom, (mod, adr) in p["externes"].items():
             k = (mod, adr)
-            if mod not in mods or adr_vers_nom.setdefault(k, nom) != nom or nom_vers_adr.setdefault(nom, k) != k:
-                mauvais.add(p["fichier"])
+            if mod not in mods:
+                mauvais[p["fichier"]].add(f"{nom} : module {mod} inconnu")
+            elif (adr_vers_nom.setdefault(k, nom), nom_vers_adr.setdefault(nom, k)) != (nom, k):
+                mauvais[p["fichier"]].add(f"externe {nom} -> {mod}:0x{adr:x} en conflit ({adr_vers_nom[k]} / {nom_vers_adr[nom][0]}:0x{nom_vers_adr[nom][1]:x})")
     # références venant de l'extérieur d'un fichier : elles doivent viser un symbole global du fichier
     globaux = {(p["module"], d["adresse"]) for p in plan for d in p["definis"] if not d["local"]}
     for mod, M in mods.items():
@@ -72,7 +78,7 @@ while True:
             tmod = reloc_module(tmod)
             f = owner(tmod, to)
             if f and owner(mod, frm) != f and (tmod, to) not in globaux:
-                mauvais.add(f)
+                mauvais[f].add(f"0x{to:x} visé depuis {mod}:0x{frm:x} sans symbole global")
     # adresses visées à l'intérieur d'un fichier sans symbole HeartGold à cet endroit :
     # dsd exige un symbole, que l'objet compilé ne fournira pas (vérification des symboles en échec)
     definis = {(p["module"], d["adresse"]) for p in plan for d in p["definis"]}
@@ -81,7 +87,7 @@ while True:
             tmod = reloc_module(tmod)
             f = owner(tmod, to)
             if f and (tmod, to) not in definis:
-                mauvais.add(f)
+                mauvais[f].add(f"adresse interne 0x{to:x} sans symbole (depuis {mod}:0x{frm:x})")
     # anciens noms C++ décorés (CodeWarrior : nom__F..., nom__5ClasseF...) : le code du jeu les appelle
     # sous une déclaration C++, un simple renommage ne suffit pas
     for p in plan:
@@ -90,16 +96,45 @@ while True:
         for mod, adr, nom in cibles_p:
             for i in symbols_at(mod).get(adr, []):
                 old = parse(mods[mod]["lines"][i])[0]
-                if old != nom and DECORE.search(old): mauvais.add(p["fichier"])
+                if old != nom and DECORE.search(old): mauvais[p["fichier"]].add(f"nom décoré {old} -> {nom}")
     # appels vers du code déjà décompilé par DQ9 sous un autre nom : on ne peut pas le renommer
     for p in plan:
         for nom, (mod, adr) in p["externes"].items():
             if mod in mods and any(lo <= adr < hi for lo, hi in mods[mod]["pris"]):
-                mauvais.add(p["fichier"])
+                olds = [parse(mods[mod]["lines"][i])[0] for i in symbols_at(mod).get(adr, [])]
+                if olds != [nom]:
+                    mauvais[p["fichier"]].add(f"appel vers code DQ9 déjà décompilé : {nom} (DQ9 : {olds})")
+    # fichier retrouvé en partie : les fonctions absentes de DQ9 sont compilées puis jetées par -dead,
+    # sauf celles qui visent un symbole introuvable, dont le nom est déjà pris ou que la source garde
+    # (#pragma force_active) : elles sont coupées de la source, avec celles qui les appellent
+    connus = {parse(ln)[0] for M in mods.values() for ln in M["lines"] if parse(ln)} | set(nom_vers_adr)
+    coupes = {}
+    for p in plan:
+        coupe = set()
+        while True:
+            n0 = len(coupe)
+            for r in p.get("retirees", []):
+                if r["noms"] and set(r["noms"]) <= coupe:
+                    continue
+                if (r.get("force") or any(e not in connus for e in r["externes"]) or any(g in connus for g in r["globaux"])
+                        or set(r["internes"]) & coupe):
+                    if not r["noms"]:
+                        mauvais[p["fichier"]].add(f"donnée retirée ({r['section']}) à couper")
+                    coupe |= set(r["noms"])
+            if len(coupe) == n0:
+                break
+        if coupe:
+            texte, manquants = couper((hg / p["fichier"]).read_text(errors="surrogateescape"), coupe)
+            if manquants:
+                mauvais[p["fichier"]].add(f"découpe impossible : {', '.join(manquants)}")
+            coupes[p["fichier"]] = texte
     if not mauvais: break
-    print("écartés pour conflit de noms ou de références :", len(mauvais), sorted(mauvais)[:5])
+    print("écartés pour conflit de noms ou de références :", len(mauvais))
+    for f in sorted(mauvais):
+        print("  ", f, "|", "; ".join(sorted(mauvais[f])))
     plan = [p for p in plan if p["fichier"] not in mauvais]
-print(f"fichiers retenus : {len(plan)}")
+print(f"fichiers retenus : {len(plan)}, dont {len(coupes)} découpés")
+if essai: sys.exit(0)
 
 # ---------- réglages de compilation repris du Makefile HeartGold ----------
 rules = []
@@ -149,7 +184,10 @@ print(f"en-têtes nécessaires : {len(deps)}")
 build_settings = {}
 for p in plan:
     d = dest(p["fichier"]); (wt / d).parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(hg / p["fichier"], wt / d)
+    if p["fichier"] in coupes:
+        (wt / d).write_text(coupes[p["fichier"]], errors="surrogateescape")
+    else:
+        shutil.copy2(hg / p["fichier"], wt / d)
     s = settings(p["fichier"])
     build_settings[str(d)] = {"mwcc": s["MWCCVER"], "flags": " ".join(x for x in (HG_FLAGS, s["OPTFLAGS"], s["EXCCFLAGS"], s["IPA"]) if x)}
 for h in sorted(deps):
@@ -163,12 +201,15 @@ for h in sorted(deps):
         print("en-tête local :", hs)
     target.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(hg / h, target)
-(wt / "libs/build_settings.json").write_text(json.dumps(
+# un import précédent est complété, pas remplacé
+bs_path = wt / "libs/build_settings.json"
+ancien = json.loads(bs_path.read_text()) if bs_path.exists() else {}
+bs_path.write_text(json.dumps(
     {"includes": [("-I" if r == "lib/include" else "-i ") + f"{HDR}/{ROOTS[r]}" for r in ROOTS],
      # présents dans le jeu même sans appelant : l'éditeur de liens (-dead) ne doit pas les retirer
-     "force_active": sorted({d["nom"] for p in plan for d in p["definis"] if not d["local"]}),
+     "force_active": sorted(set(ancien.get("force_active", [])) | {d["nom"] for p in plan for d in p["definis"] if not d["local"]}),
      "versions": ["usa"],
-     "files": build_settings}, indent=1) + "\n")
+     "files": dict(sorted({**ancien.get("files", {}), **build_settings}.items()))}, indent=1) + "\n")
 
 # delinks
 par_mod = defaultdict(list)
@@ -228,6 +269,15 @@ for mod, cib in cibles.items():
             rest = re.sub(r"\s+local\b", "", rest)
             nouvelles.append(f"{old} {mid} local{rest}")
         else:
+            # symbole DQ9 voisin dont la taille déborde sur un fichier importé : borné au début du fichier
+            mm = re.search(r"size=0x([0-9a-f]+)|byte\[0x([0-9a-f]+)\]", mid)
+            if mm:
+                taille = int(mm.group(1) or mm.group(2), 16)
+                debuts = [lo for lo, hi in plages if adr < lo < adr + taille]
+                if debuts:
+                    n = min(debuts) - adr
+                    mid = mid[:mm.start()] + (f"size=0x{n:x}" if mm.group(1) else f"byte[0x{n:x}]") + mid[mm.end():]
+                    ln = f"{old} {mid}{rest}"
             nouvelles.append(ln)
     for adr, (nom, local, kind, _) in cib.items():
         if adr not in vus:
@@ -271,5 +321,5 @@ if explicites:
         t2, n = pat_ligne.subn(lambda m: explicites[m.group(1)] + " ", t)
         if n: f.write_text(t2); jpn_renommes += n
 print(f"symboles JPN renommés : {jpn_renommes}")
-json.dump({"fichiers": [p["fichier"] for p in plan], "renommes": renommes}, open(wt.parent / "import_hg_journal.json", "w"), indent=1)
+json.dump({"fichiers": [p["fichier"] for p in plan], "renommes": renommes}, open(wt.parent / f"import_hg_journal_{wt.name}.json", "w"), indent=1)
 print(f"symboles renommés : {len(renommes)} (dont {len(explicites)} noms explicites, {remplaces} occurrences remplacées dans le code du jeu)")
