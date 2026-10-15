@@ -15,7 +15,7 @@
 
 #ifdef jpn
 
-#define data_020e692c data_020e71d4
+#define __upper_mapC data_020e71d4
 
 #define data_020f0db8 data_020f0e84
 #define data_020f0dbc data_020f0e88
@@ -45,7 +45,7 @@ int MakeCharUpperCase(char ch);
 extern unsigned char data_0211e33c[0x30000];
 
 // character to upper case lookup table
-extern const char data_020e692c[];
+extern const char __upper_mapC[];
 
 // (USA only) array holding "ja", "en", "de", "it", "fr", "es"
 extern char* data_020f0da0[];
@@ -195,7 +195,7 @@ bool GetFileInNarcPermissive(const void *narcBuffer, const char *targetFilePath,
             fileSearchMaxIdx = handle.pFATBSection->numFiles - 1;
         
         
-        VectorizedMemset(targetUpperCase, 0, 80);
+        MI_CpuFill8(targetUpperCase, 0, 80);
         for (int i = 0; i < 80 && targetFilePath[i] != '.' && targetFilePath[i] != '\0'; i++)
         {
             targetUpperCase[i] = MakeCharUpperCase(targetFilePath[i]);
@@ -208,7 +208,7 @@ bool GetFileInNarcPermissive(const void *narcBuffer, const char *targetFilePath,
             if (PrepareReadFileInNARCByID(&machine, &handle, midpoint))
             {
                 NitroVM_WriteOutFilePath(&machine, loopFilePathOutput, 80);
-                VectorizedMemset(loopFilePathUpperCase, 0, 80);
+                MI_CpuFill8(loopFilePathUpperCase, 0, 80);
                 for (i = 0; i < 80 && loopFilePathOutput[i] != '.' && loopFilePathOutput[i] != '\0'; i++)
                     loopFilePathUpperCase[i] = MakeCharUpperCase(loopFilePathOutput[i]);
                 
@@ -246,7 +246,7 @@ int MakeCharUpperCase(char ch)
 {
     if (ch < 0 || ch >= 0x80)
         return ch;
-    return (unsigned char)data_020e692c[ch];
+    return (unsigned char)__upper_mapC[ch];
 }
 
 unsigned int FindFilesInNarcBySubstring(const void* narcBuffer, const char* substr,

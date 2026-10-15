@@ -13,8 +13,8 @@
 #define data_020f2290 data_020f23fc
 
 #define func_02000970 func_02000970
-#define func_020c9be0 func_020cb6ac
-#define func_020c0c3c func_020c2708
+#define OS_Terminate func_020cb6ac
+#define DGT_Hash2CalcHmac func_020c2708
 #endif
 
 // might be some kind of overlay-like thing for download play
@@ -37,8 +37,8 @@ extern struct {
 extern "C"
 {
     int func_02000970(unsigned int);
-    void func_020c9be0();
-    void func_020c0c3c(UnknownDownloadPlayStruct*, unsigned, unsigned, unsigned char*, unsigned);
+    void OS_Terminate();
+    void DGT_Hash2CalcHmac(UnknownDownloadPlayStruct*, unsigned, unsigned, unsigned char*, unsigned);
 }
 
 
@@ -58,7 +58,7 @@ void InvalidateCacheAndZeroOverlay(const OverlayMetadata &overlay)
 
     InvalidateInstructionCacheRange(startAddr, totalSize);
     InvalidateDataCacheRange(startAddr, totalSize);
-    VectorizedMemset(startAddr + copySize, 0, totalSize - copySize);
+    MI_CpuFill8(startAddr + copySize, 0, totalSize - copySize);
 }
 
 void CreateFileAccessorForOverlay(NitroFileAccessor *outAccessor, const OverlayMetadata &overlay)
@@ -155,7 +155,7 @@ bool LoadOverlayMetadata(OverlayMetadata* into, bool isArm7, unsigned int idx)
         __asm("mov copyDst, into");
         __asm("add shifted, source, offset");
         DECLARE_ASM_NOP();
-        VectorizedInvertedMemcpy(shifted, copyDst, 0x20);
+        MI_CpuCopy8(shifted, copyDst, 0x20);
         into->isArm7 = isArm7;
 
         NitroVM machine;
@@ -224,11 +224,11 @@ bool VerifyDownloadPlayStruct(const UnknownDownloadPlayStruct& data,
     unsigned int loadAddress, unsigned int size)
 {
     UnknownDownloadPlayStruct clone;
-    VectorizedMemset(&clone, 0, sizeof(UnknownDownloadPlayStruct));
+    MI_CpuFill8(&clone, 0, sizeof(UnknownDownloadPlayStruct));
 
     unsigned char buffer[64];
-    VectorizedInvertedMemcpy(data_020f2290.pointer, buffer, data_020f2290.length);
-    func_020c0c3c(&clone, loadAddress, size, buffer, data_020f2290.length);
+    MI_CpuCopy8(data_020f2290.pointer, buffer, data_020f2290.length);
+    DGT_Hash2CalcHmac(&clone, loadAddress, size, buffer, data_020f2290.length);
 
     unsigned int offsetCounter = 0;
     unsigned int* cloneReader = &clone.unknown[0];
@@ -265,8 +265,8 @@ void DecompressAndStaticInitializeOverlay(const OverlayMetadata& overlay)
         }
         if (!result)
         {
-            VectorizedMemset((void*)overlay.loadAddress, 0, initialSize);
-            func_020c9be0();
+            MI_CpuFill8((void*)overlay.loadAddress, 0, initialSize);
+            OS_Terminate();
             return;
         }
     }

@@ -4,3 +4,34 @@
     .data       start:0x021dd8e0 end:0x021dd920 kind:data align:32
     .bss        start:0x021dd920 end:0x021e3440 kind:bss align:32
 
+libs/NitroSDK/src/mb/mb_parent_recv_child.c:
+    complete
+    .text start:0x021d9134 end:0x021d9618
+
+libs/NitroSDK/src/mb/mb_parent_send_block.c:
+    complete
+    .text start:0x021d9940 end:0x021d9bdc
+
+libs/NitroSDK/src/mb/mb_parent_send_data.c:
+    complete
+    .text start:0x021d9bdc end:0x021d9d5c
+
+libs/NitroSDK/src/mb/mb_parent_calc_block.c:
+    complete
+    .text start:0x021d9d5c end:0x021d9dd8
+
+libs/NitroSDK/src/mb/mb_beacon_volat_init.c:
+    complete
+    .text start:0x021db124 end:0x021db154
+
+libs/NitroSDK/src/mb/mb_disconnect.c:
+    complete
+    .text start:0x021dcd5c end:0x021dcee8
+
+libs/NitroSDK/src/mb/mb_comm_params.c:
+    complete
+    .text start:0x021dcee8 end:0x021dd0cc
+
+libs/NitroSDK/src/mb/mb_wm_error.c:
+    complete
+    .text start:0x021dd0cc end:0x021dd104

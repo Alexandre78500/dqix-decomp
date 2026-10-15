@@ -5,7 +5,7 @@
 #pragma optimize_for_size off
 
 #if defined(jpn)
-#define func_020ca390 func_020cbe5c
+#define MIi_CpuClear16 func_020cbe5c
 
 #define data_020f1c74 data_020f1de0
 #endif
@@ -13,7 +13,7 @@
 extern "C"
 {
     // memset 
-    void func_020ca390(int value, void* dst, unsigned len);
+    void MIi_CpuClear16(int value, void* dst, unsigned len);
 }
 
 void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32_t time, BoneMatrixRenderData* bmrd);
@@ -51,7 +51,7 @@ void InitializeModelAnimationFromJAC(AnimationData* anim, void* pvJAC, NSBXXInte
     anim->pRawData_ = jac;
     anim->callback_ = data_020f1c74;
     anim->numEntries_ = model->numBoneMatrices_;
-    func_020ca390(0, anim->entries_, 2 * anim->numEntries_);
+    MIi_CpuClear16(0, anim->entries_, 2 * anim->numEntries_);
 
     unsigned int trackIdx = 0;
     uint16_t* trackOffsets = jac->trackOffsets_;
@@ -891,14 +891,14 @@ void CalculateRotationFrameAligned(Matrix3x3* out, fix32_t time, NSBXXAnimationJ
                 out->entries[3] = tempMatrix.entries[3] + out->entries[3] * 3;
                 out->entries[4] = tempMatrix.entries[4] + out->entries[4] * 3;
                 out->entries[5] = tempMatrix.entries[5] + out->entries[5] * 3;
-                Vector3fix_Normalize(&out->rows[0], &out->rows[0]);
-                Vector3fix_Normalize(&out->rows[1], &out->rows[1]);
+                VEC_Normalize(&out->rows[0], &out->rows[0]);
+                VEC_Normalize(&out->rows[1], &out->rows[1]);
                 if (!anyBasisMatrix)
                 {
                     out->entries[6] = tempMatrix.entries[6] + out->entries[6] * 3;
                     out->entries[7] = tempMatrix.entries[7] + out->entries[7] * 3;
                     out->entries[8] = tempMatrix.entries[8] + out->entries[8] * 3;
-                    Vector3fix_Normalize(&out->rows[2], &out->rows[2]);
+                    VEC_Normalize(&out->rows[2], &out->rows[2]);
                 }
                 else
                     CalculateThirdRowByCrossProduct(out);
@@ -933,15 +933,15 @@ calculate_by_average:
     out->entries[3] += tempMatrix.entries[3];
     out->entries[4] += tempMatrix.entries[4];
     out->entries[5] += tempMatrix.entries[5];
-    Vector3fix_Normalize(&out->rows[0], &out->rows[0]);
-    Vector3fix_Normalize(&out->rows[1], &out->rows[1]);
+    VEC_Normalize(&out->rows[0], &out->rows[0]);
+    VEC_Normalize(&out->rows[1], &out->rows[1]);
 
     if (!anyBasisMatrix) // both pivot matrices
     {
         out->entries[6] += tempMatrix.entries[6];
         out->entries[7] += tempMatrix.entries[7];
         out->entries[8] += tempMatrix.entries[8];
-        Vector3fix_Normalize(&out->rows[2], &out->rows[2]);
+        VEC_Normalize(&out->rows[2], &out->rows[2]);
     }
     else
         CalculateThirdRowByCrossProduct(out);
@@ -955,7 +955,7 @@ calculate_exact_frame:
     if (isBasis)
         CalculateThirdRowByCrossProduct(out);
     else
-        Vector3fix_Normalize(&out->rows[2], &out->rows[2]);
+        VEC_Normalize(&out->rows[2], &out->rows[2]);
 }
 }
 
@@ -998,7 +998,7 @@ void CalculateRotationSmooth(Matrix3x3* out, fix32_t time, NSBXXAnimationJAC::Tr
             if (isBasis)
                 CalculateThirdRowByCrossProduct(out);
             else
-                Vector3fix_Normalize(&out->rows[2], &out->rows[2]);
+                VEC_Normalize(&out->rows[2], &out->rows[2]);
             return;    
         }
     }
@@ -1062,14 +1062,14 @@ skip_default_values:
     out->entries[3] = matrixA.entries[3] * preMultiply + ((reducedTime * (matrixB.entries[3] - matrixA.entries[3])) >> 12);
     out->entries[4] = matrixA.entries[4] * preMultiply + ((reducedTime * (matrixB.entries[4] - matrixA.entries[4])) >> 12);
     out->entries[5] = matrixA.entries[5] * preMultiply + ((reducedTime * (matrixB.entries[5] - matrixA.entries[5])) >> 12);
-    Vector3fix_Normalize(&out->rows[0], &out->rows[0]);
-    Vector3fix_Normalize(&out->rows[1], &out->rows[1]);
+    VEC_Normalize(&out->rows[0], &out->rows[0]);
+    VEC_Normalize(&out->rows[1], &out->rows[1]);
     if (!anyBasisMatrices)
     {
         out->entries[6] = matrixA.entries[6] * preMultiply + ((reducedTime * (matrixB.entries[6] - matrixA.entries[6])) >> 12);
         out->entries[7] = matrixA.entries[7] * preMultiply + ((reducedTime * (matrixB.entries[7] - matrixA.entries[7])) >> 12);
         out->entries[8] = matrixA.entries[8] * preMultiply + ((reducedTime * (matrixB.entries[8] - matrixA.entries[8])) >> 12);
-        Vector3fix_Normalize(&out->rows[2], &out->rows[2]);
+        VEC_Normalize(&out->rows[2], &out->rows[2]);
     }
     else
         CalculateThirdRowByCrossProduct(out);

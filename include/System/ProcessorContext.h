@@ -106,11 +106,11 @@ struct Struct_021112e0
 
 #if defined(jpn)
 #define data_021112e0 data_02110f80
-#define data_02111304 data_02110fa4
+#define OSi_ThreadInfo data_02110fa4
 #endif
 
 extern Struct_021112e0 data_021112e0;
-extern Struct_02111304 data_02111304;
+extern Struct_02111304 OSi_ThreadInfo;
 extern ProcessorContext data_02111314;
 extern ProcessorContext data_021113d4;
 

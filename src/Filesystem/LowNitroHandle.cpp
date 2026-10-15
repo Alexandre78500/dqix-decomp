@@ -11,7 +11,7 @@ int MemoryMappedMetadataReadProc(NitroHandle* handle, void* dst, unsigned int of
 
 void NitroHandle_Initialize(NitroHandle* handle)
 {
-    VectorizedMemset(handle, 0, sizeof(NitroHandle));
+    MI_CpuFill8(handle, 0, sizeof(NitroHandle));
     handle->taskWaitBlock.last = NULL;
     handle->taskWaitBlock.first = NULL;
     handle->busReleaseBlock.last = NULL;
@@ -176,7 +176,7 @@ unsigned int NitroHandle_LoadFileTables(NitroHandle* handle, void* into, unsigne
             handle->fatOffsetFast + handle->fatSize, -1))
         {
             if (NitroVM_ReadSync(&vm, alignedPtr, handle->fatSize) < 0)
-                VectorizedMemset(alignedPtr, 0, handle->fatSize);
+                MI_CpuFill8(alignedPtr, 0, handle->fatSize);
             NitroVM_FinishRead(&vm);
         }
         handle->fatOffsetFast = (unsigned int)alignedPtr;
@@ -187,7 +187,7 @@ unsigned int NitroHandle_LoadFileTables(NitroHandle* handle, void* into, unsigne
             handle->nameTableOffsetFast + handle->nameTableSize, -1))
         {
             if (NitroVM_ReadSync(&vm, alignedPtr, handle->nameTableSize) < 0)
-                VectorizedMemset(alignedPtr, 0, handle->nameTableSize);
+                MI_CpuFill8(alignedPtr, 0, handle->nameTableSize);
             NitroVM_FinishRead(&vm);
         }
 

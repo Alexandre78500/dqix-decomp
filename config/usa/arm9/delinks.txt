@@ -372,3 +372,310 @@ src/Graphics/VRAMStaging.cpp:
     complete
     .bss start:0x0214e5e4 end:0x02153628
     .text start:0x020dc07c end:0x020dc214
+
+libs/MSL_C/src/msl_abort_exit.c:
+    complete
+    .text start:0x02001578 end:0x020015e8
+
+libs/MSL_C/src/msl_arm_math.c:
+    complete
+    .text start:0x02001710 end:0x02001728
+
+libs/MSL_C/src/msl_mbstring_wcstombs.c:
+    complete
+    .text start:0x020019c8 end:0x02001a40
+
+libs/MSL_C/src/msl_mem_funcs.c:
+    complete
+    .text start:0x02001b2c end:0x02001bdc
+
+libs/MSL_C/src/msl_scanf_string_read.c:
+    complete
+    .text start:0x02003d58 end:0x02003ddc
+
+libs/MSL_C/src/msl_string_strlen.c:
+    complete
+    .text start:0x02003f0c end:0x02003f28
+
+libs/MSL_C/src/msl_string_strcpy.c:
+    complete
+    .text start:0x02003f28 end:0x02003ff0
+
+libs/MSL_C/src/msl_string_strcmp.c:
+    complete
+    .text start:0x02004070 end:0x02004184
+
+libs/MSL_C/src/msl_string_strstr.c:
+    complete
+    .text start:0x0200423c end:0x020042a8
+
+libs/MSL_C/src/msl_strtold_core.c:
+    complete
+    .text start:0x020042a8 end:0x020054f4
+
+libs/MSL_C/src/msl_strtol.c:
+    complete
+    .text start:0x020059cc end:0x02005aa8
+
+libs/MSL_C/src/msl_wstring_wcslen.c:
+    complete
+    .text start:0x02005aa8 end:0x02005ac4
+
+libs/MSL_C/src/msl_s_copysign.c:
+    complete
+    .text start:0x02008da4 end:0x02008dcc
+
+libs/MSL_C/src/msl_s_fabs.c:
+    complete
+    .text start:0x02008f3c end:0x02008f5c
+
+libs/MSL_C/src/msl_fp_ansi_timesdec.c:
+    complete
+    .text start:0x02009778 end:0x020098fc
+
+libs/MSL_C/src/msl_fp_ansi_str2dec.c:
+    complete
+    .text start:0x020098fc end:0x02009998
+
+libs/MSL_C/src/msl_fp_ansi_two_exp.c:
+    complete
+    .text start:0x02009998 end:0x02009d1c
+
+libs/MSL_C/src/msl_fp_ansi_compare_dec.c:
+    complete
+    .text start:0x02009d1c end:0x02009edc
+
+libs/MSL_C/src/msl_fp_ansi_minus_dec.c:
+    complete
+    .text start:0x02009edc end:0x0200a180
+
+libs/MSL_C/src/msl_fp_ansi_num2dec_internal.c:
+    complete
+    .text start:0x0200a180 end:0x0200a300
+
+libs/MSL_C/src/msl_fp_ansi_num2dec.c:
+    complete
+    .text start:0x0200a300 end:0x0200a3a8
+
+libs/MSL_C/src/msl_fp_ansi_dec2num.c:
+    complete
+    .text start:0x0200a3a8 end:0x0200a9cc
+
+libs/MSL_C/src/msl_math.c:
+    complete
+    .text start:0x0200a9cc end:0x0200ab10
+
+libs/MSL_C/src/msl_semihosting.c:
+    complete
+    .text start:0x0200d894 end:0x0200d8cc
+
+libs/MSL_C/src/msl_exception_table.c:
+    complete
+    .text start:0x0200d958 end:0x0200df80
+
+libs/MSL_C/src/msl_exception_lookup.c:
+    complete
+    .text start:0x0200e830 end:0x0200ea08
+
+libs/MSL_C/src/msl_exception_throw.c:
+    complete
+    .text start:0x0200ea68 end:0x0200edb4
+
+libs/MSL_C/src/msl_static_init.c:
+    complete
+    .text start:0x0200edc8 end:0x0200ee38
+
+libs/NitroSystem/src/g2d_font.c:
+    complete
+    .text start:0x020b0d80 end:0x020b10b4
+
+libs/NitroSystem/src/g2d_char_canvas_util.c:
+    complete
+    .text start:0x020b10b4 end:0x020b1300
+
+libs/NitroSystem/src/g2d_char_canvas_letter.c:
+    complete
+    .text start:0x020b1300 end:0x020b1540
+
+libs/NitroSystem/src/g2d_char_canvas.c:
+    complete
+    .text start:0x020b1540 end:0x020b1f48
+
+libs/NitroSystem/src/g2d_canvas_arrange.c:
+    complete
+    .text start:0x020b1f48 end:0x020b23a8
+
+libs/NitroSystem/src/g2d_text_canvas.c:
+    complete
+    .text start:0x020b23a8 end:0x020b27c8
+
+libs/NitroSystem/src/g2d_font_load.c:
+    complete
+    .text start:0x020b27c8 end:0x020b29f8
+
+libs/NitroSystem/src/g2d_char_util.c:
+    complete
+    .text start:0x020b29f8 end:0x020b2a6c
+
+libs/NitroSystem/src/snd_resource_mgr.c:
+    complete
+    .text start:0x020bbe1c end:0x020bbf34
+
+libs/NitroSystem/src/snd_seqarc.c:
+    complete
+    .text start:0x020c01ac end:0x020c01ec
+
+libs/NitroSystem/src/snd_fader.c:
+    complete
+    .text start:0x020c01ec end:0x020c0290
+
+libs/NitroSDK/src/dgt_hash.c:
+    complete
+    .text start:0x020c0328 end:0x020c0e88
+
+libs/NitroSDK/src/fx/fx_mtx33_identity.c:
+    complete
+    .text start:0x020c1180 end:0x020c11a4
+
+libs/NitroSDK/src/fx/fx_mtx33_inverse_concat.c:
+    complete
+    .text start:0x020c12b4 end:0x020c1840
+
+libs/NitroSDK/src/fx/fx_mtx43_identity.c:
+    complete
+    .text start:0x020c1840 end:0x020c189c
+
+libs/NitroSDK/src/fx/fx_mtx43_trans_apply.c:
+    complete
+    .text start:0x020c189c end:0x020c1948
+
+libs/NitroSDK/src/fx/fx_mtx43_scale_apply.c:
+    complete
+    .text start:0x020c1948 end:0x020c197c
+
+libs/NitroSDK/src/fx/fx_mtx43_inverse_concat.c:
+    complete
+    .text start:0x020c19d4 end:0x020c21dc
+
+libs/NitroSDK/src/fx/fx_mtx44_identity.c:
+    complete
+    .text start:0x020c21dc end:0x020c223c
+
+libs/NitroSDK/src/fx/fx_mtx44_concat.c:
+    complete
+    .text start:0x020c223c end:0x020c28a0
+
+libs/NitroSDK/src/fx/fx_mtx44_perspective.c:
+    complete
+    .text start:0x020c28a0 end:0x020c29ec
+
+libs/NitroSDK/src/fx/fx_mtx44_ortho.c:
+    complete
+    .text start:0x020c29ec end:0x020c2bf4
+
+libs/NitroSDK/src/fx/fx_trig_internal.c:
+    complete
+    .text start:0x020c30ac end:0x020c3260
+
+libs/NitroSDK/src/fx/fx_trig.c:
+    complete
+    .text start:0x020c3260 end:0x020c338c
+
+libs/NitroSDK/src/fx/fx_atanidx.c:
+    complete
+    .text start:0x020c3544 end:0x020c36ec
+    .rodata start:0x020ed554 end:0x020ed658
+
+libs/NitroSDK/src/gx/g3imm.c:
+    complete
+    .text start:0x020c516c end:0x020c51dc
+
+libs/NitroSDK/src/gx/g3x_nop_clear_fifo.c:
+    complete
+    .text start:0x020c56dc end:0x020c5770
+
+libs/NitroSDK/src/gx/gxasm.c:
+    complete
+    .text start:0x020c6914 end:0x020c6954
+
+libs/MSL_C/src/msl_scanf_sscanf.c:
+    complete
+    .text start:0x020c7130 end:0x020c7158
+
+libs/NitroSDK/src/os/os_init.c:
+    complete
+    .text start:0x020c8348 end:0x020c8368
+
+libs/NitroSDK/src/os/os_tcm.c:
+    complete
+    .text start:0x020c89e4 end:0x020c89f8
+
+libs/NitroSDK/src/os/os_protectionUnit.c:
+    complete
+    .text start:0x020c89f8 end:0x020c8a18
+
+libs/NitroSDK/src/os/os_protectionRegion.c:
+    complete
+    .text start:0x020c8a18 end:0x020c8a3c
+
+libs/NitroSDK/src/os/os_terminate_proc.c:
+    complete
+    .text start:0x020c9bf0 end:0x020c9bfc
+
+libs/NitroSDK/src/mi/mi_wram.c:
+    complete
+    .text start:0x020c9bfc end:0x020c9c0c
+
+libs/NitroSDK/src/mi/mi_swap.c:
+    complete
+    .text start:0x020ca7e0 end:0x020ca7e8
+
+libs/NitroSDK/src/mi/mi_uncompress.c:
+    complete
+    .text start:0x020ca7e8 end:0x020ca8e8
+
+libs/NitroSDK/src/cp/CP_context.c:
+    complete
+    .text start:0x020cd594 end:0x020cd610
+
+libs/NitroSDK/src/rtc/rtc_convert_pre.c:
+    complete
+    .text start:0x020cf8e4 end:0x020cf990
+    .data start:0x020f229c end:0x020f22cc
+
+libs/NitroSDK/src/rtc/rtc_convert_date_time_to_second.c:
+    complete
+    .text start:0x020cf990 end:0x020cf9f4
+
+libs/NitroSDK/src/rtc/rtc_convert_post.c:
+    complete
+    .text start:0x020cf9f4 end:0x020cfcbc
+
+libs/NitroSDK/src/card/card_identify_backup.c:
+    complete
+    .text start:0x020d0078 end:0x020d03fc
+
+libs/NitroSDK/src/math/MATH_pop.c:
+    complete
+    .text start:0x020d1ae4 end:0x020d1b28
+
+libs/NitroSDK/src/snd/snd_master_volume.c:
+    complete
+    .text start:0x020d20e4 end:0x020d2104
+
+libs/NitroSDK/src/snd/SND_alarm.c:
+    complete
+    .text start:0x020d2930 end:0x020d29f4
+    .bss start:0x02114260 end:0x021142c0
+
+libs/NitroSDK/src/snd/snd_next_inst_data.c:
+    complete
+    .text start:0x020d2d00 end:0x020d2eb0
+
+libs/NitroSDK/src/std_sprintf_writer.c:
+    complete
+    .text start:0x020d3084 end:0x020d3160
+
+libs/NitroSDK/src/std_sprintf.c:
+    complete
+    .text start:0x020d3160 end:0x020d39dc

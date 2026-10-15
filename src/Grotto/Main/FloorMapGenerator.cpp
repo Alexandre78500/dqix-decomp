@@ -693,7 +693,7 @@ bool FloorMapGenerator::RoutineJ()
             if (tileS != 1 && tileS != 3)
             {
                 map->fpUpStairRotation = 0;
-                Mat3x3_WriteIdentity(&map->unknown1);
+                MTX_Identity33_(&map->unknown1);
             }
             else if (tileE != 1 && tileE != 3)
             {
@@ -772,7 +772,7 @@ bool FloorMapGenerator::RoutineJ()
     {
         FloorMap* map = pFloorMap;
         map->fpDownStairRotation = 0;
-        Mat3x3_WriteIdentity(&map->unknown2);
+        MTX_Identity33_(&map->unknown2);
         map->downStairWorldX = (int)((float)posX * 8.0f * 4096.0f);
         map->downStairWorldY = 0;
         map->downStairWorldZ = (int)((float)posY * 8.0f * 4096.0f);

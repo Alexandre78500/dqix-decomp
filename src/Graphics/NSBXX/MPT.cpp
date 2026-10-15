@@ -5,14 +5,14 @@
 #pragma optimize_for_size off
 
 #if defined(jpn)
-#define func_020ca390 func_020cbe5c
+#define MIi_CpuClear16 func_020cbe5c
 #define data_020f1c7c data_020f1de8
 #endif
 
 extern "C"
 {
     // memset
-    void func_020ca390(int, void*, unsigned);
+    void MIi_CpuClear16(int, void*, unsigned);
 }
 
 // processing callback for M.PT animations
@@ -32,7 +32,7 @@ void InitializeModelAnimationFromMPT(AnimationData* anim, void* pvMPT, NSBXXInte
     anim->numEntries_ = model->numMaterials_;
     NSBXXAnimationMPT* mpt = (NSBXXAnimationMPT*)pvMPT;
     anim->pRawData_ = mpt;
-    func_020ca390(0, &anim->entries_[0], anim->numEntries_ * 2);
+    MIi_CpuClear16(0, &anim->entries_[0], anim->numEntries_ * 2);
     
     track = 0;
     if (track < mpt->tracks_.numEntries_)
@@ -79,10 +79,10 @@ void SetMaterialTextureForRender(NSBXXTex* tex, const char* textureName, Materia
     int newHeight = (innerTexture->unk_4 & 0x3ff800) >> 11;
 
     // wtf is the point of this? you just set it to these values...
-    fix32_t rescaleX = (newWidth == renderData->materialWidth_) ? 0x1000 : fix32_Divide(newWidth << 12, renderData->materialWidth_ << 12);
+    fix32_t rescaleX = (newWidth == renderData->materialWidth_) ? 0x1000 : FX_Div(newWidth << 12, renderData->materialWidth_ << 12);
     renderData->materialxScale_ = rescaleX;
 
-    fix32_t rescaleY = (newHeight == renderData->materialHeight_) ? 0x1000 : fix32_Divide(newHeight << 12, renderData->materialHeight_ << 12);
+    fix32_t rescaleY = (newHeight == renderData->materialHeight_) ? 0x1000 : FX_Div(newHeight << 12, renderData->materialHeight_ << 12);
     renderData->materialyScale_ = rescaleY;
 }
 

@@ -9,21 +9,21 @@
 #pragma optimize_for_size off
 
 #if defined(jpn)
-#define func_020c9bf0 func_020cb6bc
-#define func_020c9be0 func_020cb6ac
-#define func_020ca3ec func_020cbeb8
+#define OS_Halt func_020cb6bc
+#define OS_Terminate func_020cb6ac
+#define MIi_CpuClear32 func_020cbeb8
 #endif
 
 extern "C"
 {
     // wait for an interrupt
-    void func_020c9bf0();
+    void OS_Halt();
 
     // something like abort()
-    void func_020c9be0();
+    void OS_Terminate();
 
     // memset with silly signature and assuming alignment
-    void func_020ca3ec(int value, void* dst, unsigned len);
+    void MIi_CpuClear32(int value, void* dst, unsigned len);
 }
 
 void PopulateContext(ProcessorContext *context, unsigned int startAddress,
@@ -50,7 +50,7 @@ void PopulateContext(ProcessorContext *context, unsigned int startAddress,
     // when the function at startAddress returns, go here
     context->userModeRegisters[14] = (unsigned int)&ContextExecutionReturnProc;
 
-    func_020ca3ec(0, (void*)(stackBottom - stackSize + 4), stackSize - 8);
+    MIi_CpuClear32(0, (void*)(stackBottom - stackSize + 4), stackSize - 8);
     context->blockingMutex = NULL;
     context->lockedMutexes.pFirst = NULL;
     context->lockedMutexes.pLast = NULL;
@@ -59,7 +59,7 @@ void PopulateContext(ProcessorContext *context, unsigned int startAddress,
     context->containerBlockedQueue = NULL;
     context->pNextBlocked = NULL;
     context->pPrevBlocked = NULL;
-    func_020ca3ec(0, &context->unknown_A4, 12);
+    MIi_CpuClear32(0, &context->unknown_A4, 12);
     context->sleepAlarm = NULL;
 
     SetIRQInterruptState(priorState);
@@ -115,7 +115,7 @@ void ShutdownCurrentContext()
     UnblockContexts(&context->contextsAwaitingThisCompletion);
     RemoveContextSwitchLock();
     SwitchContextUninterrupted();
-    func_020c9be0();
+    OS_Terminate();
 }
 
 void ShutdownContext(ProcessorContext* context)
@@ -373,7 +373,7 @@ void InterruptWaitLoopFunction(void* unusedUserdata)
 {
     EnableIRQInterrupts();
     while (true)
-        func_020c9bf0();
+        OS_Halt();
 }
 
 unsigned int AddContextSwitchLock()

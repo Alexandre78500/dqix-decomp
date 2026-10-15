@@ -1,3 +1,6 @@
+# Nintendo library sources imported from pokeheartgold are kept as they are
+exclude: ^libs/
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
