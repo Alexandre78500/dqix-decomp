@@ -43,12 +43,6 @@ struct Ov014Globals
 
 extern "C"
 {
-    // Packed table load slot, see BestiaryLoadSlot
-    void func_ov014_02188bd0(BestiaryLoadSlot* slot);
-    void func_ov014_02188bfc(BestiaryLoadSlot* slot, SafeAllocator* alloc, short number);
-    int func_ov014_02188c34(BestiaryLoadSlot* slot);
-    int func_ov014_02188d10(BestiaryLoadSlot* slot);
-
     void func_02096fb0(void* monsterData);
     void func_02096fc4(void* monsterData);
     void func_02097054(void* monsterData, SafeAllocator* alloc, void* file, u32 size, int modelId);
@@ -200,7 +194,7 @@ void BestiaryViewer::Initialize()
     spriteBank_ = 0;
     sprites_ = 0;
     func_02096fb0(monsterData_);
-    func_ov014_02188bd0(&loadSlot_);
+    tableLoader_.Init();
     heaps_ = 0;
     model_ = 0;
     scene_ = 0;
@@ -268,9 +262,9 @@ void BestiaryViewer::Shutdown()
             tasks_[i] = -1;
         }
     }
-    func_ov014_02188d10(&loadSlot_);
+    tableLoader_.Cancel();
     func_02096fc4(monsterData_);
-    func_ov014_02188bd0(&loadSlot_);
+    tableLoader_.Init();
     func_020100c4(GameState::GetInstance(), data_ov014_02189800.savedScene);
     data_ov014_02189800.savedScene = 0;
     LightingManager::GetInstance()->fogEnabled_ = true;
@@ -490,7 +484,7 @@ void BestiaryViewer::CancelMonsterLoad()
                 tasks_[i] = -1;
             }
         }
-        func_ov014_02188d10(&loadSlot_);
+        tableLoader_.Cancel();
         monsterLoadStep_ = 0;
     }
     if (flags81_ & 0x10)
@@ -591,7 +585,7 @@ void BestiaryViewer::SetMonster(MonsterEntry* monster, MonsterRecord* record, u8
             tasks_[i] = -1;
         }
     }
-    func_ov014_02188d10(&loadSlot_);
+    tableLoader_.Cancel();
     monsterLoadStep_ = 0;
     page_ = 0;
     monster_ = monster;
@@ -633,7 +627,7 @@ void BestiaryViewer::UpdateMonsterLoad()
         if (loadModel_)
             tasks_[0] = loader->QueueLoadFile(data_ov014_021895d5, NULL);
         heaps_[1].Reset();
-        func_ov014_02188bfc(&loadSlot_, &heaps_[1], monster_->number);
+        tableLoader_.Start(&heaps_[1], monster_->number);
         tasks_[1] = loader->QueueLoadFileInGP2(data_ov014_021895ed, data_ov014_02189603, NULL);
         sprintf(gp2, data_ov014_02189615, page_ + 1);
         sprintf(inner, data_ov014_0218962c, page_ + 1);
@@ -693,7 +687,7 @@ void BestiaryViewer::UpdateMonsterLoad()
 
     if (monsterLoadStep_ == 2)
     {
-        if (func_ov014_02188c34(&loadSlot_))
+        if (tableLoader_.Update())
             monsterLoadStep_++;
     }
 

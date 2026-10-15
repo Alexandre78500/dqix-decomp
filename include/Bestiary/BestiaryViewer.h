@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Memory/SafeAllocator.h"
+#include "PackedTable.h"
 #include "../World/Object3D.h"
 
 typedef unsigned char u8;
@@ -125,16 +126,6 @@ struct TextArchive
     u8 unk_0[0x18];
 };
 
-// Packed table load slot (functions from 0x02188bd0 on). sizeof == 0x20.
-struct BestiaryLoadSlot
-{
-    u8 unk_0[0x14];
-    short unk_14;
-    short step;
-    int taskId;
-    int unk_1c;
-};
-
 // Top screen of the bestiary: 3D view of the selected monster, its texts
 // and sprites. BestiaryScreen extends it.
 class BestiaryViewer
@@ -146,7 +137,7 @@ public:
     SpriteBank* spriteBank_;        // 0x4
     Sprite* sprites_;               // 0x8: 3 sprites
     u8 monsterData_[0x10];          // 0xc: mons_info2.nat (func_02096fb0)
-    BestiaryLoadSlot loadSlot_;     // 0x1c
+    PackedTableLoader tableLoader_; // 0x1c: enchab table, entries of the monster
     SafeAllocator* heaps_;          // 0x3c: 6 sub-heaps
     Object3D* model_;               // 0x40
     void* scene_;                   // 0x44

@@ -12,3 +12,11 @@ src/Bestiary/BestiaryViewer.cpp:
 src/Bestiary/BestiaryScreen.cpp:
     complete
     .text start:0x021868b8 end:0x02188b18
+
+src/Bestiary/PackedTableLoader.cpp:
+    complete
+    .text start:0x02188b18 end:0x02188d48
+
+src/Bestiary/PackedTable.cpp:
+    complete
+    .text start:0x021891f0 end:0x02189468
