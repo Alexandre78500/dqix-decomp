@@ -61,6 +61,24 @@ Chaque essai est journalisé automatiquement (c'est ainsi qu'on compte les essai
 - Constantes de pool (`.word 0x...`) : grandes constantes, adresses de données.
 - Un switch dense donne une table de saut `addls pc, pc, r0, lsl #2`.
 
+Appris sur l'overlay 14 (voir `tools/decomp_ia/pilote_ov014/notes_ov014.md`) :
+
+- Registres non volatils : mwcc les attribue dans l'ordre **inverse** de la déclaration ;
+  déclarer en tête de bloc, dans un autre ordre, les variables dont les registres sont croisés.
+  Sur la pile, la première locale déclarée prend l'adresse la plus haute.
+- Un champ relu après un appel (`ldr` répété) : passer l'objet par une locale
+  (`BackgroundLoader* l = BackgroundLoader::GetInstance();`) ; à l'inverse, une valeur gardée en
+  registre se relit en réécrivant l'expression (`&self->sprites[i]`).
+- `a = b = f();` (affectation chaînée) donne le `mov r1, r0` que deux affectations ne donnent pas.
+- Drapeaux sur un octet : `tst`/`orr`/`bic` viennent de masques sur l'octet brut (`flags |= 8`),
+  les `lsl`/`lsr` d'un champ de bits ; une union octet/bitfield permet les deux.
+- `-inline noauto` : seules les `inline` triviales (une expression sans `if`, sans locale)
+  sont intégrées ; une `inline` plus grosse devient un vrai appel.
+- Un `.word` vers une donnée en deux exemplaires dans le pool alors que le nôtre n'en a qu'un :
+  une table `static` locale. Garde la donnée `extern` et déclare-la une deuxième fois dans un
+  `namespace` pour l'écriture d'initialisation (voir `BestiaryScreen::Update`).
+- `char buf[0x40] = {0};` produit l'appel à `__clear`.
+
 ## Partage avec les autres agents
 
 D'autres agents décompilent en parallèle les fonctions voisines du même module.

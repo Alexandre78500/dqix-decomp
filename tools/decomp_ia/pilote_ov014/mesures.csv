@@ -1,0 +1,69 @@
+fonction,taille,essais,score,reussite,essais_pour_100,duree_s,jetons,nom_propose,blocage,vague
+func_ov014_021842a0,96,5,100.0,True,5,37,54042,MonsterTable::FindById,,1
+func_ov014_02184300,452,2,100.0,True,2,84,68239,BestiaryScene::AllocateResources,"Toutes les instructions correspondent (100 % avec objdiff -c functionRelocDiffs=none). Les 2 seules différences sont les .word du pool vers data_ov014_02189498/02189480 : dans l'objet cible ces données sont définies (même objet ov014_5.o), dans le nôtre elles sont extern non définies, objdiff les marque donc différentes. Artefact de l'outil, pas du code.",1
+func_ov014_021844c4,272,6,100.0,True,5,111,73055,BestiaryScene::Init,"Code machine identique octet pour octet : les 3 lignes restantes (bl func_ov014_02188bd0, bl func_ov014_021845d4, .word data_ov014_02189800) sont un artefact objdiff, car ces symboles sont définis dans l'objet cible mais externes dans le nôtre. Vérifié : en définissant ces symboles après la fonction dans un fichier de test, le score passe à 100 %.",1
+func_ov014_021845d4,24,1,100.0,True,1,22,51064,UnkOv014Entry::Reset,,1
+func_ov014_021845ec,276,2,100.0,True,2,42,67670,Bestiary::ReleaseResources,,2
+func_ov014_02184700,868,5,100.0,True,4,138,92230,BestiaryViewer::Update,,2
+func_ov014_02184a64,420,3,100.0,True,3,61,69068,Bestiary::DrawMonsterView,,2
+func_ov014_02184c08,256,1,100.0,True,1,40,65604,Bestiary::ApplyMonsterTransform,,2
+func_ov014_02184d08,196,1,100.0,True,1,27,59642,Bestiary::CancelPendingLoads,,2
+func_ov014_02184dcc,112,15,100.0,True,14,220,90151,Bestiary::ToggleMonsterView,,2
+func_ov014_02184e3c,212,2,100.0,True,2,37,62957,BestiaryViewer::CycleMonsterAnimation,,2
+func_ov014_02184f10,104,1,100.0,True,1,22,55263,Bestiary::RequestMonster,,2
+func_ov014_02184f78,340,4,100.0,True,4,70,69340,Bestiary::SetDisplayedMonster,,2
+func_ov014_021850cc,1856,2,100.0,True,1,134,100306,Bestiary::UpdateMonsterLoad,,2
+func_ov014_0218580c,1072,3,100.0,True,3,105,90762,Bestiary::LoadResources,,2
+func_ov014_02185c3c,12,1,100.0,True,1,20,52777,Bestiary::Update,,2
+func_ov014_02185c48,72,2,100.0,True,2,76,64270,Bestiary::QueueTopScreenBackgroundLoad,"Code identique octet pour octet ; seule la relocation du mot de pool (.word data_ov014_021896bc) est notée différente par objdiff car le symbole est défini dans l'objet cible et extern dans la proposition (artefact de l'outil, inévitable sans définir la donnée).",1
+func_ov014_02185c90,3112,60,99.74293,False,,1914,439103,BestiaryViewer::UpdateMonsterLoading,"1 seule difference d'ordonnancement : le rechargement du spill idC (ldr r1,[sp,#0x14]) avant le 3e appel du bloc 2 reste apres le str r0,[sp]. Passe 1 : types short/u8/volatile, adresse, portee, ordre des declarations, temporaires, inline, parametre non signe, ids[3]. Passe 2, sans effet ou pire : idC[1] (scalarise), adresse prise + litteraux dans le bloc 1 (95 %), u8 pour les 2 derniers parametres, short/u32/enum pour idC ou pour les trois ids (l'allocateur change et ce n'est plus idC qui est deverse), wrapper inline identite, wrapper inline SetText(l,id,str), methode membre au lieu de la fonction libre, temporaire pour la chaine (avant, ou en affectation dans l'argument), copie int id2 = idC (propagee), idC++ / ids++ dans les arguments, ~~idC (replie), conditions du bloc 2 fusionnees, parametre short (ajoute lsl/asr). Observations : une conversion qui produit du code (int->short) est evaluee avant les arguments de pile ; les conversions sans code (short->int, u32->int) ne passent pas avant le str ; tout changement de type de idC modifie le choix de la variable deversee.",passe2
+func_ov014_021868b8,440,2,100.0,True,2,50,69793,Bestiary::Allocate,,2
+func_ov014_02186a70,192,2,100.0,True,2,34,59429,BestiaryScreen::Init,,2
+func_ov014_02186b30,152,2,100.0,True,2,35,60240,Bestiary::Shutdown,,2
+func_ov014_02186bc8,412,10,100.0,True,9,178,83664,Bestiary::Update,,2
+func_ov014_02186d64,24,1,100.0,True,1,18,51533,Bestiary::UpdateIfState4,,2
+func_ov014_02186d7c,76,1,100.0,True,1,19,53805,Bestiary::RefreshModelAnimation,,2
+func_ov014_02186dc8,40,4,100.0,True,3,80,62196,Bestiary::Update,"Aucun sur le code : octets identiques (vérifié à llvm-objdump, mêmes relocations). essai affiche 90 % car dans l'objet cible func_ov014_02185c90 est défini (même .o ov014_5.o) alors qu'il est externe dans la proposition ; objdiff compte l'argument du bl comme différent. Avec un stub de 02185c90 défini après la fonction (stub_test.cpp, diagnostic), essai donne 100 %. Le .cpp rendu est la version propre sans stub.",1
+func_ov014_02186df0,60,1,100.0,True,1,24,53899,Bestiary::RequestClose,,2
+func_ov014_02186e2c,228,3,100.0,True,3,43,62512,Bestiary::UpdateCursorSprite,,2
+func_ov014_02186f10,224,2,100.0,True,1,36,61195,BestiaryScreen::CheckSelectInput,,2
+func_ov014_02186ff0,132,2,100.0,True,1,32,58764,Bestiary::IsCancelRequested,,2
+func_ov014_02187074,436,13,100.0,True,13,223,94919,Bestiary::ToggleSortOrder,,2
+func_ov014_02187228,180,6,100.0,True,5,47,62090,Bestiary::SetSelection,,2
+func_ov014_021872dc,100,6,100.0,True,6,53,58617,Bestiary::ScrollPage,,2
+func_ov014_02187340,96,7,100.0,True,7,67,60790,Bestiary::GetPageFirstNode,,2
+func_ov014_021873a0,176,1,100.0,True,1,26,57538,Bestiary::SelectEntryAtCursor,,2
+func_ov014_02187450,56,1,100.0,True,1,18,53290,Bestiary::GetMonsterEntry,,2
+func_ov014_02187488,112,1,100.0,True,1,23,55749,Bestiary::MarkSeenMonsters,,2
+func_ov014_021874f8,40,1,100.0,True,1,19,52834,Bestiary::CountListNodes,,2
+func_ov014_02187520,72,1,100.0,True,1,24,54450,Bestiary::GetCurrentPage,,2
+func_ov014_02187568,1488,4,100.0,True,3,112,94523,BestiaryScreen::State_Load,,2
+func_ov014_02187b38,204,1,100.0,True,1,30,59632,BestiaryScreen::StateFadeIn,,2
+func_ov014_02187c04,436,3,100.0,True,2,45,68808,BestiaryScreen::StateMenu,,2
+func_ov014_02187db8,600,2,100.0,True,2,50,70209,BestiaryScreen::UpdateSortMenuState,,2
+func_ov014_02188010,708,1,100.0,True,1,54,71793,BestiaryScreen::UpdateListState,,2
+func_ov014_021882d4,92,1,100.0,True,1,26,55937,Bestiary::UpdateFadeOutToState6,,2
+func_ov014_02188330,412,3,100.0,True,3,62,67811,Bestiary::RefreshCompletionDisplay,,2
+func_ov014_021884cc,128,2,100.0,True,2,30,57175,Bestiary::SetupDisplayLayers,,2
+func_ov014_0218854c,112,1,100.0,True,1,21,55676,Bestiary::SetupDisplayLayers,,2
+func_ov014_021885bc,316,2,100.0,True,2,34,62802,Bestiary::RefreshListPage,,2
+func_ov014_021886f8,916,5,100.0,True,5,93,84961,Bestiary::UpdateTitleBackgroundLoad,,2
+func_ov014_02188a8c,140,2,100.0,True,1,30,57854,Bestiary::SetSelectionFromMonsterId,,2
+func_ov014_02188b18,8,2,100.0,True,1,25,54272,GetU16Key,,2
+func_ov014_02188b20,128,6,100.0,True,5,83,64059,PackedTable::RelocateOffsets,,2
+func_ov014_02188ba0,48,16,100.0,True,15,317,100759,PackedData::ResolveOffset,,2
+func_ov014_02188bd0,44,1,100.0,True,1,21,53498,BestiaryUnk1C::Init,,2
+func_ov014_02188bfc,56,1,100.0,True,1,22,54048,BestiaryList::Setup,,2
+func_ov014_02188c34,220,2,100.0,True,1,34,64486,BestiaryLoadSlot::Update,,2
+func_ov014_02188d10,56,2,100.0,True,1,30,57673,BestiaryFileSlot::Reset,,2
+func_ov014_02188d48,1192,66,98.32214,False,,1574,375583,PackedTable::LoadFromFile,"Reste 4 instructions (scheduling post-RA) : dans la cible le temporaire du `bic` (alignement du bloc d'offsets) prend r4, le registre de cnt, ce qui repousse `mov r4, r1, lsr #0x1c` (cnt = key->count) après le calcul de words ; chez nous cnt est vivant avant le bic (temp en r6). Assigner cnt après words (ou après total = 0, ou réutiliser entSize pour l'offset) met bien le bic en r4 mais permute alors entries/demi-mot de la clé (r1/r2) et le lsl #0x10 part dans r3 (94,30 %). Passe 2 : registres r6/r7/r8 corrigés en déclarant `int c; u16* p; u32* outWords;` en tête du bloc else (key/total/buf restent déclarés à leur première affectation) ; code adapté à la classe PackedTable intégrée (Attach, BinarySearch, GetEntriesSize, Relocate, ResolveOffset, GetEntryKey).",passe2
+func_ov014_021891f0,84,2,100.0,True,2,25,54687,SortedTable::ForEach,,2
+func_ov014_02189244,144,1,100.0,True,1,35,60471,PackedTable::Attach,,2
+func_ov014_021892d4,120,3,100.0,True,3,30,57186,SortedTable::BinarySearch,,2
+func_ov014_0218934c,52,24,100.0,True,24,256,91933,SortedTable::GetDataSize,,2
+func_ov014_02189380,24,1,100.0,True,1,22,53269,Grid::GetCurrentCell,,2
+func_ov014_02189398,44,2,100.0,True,1,29,54709,PackedTable::GetEndAligned,,2
+func_ov014_021893c4,32,1,100.0,True,1,29,56032,SortedTable::FindById,,2
+func_ov014_021893e4,40,2,100.0,True,1,29,54437,ResourceTable::GetEntryData,,2
+func_ov014_0218940c,36,1,100.0,True,1,23,54329,ResBank::GetEntryAt,,2
+func_ov014_02189430,56,1,100.0,True,1,21,53637,PackedTable::GetEntryData,,2
