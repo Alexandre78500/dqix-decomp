@@ -479,8 +479,8 @@ void AtmosphericEffectSet::ProcessArchive(AtmosphericEffectSet *target, SafeAllo
                 continue;
             }
             // treat the scale factor as shrinking the screen instead of enlarging the tiles
-            fix32_t effectiveScreenWidth = fix32_Divide(256 << 12, loopObject->scaleFactor_);
-            fix32_t effectiveScreenHeight = fix32_Divide(192 << 12, loopObject->scaleFactor_);
+            fix32_t effectiveScreenWidth = FX_Div(256 << 12, loopObject->scaleFactor_);
+            fix32_t effectiveScreenHeight = FX_Div(192 << 12, loopObject->scaleFactor_);
             if (!(loopObject->flags_ & (1 << 6)))
             {
                 if (loopObject->flags_ & (1 << 7))
@@ -495,23 +495,23 @@ void AtmosphericEffectSet::ProcessArchive(AtmosphericEffectSet *target, SafeAllo
                 else
                     loopObject->originZ_ = 0;
             }
-            unsigned int floorNumTilesX = fix32_Divide(effectiveScreenWidth, loopObject->tileWidth_) / 4096.0f;
+            unsigned int floorNumTilesX = FX_Div(effectiveScreenWidth, loopObject->tileWidth_) / 4096.0f;
             loopObject->tileCountX_ = floorNumTilesX + 1;
-            unsigned int floorNumTilesZ = fix32_Divide(effectiveScreenHeight, loopObject->tileHeight_) / 4096.0f;
+            unsigned int floorNumTilesZ = FX_Div(effectiveScreenHeight, loopObject->tileHeight_) / 4096.0f;
             loopObject->tileCountZ_ = floorNumTilesZ + 1;
 
             fix32_t oldE0 = loopObject->originX_;
-            fix32_t xpercent = fix32_Divide(effectiveScreenWidth, 100 << 12);
+            fix32_t xpercent = FX_Div(effectiveScreenWidth, 100 << 12);
             loopObject->originX_ = FIX32_MULTIPLY(xpercent, oldE0);
             fix32_t oldE4 = loopObject->originZ_;
-            fix32_t ypercent = fix32_Divide(effectiveScreenHeight, 100 << 12);
+            fix32_t ypercent = FX_Div(effectiveScreenHeight, 100 << 12);
             loopObject->originZ_ = FIX32_MULTIPLY(ypercent, oldE4);
 
             fix32_t oldD8 = loopObject->xSpeed_;
-            fix32_t ratioE8 = fix32_Divide(effectiveScreenWidth, loopObject->tileWidth_);
+            fix32_t ratioE8 = FX_Div(effectiveScreenWidth, loopObject->tileWidth_);
             loopObject->xSpeed_ = FIX32_MULTIPLY(ratioE8, oldD8);
             fix32_t oldDC = loopObject->zSpeed_;
-            fix32_t ratioEC = fix32_Divide(effectiveScreenHeight, loopObject->tileHeight_);
+            fix32_t ratioEC = FX_Div(effectiveScreenHeight, loopObject->tileHeight_);
             loopObject->zSpeed_ = FIX32_MULTIPLY(ratioEC, oldDC);
 
             loopObject = loopObject->pNext_;
@@ -560,10 +560,10 @@ bool AtmosphericEffectSet::Draw()
         }
 
         // treat the scale factor as shrinking the screen instead of enlarging the tiles
-        fix32_t effectiveScreenWidth = fix32_Divide(256 << 12, loopObject->scaleFactor_);
-        fix32_t effectiveScreenHeight = fix32_Divide(192 << 12, loopObject->scaleFactor_);
+        fix32_t effectiveScreenWidth = FX_Div(256 << 12, loopObject->scaleFactor_);
+        fix32_t effectiveScreenHeight = FX_Div(192 << 12, loopObject->scaleFactor_);
 
-        Mat4x4_WriteProjectionUnknown(
+        MTX_OrthoW(
             effectiveScreenHeight >> 1, -effectiveScreenHeight >> 1,
             -effectiveScreenWidth >> 1, effectiveScreenWidth >> 1,
             1 << 12, 100 << 12, 1 << 12, &data_0210a010.projectionMatrix);
@@ -572,7 +572,7 @@ bool AtmosphericEffectSet::Draw()
         data_0210a010.eyeVector = eye;
         data_0210a010.upVector = up;
         data_0210a010.targetVector = target;
-        Mat4x3_WriteViewMatrix(&eye, &up, &target, &data_0210a010.viewMatrix);
+        MTX_LookAt(&eye, &up, &target, &data_0210a010.viewMatrix);
         
         data_0210a010.flags &= ~(
             (1 << RENDER_CONFIG_FLAG_INVERSE_VIEW_CACHE_VALID) |

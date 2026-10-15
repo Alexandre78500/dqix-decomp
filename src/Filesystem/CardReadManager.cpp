@@ -20,10 +20,10 @@
 #define ROMCTRL_FLAG_BUSY (1u << 31)
 
 #if defined(jpn)
-#define func_020c89e4 func_020ca4b0
+#define OS_GetDTCMAddress func_020ca4b0
 #define func_020ca8e8 func_020cc3b4
 #define func_020d1118 func_020d2be4
-#define func_020d1234 func_020d2d00
+#define func_020d1234 SND_GetNextInstData
 #endif
 
 void SendTaskToReadContext(CardReadManager::ReadProc);
@@ -31,7 +31,7 @@ void SendTaskToReadContext(CardReadManager::ReadProc);
 extern "C"
 {
     // Gets the base of the tightly coupled memory region
-    unsigned int func_020c89e4();
+    unsigned int OS_GetDTCMAddress();
 
     // Seems to set up DMA to repeatedly read from the read parameter into write
     // pointer, incrementing the write pointer but not the read pointer.
@@ -48,7 +48,7 @@ Struct_02111f20::LowLevelReadProc GetLowLevelCartridgeReadProc();
 // Returns true if there's more to be copied after
 extern "C" bool TransferScratchBuffer(Struct_02111f20* input)
 {
-    CardReadManager* ptr = &data_021118e0;
+    CardReadManager* ptr = &cardi_common;
     unsigned int romCurrentBlockStart = ptr->cartridgeReadOffset & 0xfffffe00;
     if (romCurrentBlockStart == (unsigned int)input->alignedWrite)
     {
@@ -58,7 +58,7 @@ extern "C" bool TransferScratchBuffer(Struct_02111f20* input)
         if (usefulLength > ptr->writeLength)
             usefulLength = ptr->writeLength;
         
-        VectorizedInvertedMemcpy(input->scratchBuffer + offsetFromAlignment,
+        MI_CpuCopy8(input->scratchBuffer + offsetFromAlignment,
             ptr->writeDst, usefulLength);
         ptr->cartridgeReadOffset += usefulLength;
         ptr->writeDst += usefulLength;
@@ -94,7 +94,7 @@ void SendGamecardBusCommand(unsigned int firstWord, unsigned int secondWord)
 
 void ReadSingleSegmentFromCartridge()
 {
-    CardReadManager* readManager = &data_021118e0;
+    CardReadManager* readManager = &cardi_common;
     void* gamecardReceivedDataRegister = (void*)ADDR_GAMECARD_RECEIVED_DATA;
     Struct_02111f20* ps1f20 = &data_02111f00.innerStruct;
 
@@ -108,9 +108,9 @@ void ReadSingleSegmentFromCartridge()
 
 void DMAChainSegmentInterruptHandler()
 {
-    ResetDMAChannel(data_021118e0.dmaChannel);
+    ResetDMAChannel(cardi_common.dmaChannel);
 
-    CardReadManager* manager = &data_021118e0;
+    CardReadManager* manager = &cardi_common;
     
     manager->cartridgeReadOffset += 512;
     manager->writeDst += 512;
@@ -122,7 +122,7 @@ void DMAChainSegmentInterruptHandler()
     {
         DisableSpecificInterrupts(IRQ_MASK_GAMECARD_DATA_TRANSFER_DONE);
         AcknowledgeSpecificInterrupts(IRQ_MASK_GAMECARD_DATA_TRANSFER_DONE);
-        CardReadManager* readManager = &data_021118e0;
+        CardReadManager* readManager = &cardi_common;
         unsigned int romChipID = SetupNormalGamecardBusCommandMode();
         func_020d1234(romChipID);
 
@@ -150,7 +150,7 @@ void DMAChainSegmentInterruptHandler()
 
 extern "C" bool TryReadViaDMA(Struct_02111f20* handler)
 {
-    CardReadManager* readManager = &data_021118e0;
+    CardReadManager* readManager = &cardi_common;
     unsigned int length = readManager->writeLength;
     
     bool canDoDMARead = false;
@@ -166,7 +166,7 @@ extern "C" bool TryReadViaDMA(Struct_02111f20* handler)
     
     if (destinationIsCacheAligned)
     {
-        unsigned int dtcmBase = func_020c89e4();
+        unsigned int dtcmBase = OS_GetDTCMAddress();
         bool isDTCM = true;
         bool isITCM = false;
         if (destination + length > ADDR_ITCM_START && destination < ADDR_ITCM_END)
@@ -225,7 +225,7 @@ extern "C" bool TryReadViaDMA(Struct_02111f20* handler)
 
 extern "C" void ReadBlocksFromCartridge(Struct_02111f20* handler)
 {
-    CardReadManager* readManager = &data_021118e0;
+    CardReadManager* readManager = &cardi_common;
     while (true)
     {
         unsigned int alignedOffset = readManager->cartridgeReadOffset & 0xfffffe00;
@@ -269,7 +269,7 @@ extern "C" void ReadBlocksFromCartridge(Struct_02111f20* handler)
         if (practicalWriteLoc == (unsigned int*)readManager->writeDst)
         {
             unsigned int remainingLength;
-            volatile CardReadManager* manager = &data_021118e0;
+            volatile CardReadManager* manager = &cardi_common;
             manager->cartridgeReadOffset += 0x200;
             manager->writeDst += 0x200;
             remainingLength = manager->writeLength - 0x200;
@@ -309,7 +309,7 @@ extern "C" void SafeReadBlocksFromCartridge(CardReadManager*)
         readProc(rawHandler);
     }
 
-    CardReadManager* readManager = &data_021118e0;
+    CardReadManager* readManager = &cardi_common;
     unsigned int romChipID = SetupNormalGamecardBusCommandMode();
     // Does a few things, but in the end it resets all four DMA channels,
     // so it's some kind of cleanup
@@ -338,7 +338,7 @@ void LoadDataFromCartridgeToMemory(unsigned int dmaChannel,
     CardReadManager::CompletionCallback onComplete, NitroHandle* handle, CBool async)
 {
     Struct_02111f20* rawHandler = &data_02111f00.innerStruct;
-    CardReadManager* readManager = &data_021118e0;
+    CardReadManager* readManager = &cardi_common;
     VerifyCardReadManagerInitialized();
 
     int oldState = DisableIRQInterrupts();
@@ -370,14 +370,14 @@ void LoadDataFromCartridgeToMemory(unsigned int dmaChannel,
     }
     else
     {
-        readManager->currentTaskExecutionContext = data_02111304.activeContext;
+        readManager->currentTaskExecutionContext = OSi_ThreadInfo.activeContext;
         SafeReadBlocksFromCartridge(readManager);
     }
 }
 
 void InitializeCardReading()
 {
-    CardReadManager* readManager = &data_021118e0;
+    CardReadManager* readManager = &cardi_common;
     if (readManager->flags != 0)
         return;
 
@@ -410,7 +410,7 @@ void IPCCommand11Proc(unsigned int command, unsigned int argument, unsigned int 
     if (command != 11 || !flag)
         return;
 
-    CardReadManager* manager = (CardReadManager*)&data_021118e0;
+    CardReadManager* manager = (CardReadManager*)&cardi_common;
     
     ProcessorContext* context = manager->currentTaskExecutionContext;
     manager->flags &= ~(1 << READ_MANAGER_FLAG_AWAITING_ARM7_ACTION);
@@ -420,7 +420,7 @@ void IPCCommand11Proc(unsigned int command, unsigned int argument, unsigned int 
 
 void CartridgeReadContextLoop()
 {
-    CardReadManager* readManager = &data_021118e0;
+    CardReadManager* readManager = &cardi_common;
     while (true)
     {
         int priorState = DisableIRQInterrupts();

@@ -4,13 +4,13 @@
 
 #if defined(jpn)
 #define func_020ca408 func_020cbed4
-#define func_020ca458 func_020cbf24
+#define MIi_CpuClearFast func_020cbf24
 #endif
 
 extern "C"
 {
     void func_020ca408(const void* src, void* dst, unsigned len);
-    void func_020ca458(int value, void* data, unsigned len);
+    void MIi_CpuClearFast(int value, void* data, unsigned len);
 }
 
 bool ProcessMaterialAnimationsOnBoundMaterial(MaterialRenderData* material, AnimationData* anim, unsigned int matIdx)
@@ -109,7 +109,7 @@ bool ProcessJointAnimationsOnBoneMatrix(BoneMatrixRenderData* bone, AnimationDat
     }
 
     // Multiple animations to deal with
-    func_020ca458(0, bone, sizeof(BoneMatrixRenderData));
+    MIi_CpuClearFast(0, bone, sizeof(BoneMatrixRenderData));
     bone->flags_ = 0xffffffff;
 
     Vector3fix rootRotationTopRow;
@@ -128,7 +128,7 @@ bool ProcessJointAnimationsOnBoneMatrix(BoneMatrixRenderData* bone, AnimationDat
                 func_020ca408(&tempData.rotationMatrix_.rows[2], &rootRotationBottomRow, sizeof(Vector3fix));
             }
 
-            fix32_t thisIntensity = (totalWeight == 0x1000) ? anim->weight_ : fix32_Divide(anim->weight_, totalWeight);
+            fix32_t thisIntensity = (totalWeight == 0x1000) ? anim->weight_ : FX_Div(anim->weight_, totalWeight);
             AccumulateScaleVector(&bone->scale_v0_, &tempData.scale_v0_, thisIntensity, tempData.flags_ & 1);
             AccumulateScaleVector(&bone->scale_v1_, &tempData.scale_v1_, thisIntensity, tempData.flags_ & 8);
             AccumulateScaleVector(&bone->scale_v2_, &tempData.scale_v2_, thisIntensity, tempData.flags_ & 0x10);
@@ -165,7 +165,7 @@ bool ProcessJointAnimationsOnBoneMatrix(BoneMatrixRenderData* bone, AnimationDat
         anim = anim->pNext_;
         numAnimsProcessed++;
     } while (anim != NULL);
-    Vector3fix_CrossProduct(&bone->rotationMatrix_.rows[0], &bone->rotationMatrix_.rows[1], &bone->rotationMatrix_.rows[2]);
+    VEC_CrossProduct(&bone->rotationMatrix_.rows[0], &bone->rotationMatrix_.rows[1], &bone->rotationMatrix_.rows[2]);
 
     if (bone->rotationMatrix_.rows[0].x == 0 && bone->rotationMatrix_.rows[0].y == 0 && bone->rotationMatrix_.rows[0].z == 0)
     {
@@ -173,7 +173,7 @@ bool ProcessJointAnimationsOnBoneMatrix(BoneMatrixRenderData* bone, AnimationDat
     }
     else
     {
-        Vector3fix_Normalize(&bone->rotationMatrix_.rows[0], &bone->rotationMatrix_.rows[0]);
+        VEC_Normalize(&bone->rotationMatrix_.rows[0], &bone->rotationMatrix_.rows[0]);
     }
 
     if (bone->rotationMatrix_.rows[2].x == 0 && bone->rotationMatrix_.rows[2].y == 0 && bone->rotationMatrix_.rows[2].z == 0)
@@ -182,13 +182,13 @@ bool ProcessJointAnimationsOnBoneMatrix(BoneMatrixRenderData* bone, AnimationDat
     }
     else
     {
-        Vector3fix_Normalize(&bone->rotationMatrix_.rows[2], &bone->rotationMatrix_.rows[2]);
+        VEC_Normalize(&bone->rotationMatrix_.rows[2], &bone->rotationMatrix_.rows[2]);
     }
 
     // set row2 = (row3) x (row1). Previously we set row3 = (row1) x (row2), so
     // that row3 and row1 are orthogonal to each other, then normalized both.
     // This way we guarantee the resulting matrix is orthogonal
-    Vector3fix_CrossProduct(&bone->rotationMatrix_.rows[2], &bone->rotationMatrix_.rows[0], &bone->rotationMatrix_.rows[1]);
+    VEC_CrossProduct(&bone->rotationMatrix_.rows[2], &bone->rotationMatrix_.rows[0], &bone->rotationMatrix_.rows[1]);
 
     return true;
 }

@@ -23,7 +23,7 @@
 #define func_02099950 func_0209b684
 #define func_020de848 func_020e01c4
 
-#define data_020ef0f0 data_020ef02c
+#define data_020ef0f0 fp_str$6F40
 #endif
 
 extern "C"
@@ -43,7 +43,7 @@ extern "C"
     void func_02094d00(void*);
     Zone3D_StructPtr_8* func_02099950(void*, unsigned short id);
 
-    void func_020c9be0(); // abort() or similar
+    void OS_Terminate(); // abort() or similar
     void func_020de848(void*);
 
     void func_02013490(void*);

@@ -607,7 +607,7 @@ void LightingManager::ComputeFogInfo(FogInfo *outFog)
 
 void LightingManager::Initialize()
 {
-    VectorizedMemset(this, 0, sizeof(LightingManager));
+    MI_CpuFill8(this, 0, sizeof(LightingManager));
     lightingIndexOverride_ = 0;
     fogInfo_.unk_0 = 0;
     fogInfo_.type = 0;
@@ -881,7 +881,7 @@ void LightingManager::RecomputeAdvancedLighting()
         (4096.0f * light0.direction[0] + 0.5f) :
         (4096.0f * light0.direction[0] - 0.5f);
     SetVector3fixComponents(&lightVectors_[0], lightXFix, lightYFix, lightZFix);
-    Vector3fix_Normalize(&lightVectors_[0], &lightVectors_[0]);
+    VEC_Normalize(&lightVectors_[0], &lightVectors_[0]);
     if (lightVectors_[0].x > 0xff7)
         lightVectors_[0].x = 0xff7;
     if (lightVectors_[0].y > 0xff7)
@@ -900,7 +900,7 @@ void LightingManager::RecomputeAdvancedLighting()
         (4096.0f * light1.direction[0] + 0.5f) :
         (4096.0f * light1.direction[0] - 0.5f);
     SetVector3fixComponents(&lightVectors_[1], lightXFix, lightYFix, lightZFix);
-    Vector3fix_Normalize(&lightVectors_[1], &lightVectors_[1]);
+    VEC_Normalize(&lightVectors_[1], &lightVectors_[1]);
     if (lightVectors_[1].x > 0xff7)
         lightVectors_[1].x = 0xff7;
     if (lightVectors_[1].y > 0xff7)
@@ -1003,14 +1003,14 @@ void LightingManager::MaybeComputeHorizonPosition()
     Vector3fix_Subtract(maybeCameraTarget, maybeCameraEye, &cameraRay);
     fix32_t rayY = cameraRay.y;
     cameraRay.y = 0;
-    Vector3fix_Normalize(&cameraRay, &cameraRay);
+    VEC_Normalize(&cameraRay, &cameraRay);
     Vector3fixMultiplyScalar(&cameraRay, 2048 << 12, &cameraRay);
     int pixelX, pixelY;
     // convert world coordinates to pixel value
     func_0202ec84(maybeCameraData, &cameraRay, &pixelX, &pixelY);
     if (pixelY < 192 && pixelY > 0)
     {
-        gradientCenterNorm_ = fix32_Divide(pixelY << 12, 191 << 12);
+        gradientCenterNorm_ = FX_Div(pixelY << 12, 191 << 12);
         // why do this?
         if (gradientCenterNorm_ < 0)
             gradientCenterNorm_ = -gradientCenterNorm_;

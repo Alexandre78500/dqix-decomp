@@ -21,7 +21,7 @@
 #define func_02031234 func_02030d6c
 #define func_02031278 func_02030db0
 #define func_0203ac40 func_0203a698
-#define func_020ca528 func_020cbff4
+#define MI_Copy36B func_020cbff4
 #define func_020d8524 func_020d9e88
 #define func_020d1d1c func_020d37e8
 
@@ -51,7 +51,7 @@ extern "C"
     void func_0203ac40(void*, int, int, int);
 
     // copy 3x3 matrix
-    void func_020ca528(const void*, void*);
+    void MI_Copy36B(const void*, void*);
 
     // compute a checksum for a string
     void func_020d1d1c(unsigned short* out, const void* data, unsigned int length);
@@ -233,7 +233,7 @@ void Object3D::AdvanceEffects()
             // subtracting deltaTime and then dividing by the new value, isn't
             // this a bug? we divide by 0 in the last frame
             animationPlaybackSpeedTransitionRemainingTicks_ -= deltaTimeTicks;
-            fix32_t rateOfChange = fix32_Divide(
+            fix32_t rateOfChange = FX_Div(
                 targetAnimationPlaybackSpeed_ - animationPlaybackSpeed_,
                 animationPlaybackSpeedTransitionRemainingTicks_ << 12);
             animationPlaybackSpeed_ += deltaTimeTicks * rateOfChange;
@@ -320,7 +320,7 @@ void Object3D::AdvanceAnimations_v0()
             }
         }
         prevFrameNormalizedAnimationTime_ = normalizedAnimationTime_;
-        normalizedAnimationTime_ = fix32_Divide(
+        normalizedAnimationTime_ = FX_Div(
             timer - record->startTime,
             record->endTime - record->startTime
         );
@@ -435,7 +435,7 @@ void Object3D::AdvanceAnimations_v1()
             }
             fix32_t duration = GetAnimationFrameCountFix32(anim3D->GetBasicAnimationData()) - 0x1000;
             prevFrameNormalizedAnimationTime_ = normalizedAnimationTime_;
-            normalizedAnimationTime_ = fix32_Divide(timer, duration);
+            normalizedAnimationTime_ = FX_Div(timer, duration);
             animationTime_ = timer;
         }
         else
@@ -548,7 +548,7 @@ void Object3D::PopulateRenderConfigWorld()
     if (pPrevChild_ ? 1 : 0)
     {
         Matrix3x3 worldRotation;
-        func_020ca528(&data_0210a010.objectRotationPosition, &worldRotation);
+        MI_Copy36B(&data_0210a010.objectRotationPosition, &worldRotation);
         Matrix3x3 axisRotation;
         fix32_t rotationComponents[3];
         rotationComponents[0] = rotation_.z;
@@ -570,7 +570,7 @@ void Object3D::PopulateRenderConfigWorld()
                 fix32_t sine = fix32sin(angle);
                 fix32_t cosine = fix32cos(angle);
                 object3DsData.rotationFunctionsRelative[i](&axisRotation, sine, cosine);
-                Mat3x3_Multiply(&worldRotation, &axisRotation, &worldRotation);
+                MTX_Concat33(&worldRotation, &axisRotation, &worldRotation);
             }
         }
         func_02016d8c(&worldRotation);
@@ -592,14 +592,14 @@ void Object3D::PopulateRenderConfigWorld()
         if (flags_ & (1 << OBJECT3D_FLAG_19))
         {
             const Matrix3x3* rotation = func_0202ed74(func_020100bc(GameState::GetInstance()));
-            func_020ca528(rotation, &data_0210a010.objectRotationPosition.rotation);
+            MI_Copy36B(rotation, &data_0210a010.objectRotationPosition.rotation);
             data_0210a010.flags &= ~((1 << RENDER_CONFIG_FLAG_WORLDVIEW_CACHE_VALID) | (1 << RENDER_CONFIG_FLAG_5) | (1 << RENDER_CONFIG_FLAG_2));
         }
         else
         {
             Matrix3x3 axisRotation;
             Matrix3x3 totalRotation;
-            Mat3x3_WriteIdentity(&totalRotation);
+            MTX_Identity33_(&totalRotation);
             fix32_t rotationComponents[3];
             rotationComponents[0] = rotation_.z;
             rotationComponents[1] = rotation_.y;
@@ -620,7 +620,7 @@ void Object3D::PopulateRenderConfigWorld()
                     fix32_t sine = fix32sin(angle);
                     fix32_t cosine = fix32cos(angle);
                     object3DsData.rotationFunctionsAbsolute[i](&axisRotation, sine, cosine);
-                    Mat3x3_Multiply(&totalRotation, &axisRotation, &totalRotation);
+                    MTX_Concat33(&totalRotation, &axisRotation, &totalRotation);
                 }
             }
             func_02016d8c(&totalRotation);
@@ -1800,11 +1800,11 @@ void Object3D::ComputeShadowPosition()
         if (GetModelBonePositionAndDirectionMatrices(context, NULL, NULL, shadowBoneIndex_))
         {
             Matrix4x3 boneWorldTransform;
-            Mat4x3_WriteIdentity(&boneWorldTransform);
+            MTX_Identity43_(&boneWorldTransform);
             const Matrix4x3* inverseView = RenderConfig::GetInverseViewMatrix();
             // fix this cast later
             GetCurrentPositionAndDirectionMatrices(&boneWorldTransform, NULL);
-            Mat4x3_Multiply(&boneWorldTransform, inverseView, &boneWorldTransform);
+            MTX_Concat43(&boneWorldTransform, inverseView, &boneWorldTransform);
             fix32_t z = boneWorldTransform.translation.z;
             fix32_t y = boneWorldTransform.translation.y;
             fix32_t x = boneWorldTransform.translation.x;
@@ -1989,7 +1989,7 @@ unsigned char Object3D::GetField9e() const { return unknown_9e_; }
 void Object3D::TrackBone(TrackedBoneMatrix *trackingEntry)
 {
     trackingEntry->pNext = NULL;
-    Mat4x3_WriteIdentity(&trackingEntry->matrix);
+    MTX_Identity43_(&trackingEntry->matrix);
     if (trackedBoneMatrixList_ != NULL)
     {
         TrackedBoneMatrix* listEnd = trackedBoneMatrixList_;
@@ -2053,7 +2053,7 @@ void BoneTrackingRenderCommandHook(RenderCommandHandler* handler)
         
         GetCurrentPositionAndDirectionMatrices(&tracker->matrix, NULL);
         boneTracking.boneMatrixWithView = tracker->matrix;
-        Mat4x3_Multiply(&tracker->matrix, RenderConfig::GetInverseViewMatrix(), &tracker->matrix);
+        MTX_Concat43(&tracker->matrix, RenderConfig::GetInverseViewMatrix(), &tracker->matrix);
     }
 }
 

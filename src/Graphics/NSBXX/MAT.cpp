@@ -5,14 +5,14 @@
 #pragma optimize_for_size off
 
 #if defined(jpn)
-#define func_020ca390 func_020cbe5c
+#define MIi_CpuClear16 func_020cbe5c
 #define data_020f1c78 data_020f1de4
 #endif
 
 extern "C"
 {
     // memset
-    void func_020ca390(int, void*, unsigned);
+    void MIi_CpuClear16(int, void*, unsigned);
 }
 
 // processing callback for M.AT animations
@@ -289,7 +289,7 @@ void InitializeModelAnimationFromMAT(AnimationData* anim, void* pvMAT, NSBXXInte
     anim->callback_ = data_020f1c78;
 
     anim->numEntries_ = model->numMaterials_;
-    func_020ca390(0, &anim->entries_[0], anim->numEntries_ * 2);
+    MIi_CpuClear16(0, &anim->entries_[0], anim->numEntries_ * 2);
 
     NSBXXAnimationMAT* mat = (NSBXXAnimationMAT*)pvMAT;
     

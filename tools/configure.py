@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import os
 from pathlib import Path
 import argparse
@@ -153,7 +154,7 @@ class Project:
     def source_object_files(self) -> list[str]:
         return [
             str(self.game_build / source_file.with_suffix(".o"))
-            for source_file in get_c_cpp_files([src_path, libs_path])
+            for source_file in project_source_files()
         ]
 
     def arm9_lcf(self) -> Path:
@@ -215,6 +216,23 @@ def main():
         n.rule(
             name="mwcc",
             command=mwcc_cmd,
+            depfile="$basefile.d",
+        )
+        n.newline()
+
+        # Nintendo libraries (libs/): each file keeps the compiler version and flags it was built with.
+        mwcc_lib_cmd = f'{WINE} "$cc" $lib_flags -nolink -w off -MD -c $in -o $basedir'
+        if platform.system != "windows":
+            mwcc_lib_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
+        n.rule(
+            name="lcf_force_active",
+            command=f"{PYTHON} tools/lcf_force_active.py $in $settings $out",
+        )
+        n.newline()
+
+        n.rule(
+            name="mwcc_lib",
+            command=mwcc_lib_cmd,
             depfile="$basefile.d",
         )
         n.newline()
@@ -354,6 +372,19 @@ def add_extract_build(n: ninja_syntax.Writer, project: Project):
 
 def add_mwld_and_rom_builds(n: ninja_syntax.Writer, project: Project):
     lcf_file = str(project.arm9_lcf())
+    lib_settings = libs_path / "build_settings.json"
+    if load_lib_build_settings()[0]:
+        # Keep library symbols that the original game contains without any caller (see tools/lcf_force_active.py)
+        forced_lcf_file = str(project.game_build / "arm9_force_active.lcf")
+        n.build(
+            inputs=lcf_file,
+            implicit=[str(lib_settings), "tools/lcf_force_active.py"],
+            rule="lcf_force_active",
+            outputs=forced_lcf_file,
+            variables={"settings": str(lib_settings)},
+        )
+        n.newline()
+        lcf_file = forced_lcf_file
     objects_file = str(project.arm9_objects_txt())
     delink_file = str(project.arm9_delink_yaml())
     elf_file = str(project.arm9_o())
@@ -416,9 +447,46 @@ def add_mwld_and_rom_builds(n: ninja_syntax.Writer, project: Project):
     n.newline()
 
 
-def add_mwcc_builds(n: ninja_syntax.Writer, project: Project, mwcc_implicit: list[Path]):
+def load_lib_build_settings():
+    settings_path = libs_path / "build_settings.json"
+    if not settings_path.exists():
+        return {}, []
+    settings = json.loads(settings_path.read_text())
+    if args.version not in settings.get("versions", []):
+        return {}, []
+    return settings["files"], settings["includes"]
+
+
+def project_source_files():
+    # Library files are only built for the game versions whose delinks.txt declare them
+    lib_files, _ = load_lib_build_settings()
     for source_file in get_c_cpp_files([src_path, libs_path]):
+        if source_file.is_relative_to(libs_path) and source_file.as_posix() not in lib_files:
+            continue
+        yield source_file
+
+
+def add_mwcc_builds(n: ninja_syntax.Writer, project: Project, mwcc_implicit: list[Path]):
+    lib_files, lib_includes = load_lib_build_settings()
+    for source_file in project_source_files():
         src_obj_path = project.game_build / source_file
+        lib = lib_files.get(source_file.as_posix())
+        if lib is not None:
+            lib_cc = mwcc_root / lib["mwcc"] / "mwccarm.exe"
+            n.build(
+                inputs=str(source_file),
+                implicit=[str(lib_cc)] + mwcc_implicit[1:],
+                rule="mwcc_lib",
+                outputs=str(src_obj_path.with_suffix(".o")),
+                variables={
+                    "cc": os.path.join(".", str(lib_cc)),
+                    "lib_flags": " ".join([lib["flags"]] + lib_includes),
+                    "basedir": os.path.dirname(src_obj_path),
+                    "basefile": str(src_obj_path.with_suffix("")),
+                },
+            )
+            n.newline()
+            continue
         cc_flags = []
         if is_cpp(source_file): cc_flags.append("-lang=c++")
         elif is_c(source_file): cc_flags.append("-lang=c")

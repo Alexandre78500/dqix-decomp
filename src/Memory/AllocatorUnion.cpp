@@ -1,7 +1,7 @@
 #include "Memory/AllocatorUnion.h"
 
 // USA: func_020afe6c
-// JPN: func_020b1938
+// JPN: ClearLine
 void* AllocatorUnion::Allocate(unsigned int len)
 {
     return versions.base.pVTable->allocate(&versions.base, len);

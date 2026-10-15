@@ -210,7 +210,7 @@ extern "C" void CreateTextureMatrix_v0_RotateTranslateScale(Matrix4x4* matrix, M
     matrix->entries[0] = scaleXcos;
     matrix->entries[5] = scaleYcos;
 
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (-scaleYsin * aspectRatio) >> 12;
 
     fix32_QueueComputeQuotient(matWidth, matHeight);
@@ -225,7 +225,7 @@ extern "C" void CreateTextureMatrix_v0_RotateTranslateScale(Matrix4x4* matrix, M
     matrix->entries[13] = renderData->materialHeight_ * (scaleYsin - scaleYcos - renderData->extensionScaleY_ + (2 << 12)) * 8 + 
         + renderData->materialHeight_ * (int)(((int64_t)renderData->extensionScaleY_ * (int64_t)renderData->translateY_) >> 8);
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (scaleXsin * invAspectRatio) >> 12;
 }
 
@@ -237,7 +237,7 @@ extern "C" void CreateTextureMatrix_v0_RotateTranslate(Matrix4x4* matrix, Materi
     fix32_QueueComputeQuotient(matHeight, matWidth);
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (-renderData->rotationSine_ * aspectRatio) >> 12;
 
     fix32_QueueComputeQuotient(matWidth, matHeight);
@@ -249,7 +249,7 @@ extern "C" void CreateTextureMatrix_v0_RotateTranslate(Matrix4x4* matrix, Materi
     matrix->entries[13] = renderData->materialHeight_ * (renderData->rotationSine_ - renderData->rotationCosine_ + (1 << 12)) * 8
         + renderData->translateY_ * renderData->materialHeight_ * 16;
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (renderData->rotationSine_ * invAspectRatio) >> 12;
 }
 
@@ -291,7 +291,7 @@ extern "C" void CreateTextureMatrix_v0_RotateScale(Matrix4x4* matrix, MaterialRe
 
     matrix->entries[0] = scaleXcos;
     matrix->entries[5] = scaleYcos;
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (-scaleYsin * aspectRatio) >> 12;
     
     fix32_QueueComputeQuotient(matWidth, matHeight);
@@ -299,7 +299,7 @@ extern "C" void CreateTextureMatrix_v0_RotateScale(Matrix4x4* matrix, MaterialRe
     matrix->entries[12] = renderData->materialWidth_ * (renderData->extensionScaleX_ - (scaleXsin + scaleXcos)) * 8;
     matrix->entries[13] = renderData->materialHeight_ * ((scaleYsin - scaleYcos) - renderData->extensionScaleY_ + (2 << 12)) * 8;
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (scaleXsin * invAspectRatio) >> 12;
 }
 
@@ -311,7 +311,7 @@ extern "C" void CreateTextureMatrix_v0_Rotate(Matrix4x4* matrix, MaterialRenderD
 
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (-renderData->rotationSine_ * aspectRatio) >> 12;
 
     fix32_QueueComputeQuotient(matWidth, matHeight);
@@ -326,7 +326,7 @@ extern "C" void CreateTextureMatrix_v0_Rotate(Matrix4x4* matrix, MaterialRenderD
     // as a real number this is m_42 = 8h(1 + sin(u) - cos(u))
     matrix->entries[13] = renderData->materialHeight_ * ((renderData->rotationSine_ - renderData->rotationCosine_) + (1 << 12)) * 8;
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (renderData->rotationSine_ * invAspectRatio) >> 12;
 }
 
@@ -567,7 +567,7 @@ extern "C" void CreateTextureMatrix_v2_TranslateRotateScale(Matrix4x4* matrix, M
     matrix->entries[0] = scaleXcos;
     matrix->entries[5] = scaleYcos;
 
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (scaleYsin * aspectRatio) >> 12;
 
     fix32_QueueComputeQuotient(matWidth, matHeight);
@@ -584,7 +584,7 @@ extern "C" void CreateTextureMatrix_v2_TranslateRotateScale(Matrix4x4* matrix, M
         + ((int64_t)scaleYcos * shiftedTy)) >> 8)
         + renderData->materialHeight_ * (8 << 12);
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (-scaleXsin * invAspectRatio) >> 12;
 }
 
@@ -598,7 +598,7 @@ extern "C" void CreateTextureMatrix_v2_TranslateRotate(Matrix4x4* matrix, Materi
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
 
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (renderData->rotationSine_ * aspectRatio) >> 12;
 
     fix32_QueueComputeQuotient(matWidth, matHeight);
@@ -616,7 +616,7 @@ extern "C" void CreateTextureMatrix_v2_TranslateRotate(Matrix4x4* matrix, Materi
         + ((int64_t)renderData->rotationCosine_ * shiftedTy)) >> 8)
         + renderData->materialHeight_ * (8 << 12);
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (-renderData->rotationSine_ * invAspectRatio) >> 12;
 }
 
@@ -661,7 +661,7 @@ extern "C" void CreateTextureMatrix_v2_RotateScale(Matrix4x4* matrix, MaterialRe
     matrix->entries[0] = scaleXcos;
     matrix->entries[5] = scaleYcos;
 
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (scaleYsin * aspectRatio) >> 12;
 
     fix32_QueueComputeQuotient(matWidth, matHeight);
@@ -679,7 +679,7 @@ extern "C" void CreateTextureMatrix_v2_RotateScale(Matrix4x4* matrix, MaterialRe
         + ((int64_t)scaleYcos * shiftedTy)) >> 8)
         + renderData->materialHeight_ * (8 << 12);
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (-scaleXsin * invAspectRatio) >> 12;
 }
 
@@ -693,7 +693,7 @@ extern "C" void CreateTextureMatrix_v2_Rotate(Matrix4x4* matrix, MaterialRenderD
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
 
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (renderData->rotationSine_ * aspectRatio) >> 12;
 
     fix32_QueueComputeQuotient(matWidth, matHeight);
@@ -710,7 +710,7 @@ extern "C" void CreateTextureMatrix_v2_Rotate(Matrix4x4* matrix, MaterialRenderD
         + ((int64_t)renderData->rotationCosine_ * shiftedTy)) >> 8)
         + renderData->materialHeight_ * (8 << 12);
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (-renderData->rotationSine_ * invAspectRatio) >> 12;
 }
 
@@ -803,7 +803,7 @@ extern "C" void CreateTextureMatrix_v3_ScaleTranslateRotate(Matrix4x4* matrix, M
 
     matrix->entries[5] = scaleYcos;
 
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (scaleYsin * aspectRatio) >> 12;
 
     fix32_QueueComputeQuotient(matWidth, matHeight);
@@ -825,7 +825,7 @@ extern "C" void CreateTextureMatrix_v3_ScaleTranslateRotate(Matrix4x4* matrix, M
     matrix->entries[12] = renderData->materialWidth_ * m41prescaled * 16;
     matrix->entries[13] = -renderData->materialHeight_ * m42prescaled * 16;
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (-scaleXsin * invAspectRatio) >> 12;
 }
 
@@ -838,7 +838,7 @@ extern "C" void CreateTextureMatrix_v3_TranslateRotate(Matrix4x4* matrix, Materi
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
 
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (renderData->rotationSine_ * aspectRatio) >> 12;
     fix32_QueueComputeQuotient(matWidth, matHeight);
 
@@ -860,7 +860,7 @@ extern "C" void CreateTextureMatrix_v3_TranslateRotate(Matrix4x4* matrix, Materi
     matrix->entries[12] = renderData->materialWidth_ * (renderData->rotationSine_ - tx) * 16;
     matrix->entries[13] = -renderData->materialHeight_ * (renderData->rotationCosine_ + ty - 0x1000) * 16;
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (-renderData->rotationSine_ * invAspectRatio) >> 12;
 }
 
@@ -914,7 +914,7 @@ extern "C" void CreateTextureMatrix_v3_RotateScale(Matrix4x4* matrix, MaterialRe
     matrix->entries[0] = xcos;
     matrix->entries[5] = ycos;
 
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
 
     fix32_t ysine = ((int64_t)scaleY * sine) >> 12;
     matrix->entries[1] = (ysine * aspectRatio) >> 12;
@@ -923,7 +923,7 @@ extern "C" void CreateTextureMatrix_v3_RotateScale(Matrix4x4* matrix, MaterialRe
     matrix->entries[12] = renderData->materialWidth_ * xsin * 16;
     matrix->entries[13] = -renderData->materialHeight_ * (ycos - 0x1000) * 16;
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (-xsin * invAspectRatio) >> 12;
 }
 
@@ -937,7 +937,7 @@ extern "C" void CreateTextureMatrix_v3_Rotate(Matrix4x4* matrix, MaterialRenderD
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
 
-    fix32_t aspectRatio = fix32_GetDivisionResult();
+    fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (renderData->rotationSine_ * aspectRatio) >> 12;
     
     fix32_QueueComputeQuotient(matWidth, matHeight);
@@ -945,7 +945,7 @@ extern "C" void CreateTextureMatrix_v3_Rotate(Matrix4x4* matrix, MaterialRenderD
     matrix->entries[12] = renderData->materialWidth_ * renderData->rotationSine_ * 16;
     matrix->entries[13] = -renderData->materialHeight_ * (renderData->rotationCosine_ - (1 << 12)) * 16;
 
-    fix32_t invAspectRatio = fix32_GetDivisionResult();
+    fix32_t invAspectRatio = FX_GetDivResult();
     matrix->entries[4] = (-renderData->rotationSine_ * invAspectRatio) >> 12;
 }
 

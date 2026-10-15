@@ -97,9 +97,9 @@ void Vector3fixMultiply(const Vector3fix* a, const Vector3fix* b, Vector3fix* ou
 
 void Vector3fixDivideScalar(const Vector3fix* in, fix32_t scalar, Vector3fix* out)
 {
-    out->x = fix32_Divide(in->x, scalar);
-    out->y = fix32_Divide(in->y, scalar);
-    out->z = fix32_Divide(in->z, scalar);
+    out->x = FX_Div(in->x, scalar);
+    out->y = FX_Div(in->y, scalar);
+    out->z = FX_Div(in->z, scalar);
 }
 
 fix32_t fix32ReduceAngle0To2Pi(fix32_t angle)
@@ -107,12 +107,12 @@ fix32_t fix32ReduceAngle0To2Pi(fix32_t angle)
     if (angle < 0)
     {
         // bitwise AND gets floor of (-angle / 2pi)
-        fix32_t periods = (fix32_Divide(-angle, FIX_2PI) + (1 << 12)) & ~0xfff;
+        fix32_t periods = (FX_Div(-angle, FIX_2PI) + (1 << 12)) & ~0xfff;
         angle += FIX32_MULTIPLY(periods, FIX_2PI);
     }
     else if (angle > FIX_2PI)
     {
-        fix32_t periods = fix32_Divide(angle, FIX_2PI) & ~0xfff;
+        fix32_t periods = FX_Div(angle, FIX_2PI) & ~0xfff;
         angle -= FIX32_MULTIPLY(periods, FIX_2PI);
     }
 
@@ -146,7 +146,7 @@ fix32_t Vector3fixAngleToPoint(const Vector3fix* source, const Vector3fix* targe
     Vector3fix_Subtract(target, source, &difference);
     difference.y = 0;
     // not sure why we need this. is it just numerical stability?
-    Vector3fix_Normalize(&difference, &difference);
+    VEC_Normalize(&difference, &difference);
     fix32_t angle = fix32_Atan2(difference.x, difference.z);
     return fix32ReduceAngle0To2Pi(angle);
 }

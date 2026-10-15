@@ -107,7 +107,7 @@ unsigned short GenerateMapLocation(unsigned int quality)
 // JPN: func_020a7c20
 void TreasureMapMetadata::InitialiseAsNonLegacyMap(unsigned int quality, int seed)
 {
-    VectorizedMemset(this, 0, 28);
+    MI_CpuFill8(this, 0, 28);
     SetDiscoveryState(DiscoveryState_Undiscovered);
     SetMapType(TreasureMapType_Regular);
     if (quality >= 2 && quality <= 248)
@@ -135,7 +135,7 @@ void TreasureMapMetadata::InitialiseAsNonLegacyMap(unsigned int quality, int see
 // JPN: func_020a7ca0
 void TreasureMapMetadata::InitialiseAsLegacyBossMap(unsigned int bossID, unsigned int level)
 {
-    VectorizedMemset(this, 0, 28);
+    MI_CpuFill8(this, 0, 28);
     SetDiscoveryState(DiscoveryState_Undiscovered);
     SetMapType(TreasureMapType_Legacy);
     if (bossID == 0 || bossID > 13)

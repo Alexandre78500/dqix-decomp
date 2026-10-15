@@ -7,7 +7,7 @@
 
 unsigned int SetReadContextPriority(unsigned int priority)
 {
-    CardReadManager* manager = (CardReadManager*)&data_021118e0;
+    CardReadManager* manager = (CardReadManager*)&cardi_common;
     int priorState = DisableIRQInterrupts();
     unsigned int oldPrio = manager->contextPriority_108;
     manager->contextPriority_108 = priority;

@@ -3,7 +3,7 @@
 #pragma optimize_for_size off
 
 #if defined(jpn)
-#define func_020ca3ec func_020cbeb8
+#define MIi_CpuClear32 func_020cbeb8
 
 #define data_020f1c6c data_020f1dd8
 #define data_020f1c84 data_020f1df0
@@ -15,7 +15,7 @@
 extern "C"
 {
     // memset
-    void func_020ca3ec(int value, void* dst, unsigned len);
+    void MIi_CpuClear32(int value, void* dst, unsigned len);
 }
 
 extern unsigned int data_020f1c6c; // number of animation types (5)
@@ -74,7 +74,7 @@ void InitializeModelAnimation(AnimationData *anim, void *pRawData, NSBXXInternal
 
 void PopulateModelRenderContext(ModelRenderContext *context, NSBXXInternalModel *model)
 {
-    func_020ca3ec(0, context, sizeof(ModelRenderContext));
+    MIi_CpuClear32(0, context, sizeof(ModelRenderContext));
     context->pfnProcessMaterialAnimations_ = data_020f1c8c;
     context->pfnProcessJointAnimations_ = data_020f1c88;
     context->pfnProcessVisibilityAnimations_ = data_020f1c84;

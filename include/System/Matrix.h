@@ -93,12 +93,12 @@ extern "C"
 {
 #endif
     // usa: func_020c1180
-    void Mat3x3_WriteIdentity(Matrix3x3* out);
+    void MTX_Identity33_(Matrix3x3* out);
     // usa: func_020c11a4
     // computes diag(x, y, z) * in and writes to out.
     // note the resulting matrix represents first scaling, then applying the
     // input matrix.
-    void Mat3x3_ApplyScale(const Matrix3x3* in, Matrix3x3* out, fix32_t x, fix32_t y, fix32_t z);
+    void MTX_ScaleApply33(const Matrix3x3* in, Matrix3x3* out, fix32_t x, fix32_t y, fix32_t z);
     // usa: func_020c1264
     // writes an x-axis rotation into the matrix specified. Instead
     // of providing the angle of rotation, you specify the sine/cosine
@@ -127,31 +127,31 @@ extern "C"
     // calculates the inverse of the input matrix.
     // returns 0 if the process succeeded (i.e. the input matrix was invertible)
     // and -1 if it failed.
-    int Mat3x3_Invert(const Matrix3x3* in, Matrix3x3* out);
+    int MTX_Inverse33(const Matrix3x3* in, Matrix3x3* out);
     // usa: func_020c15a4
     // computes inA * inB and stores to out.
-    void Mat3x3_Multiply(const Matrix3x3* inA, const Matrix3x3* inB, Matrix3x3* out);
+    void MTX_Concat33(const Matrix3x3* inA, const Matrix3x3* inB, Matrix3x3* out);
     // usa: func_020c17c4
     // computes inVec * inMat and stores to out.
-    void Mat3x3_ApplyToVector(const Vector3fix* inVec, const Matrix3x3* inMat, Vector3fix* out);
+    void MTX_MultVec33(const Vector3fix* inVec, const Matrix3x3* inMat, Vector3fix* out);
 
 
 
     // usa: func_020c1840
-    void Mat4x3_WriteIdentity(Matrix4x3* out);
+    void MTX_Identity43_(Matrix4x3* out);
     // usa: func_020c1868
     // converts an input 4x3 matrix to a 4x4 matrix.
-    void Mat4x3_ConvertTo4x4(const Matrix4x3* in, Matrix4x4* out);
+    void MTX_Copy43To44_(const Matrix4x3* in, Matrix4x4* out);
     // usa: func_020c189c
     // computes translate(x, y, z) * in, and writes to out.
     // note the resulting matrix represents first translating, then applying
     // the input matrix.
-    void Mat4x3_ApplyTranslation(const Matrix4x3* in, Matrix4x3* out, fix32_t x, fix32_t y, fix32_t z);
+    void MTX_TransApply43(const Matrix4x3* in, Matrix4x3* out, fix32_t x, fix32_t y, fix32_t z);
     // usa: func_020c1948
     // computes diag(x, y, z) * in and writes to out.
     // note the resulting matrix represents first scaling, then applying the
     // input matrix.
-    void Mat4x3_ApplyScale(const Matrix4x3* in, Matrix4x3* out, fix32_t x, fix32_t y, fix32_t z);
+    void MTX_ScaleApply43(const Matrix4x3* in, Matrix4x3* out, fix32_t x, fix32_t y, fix32_t z);
     // usa: func_020c197c
     // writes an x-axis rotation into the matrix specified. Instead
     // of providing the angle of rotation, you specify the sine/cosine
@@ -183,62 +183,62 @@ extern "C"
     // calculates the inverse of the input matrix.
     // returns 0 if the process succeeded (i.e. the input matrix was invertible)
     // and -1 if it failed.
-    int Mat4x3_Invert(const Matrix4x3* in, Matrix4x3* out);
+    int MTX_Inverse43(const Matrix4x3* in, Matrix4x3* out);
     // usa: func_020c1d60
     // computes inA * inB and stores to out.
-    void Mat4x3_Multiply(const Matrix4x3* inA, const Matrix4x3* inB, Matrix4x3* out);
+    void MTX_Concat43(const Matrix4x3* inA, const Matrix4x3* inB, Matrix4x3* out);
     // usa: func_020c2034
     // computes inVec * inMat and stores to out.
-    void Mat4x3_ApplyToVector(const Vector3fix* inVec, const Matrix4x3* inMat, Vector3fix* out);
+    void MTX_MultVec43(const Vector3fix* inVec, const Matrix4x3* inMat, Vector3fix* out);
 
     // usa: func_020c20d4
     // calculate a 4x3 view matrix
-    void Mat4x3_WriteViewMatrix(const Vector3fix* eye, const Vector3fix* up, const Vector3fix* target, Matrix4x3* out);
+    void MTX_LookAt(const Vector3fix* eye, const Vector3fix* up, const Vector3fix* target, Matrix4x3* out);
 
 
 
     // usa: func_020c21dc
-    void Mat4x4_WriteIdentity(Matrix4x4* out);
+    void MTX_Identity44_(Matrix4x4* out);
     // usa: func_020c2208
     // converts an input 4x4 matrix to a 4x3 matrix.
-    void Mat4x4_ConvertTo4x3(const Matrix4x4* in, Matrix4x3* out);
+    void MTX_Copy44To43_(const Matrix4x4* in, Matrix4x3* out);
     // usa: func_020c223c
     // computes inA * inB and stores to out.
-    void Mat4x4_Multiply(const Matrix4x4* inA, const Matrix4x4* inB, Matrix4x4* out);
+    void MTX_Concat44(const Matrix4x4* inA, const Matrix4x4* inB, Matrix4x4* out);
     // usa: func_020c28a0
     // I'm not entirely sure what this does, but the format looks similar to
     // e.g. glFrustum but doesn't match exactly
-    void Mat4x4_MaybeWriteFrustum(fix32_t a, fix32_t b, fix32_t c, fix32_t d, fix32_t e, fix32_t f, Matrix4x4* out);
+    void MTX_PerspectiveW(fix32_t a, fix32_t b, fix32_t c, fix32_t d, fix32_t e, fix32_t f, Matrix4x4* out);
     // usa: func_020c29ec
     // Similar function to the previous, is used in places to populate the
     // RenderConfig's projection matrix, but I don't know what exactly it is
     // Might be something like glOrtho???
     // From call site in AtmosphericEffect it looks to be (top, bottom, left, right, near, far)
     // not sure about 7th parameter
-    void Mat4x4_WriteProjectionUnknown(fix32_t a, fix32_t b, fix32_t c, fix32_t d, fix32_t e, fix32_t f, fix32_t g, Matrix4x4* out);
+    void MTX_OrthoW(fix32_t a, fix32_t b, fix32_t c, fix32_t d, fix32_t e, fix32_t f, fix32_t g, Matrix4x4* out);
 
 
     // usa: func_020c2bf4
     // performs synchronous division of fixed-point numbers using the hardware divider
-    fix32_t fix32_Divide(fix32_t num, fix32_t denom);
+    fix32_t FX_Div(fix32_t num, fix32_t denom);
     // usa: func_020c2c04
     // calculates square root for a fixed-point number using the hardware sqrt register
     fix32_t fix32_Sqrt(fix32_t x);
 
     // usa: func_020c2c38
-    int64_t GetHardwareDividerResult();
+    int64_t FX_GetDivResultFx64c();
     // usa: func_020c2c5c
     // gets the hardware divider result right shifted 20 places.
-    // use this in conjunction with fix32_QueueComputeReciprocal
+    // use this in conjunction with FX_InvAsync
     // or fix32_QueueComputeQuotient for async division of fix32 values.
-    fix32_t fix32_GetDivisionResult();
+    fix32_t FX_GetDivResult();
     // usa: func_020c2c94
     // primes the hardware divider to compute 2^44 / n, where n is an integer.
     // thus for a fixed-point number x, the hardware divider will compute
     // the fixed point representation of 2^20 / x.
-    // use in conjunction with fix32_GetDivisionResult to get the fixed point
+    // use in conjunction with FX_GetDivResult to get the fixed point
     // representation of 1/x.
-    void fix32_QueueComputeReciprocal(fix32_t x);
+    void FX_InvAsync(fix32_t x);
 
     // usa: func_020c2cc4
     // not used outside of this library
@@ -248,7 +248,7 @@ extern "C"
     // primes the hardware divider to compute the integer (2^32*a) / b, where
     // a and b are integers. thus for fixed-point numbers x and y, the hardware
     // divider will compute the fixed-point representation of 2^20*(x/y).
-    // use in conjunction with fix32_GetDivisionResult to get the fixed point
+    // use in conjunction with FX_GetDivResult to get the fixed point
     // representation of x/y.
     void fix32_QueueComputeQuotient(fix32_t num, fix32_t denom);
 
@@ -267,13 +267,13 @@ extern "C"
     // usa: func_020c2dc4
     void Vector3fix_Subtract(const Vector3fix* a, const Vector3fix* b, Vector3fix* out);
     // usa: func_020c2df8
-    fix32_t Vector3fix_InnerProduct(const Vector3fix* a, const Vector3fix* b);
+    fix32_t VEC_DotProduct(const Vector3fix* a, const Vector3fix* b);
     // usa: func_020c2e34
-    void Vector3fix_CrossProduct(const Vector3fix* a, const Vector3fix* b, Vector3fix* out);
+    void VEC_CrossProduct(const Vector3fix* a, const Vector3fix* b, Vector3fix* out);
     // usa: func_020c2eb8
     fix32_t Vector3fix_Length(const Vector3fix* vec);
     // usa: func_020c2f18
-    void Vector3fix_Normalize(const Vector3fix* in, Vector3fix* out);
+    void VEC_Normalize(const Vector3fix* in, Vector3fix* out);
     // usa: func_020c3030
     // computes the length of the vector a-b
     fix32_t Vector3fix_Distance(const Vector3fix* a, const Vector3fix* b);

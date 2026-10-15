@@ -19,7 +19,7 @@ void ZeroInitializeMutex(Mutex* mutex)
 void LockMutex(Mutex* mutex)
 {
     int priorState = DisableIRQInterrupts();
-    ProcessorContext* thisContext = data_02111304.activeContext;
+    ProcessorContext* thisContext = OSi_ThreadInfo.activeContext;
     while (true)
     {
         if (mutex->ownedContext_ == NULL)
@@ -47,7 +47,7 @@ void LockMutex(Mutex* mutex)
 void UnlockMutex(Mutex* mutex)
 {
     int priorState = DisableIRQInterrupts();
-    ProcessorContext* thisContext = data_02111304.activeContext;
+    ProcessorContext* thisContext = OSi_ThreadInfo.activeContext;
     if (mutex->ownedContext_ == thisContext)
     {
         mutex->ownerRefcount_--;
@@ -78,7 +78,7 @@ void UnlockAllMutexesLockedByContext(ProcessorContext *context)
 bool TryLockMutex(Mutex* mutex)
 {
     int priorState = DisableIRQInterrupts();
-    ProcessorContext* thisContext = data_02111304.activeContext;
+    ProcessorContext* thisContext = OSi_ThreadInfo.activeContext;
     bool success;
     if (mutex->ownedContext_ == NULL)
     {

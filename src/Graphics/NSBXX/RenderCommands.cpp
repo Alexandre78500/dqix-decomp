@@ -12,7 +12,7 @@ void ExecuteRenderCommands(RenderCommandHandler* handler)
 
 void SetUpRenderCommandHandler(RenderCommandHandler* handler, ModelRenderContext* modelData)
 {
-    func_020ca458(0, handler, sizeof(RenderCommandHandler));
+    MIi_CpuClearFast(0, handler, sizeof(RenderCommandHandler));
     handler->boneMatrixBitfield_[0] = 1;
     handler->flags_ = 1;
 
@@ -91,9 +91,9 @@ void RenderModelFromRenderData(ModelRenderContext* renderData)
     
     if ((renderData->flags_ & 0x10) == 0x10)
     {
-        func_020ca3ec(0, renderData->animatedMaterials_, sizeof(renderData->animatedMaterials_));
-        func_020ca3ec(0, renderData->animatedBoneMatrices_, sizeof(renderData->animatedBoneMatrices_));
-        func_020ca3ec(0, renderData->animatedVisibilityConditions_, sizeof(renderData->animatedVisibilityConditions_));
+        MIi_CpuClear32(0, renderData->animatedMaterials_, sizeof(renderData->animatedMaterials_));
+        MIi_CpuClear32(0, renderData->animatedBoneMatrices_, sizeof(renderData->animatedBoneMatrices_));
+        MIi_CpuClear32(0, renderData->animatedVisibilityConditions_, sizeof(renderData->animatedVisibilityConditions_));
         if (renderData->materialAnimations_ != NULL)
             PopulateBitfieldFromAnimData(renderData->animatedMaterials_, renderData->materialAnimations_);
         if (renderData->jointAnimations_ != NULL)
@@ -729,14 +729,14 @@ void RenderCommand_7(RenderCommandHandler* handler, int modifier)
         {
             const Matrix4x3* worldView4x3 = RenderConfig::GetCombinedWorldViewMatrix();
             Matrix4x4 worldView;
-            Mat4x3_ConvertTo4x4(worldView4x3, &worldView);
-            Mat4x4_Multiply(&clipMatrix, &worldView, &clipMatrix);
+            MTX_Copy43To44_(worldView4x3, &worldView);
+            MTX_Concat44(&clipMatrix, &worldView, &clipMatrix);
         }
         else if (data_0210a010.flags & (1 << RENDER_CONFIG_FLAG_1))
         {
             Matrix4x4 view4x4;
-            Mat4x3_ConvertTo4x4(&data_0210a010.viewMatrix, &view4x4);
-            Mat4x4_Multiply(&clipMatrix, &view4x4, &clipMatrix);
+            MTX_Copy43To44_(&data_0210a010.viewMatrix, &view4x4);
+            MTX_Concat44(&clipMatrix, &view4x4, &clipMatrix);
         }
 
         // store 4th row of matrix
@@ -860,14 +860,14 @@ void RenderCommand_8(RenderCommandHandler* handler, int modifier)
         {
             const Matrix4x3* worldView4x3 = RenderConfig::GetCombinedWorldViewMatrix();
             Matrix4x4 worldView;
-            Mat4x3_ConvertTo4x4(worldView4x3, &worldView);
-            Mat4x4_Multiply(&clipMatrix, &worldView, &clipMatrix);
+            MTX_Copy43To44_(worldView4x3, &worldView);
+            MTX_Concat44(&clipMatrix, &worldView, &clipMatrix);
         }
         else if (data_0210a010.flags & (1 << RENDER_CONFIG_FLAG_1))
         {
             Matrix4x4 view4x4;
-            Mat4x3_ConvertTo4x4(&data_0210a010.viewMatrix, &view4x4);
-            Mat4x4_Multiply(&clipMatrix, &view4x4, &clipMatrix);
+            MTX_Copy43To44_(&data_0210a010.viewMatrix, &view4x4);
+            MTX_Concat44(&clipMatrix, &view4x4, &clipMatrix);
         }
 
         // store 4th row of matrix
@@ -882,14 +882,14 @@ void RenderCommand_8(RenderCommandHandler* handler, int modifier)
 
         if (clipMatrix.rows[1].y != 0 || clipMatrix.rows[1].z != 0)
         {
-            Vector3fix_Normalize(&clipMatrix.rows[1].xyz, &pRotation->rows[1]);
+            VEC_Normalize(&clipMatrix.rows[1].xyz, &pRotation->rows[1]);
             // generate 3rd row via m_32 = -m_23, m_33 = m_22
             pRotation->entries[7] = -pRotation->entries[5];
             pRotation->entries[8] = pRotation->entries[4];
         }
         else
         {
-            Vector3fix_Normalize(&clipMatrix.rows[2].xyz, &pRotation->rows[2]);
+            VEC_Normalize(&clipMatrix.rows[2].xyz, &pRotation->rows[2]);
             // generate 2nd row
             pRotation->entries[5] = -pRotation->entries[7];
             pRotation->entries[4] = pRotation->entries[8];

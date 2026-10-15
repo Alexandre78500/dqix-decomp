@@ -574,10 +574,10 @@ int NitroVM_DefaultCommand_GetPath(NitroVM* vm)
         else
             signatureLength = 3;
     
-        VectorizedInvertedMemcpy(&nitroHandle->signature, writeDst, signatureLength);
+        MI_CpuCopy8(&nitroHandle->signature, writeDst, signatureLength);
         signatureLength = uselessZero + signatureLength;
         // copy ":/"
-        VectorizedInvertedMemcpy(data_020f2288, writeDst + signatureLength, 2);
+        MI_CpuCopy8(data_020f2288, writeDst + signatureLength, 2);
     }
 
     NitroVM_LoadDirectoryDataByIndex(&tempVM, targetDirID);
@@ -595,7 +595,7 @@ int NitroVM_DefaultCommand_GetPath(NitroVM* vm)
         }
         // The copied string is null-terminated, and we want to also copy the null terminator
         int copySize = storage.stringLength + 1;
-        VectorizedInvertedMemcpy(storage.name, writeDst + backWriteLocation - copySize, copySize);
+        MI_CpuCopy8(storage.name, writeDst + backWriteLocation - copySize, copySize);
         backWriteLocation -= copySize;
     }
     else
@@ -623,7 +623,7 @@ int NitroVM_DefaultCommand_GetPath(NitroVM* vm)
                     if (storage.dir.dirID != targetDirID) continue;
                     
                     unsigned int tokenLength = storage.stringLength;
-                    VectorizedInvertedMemcpy(storage.name,
+                    MI_CpuCopy8(storage.name,
                         writeDst + backWriteLocation - tokenLength, tokenLength);
                     backWriteLocation -= tokenLength;
                     break;
@@ -712,19 +712,19 @@ unsigned int Nitro_CalculateSignature(const char* str, int len)
 
 int DefaultNitroReadProc(NitroHandle* handle, void* dst, unsigned int offset, unsigned int len)
 {
-    VectorizedInvertedMemcpy((const unsigned char*)handle->pFileImage + offset, dst, len);
+    MI_CpuCopy8((const unsigned char*)handle->pFileImage + offset, dst, len);
     return NITRO_RESULT_SUCCESS;
 }
 
 int DefaultNitroWriteProc(NitroHandle* handle, const void* src, unsigned int offset, unsigned int len)
 {
-    VectorizedInvertedMemcpy(src, (unsigned char*)handle->pFileImage + offset, len);
+    MI_CpuCopy8(src, (unsigned char*)handle->pFileImage + offset, len);
     return NITRO_RESULT_SUCCESS;
 }
 
 int MemoryMappedMetadataReadProc(NitroHandle* handle, void* dst, unsigned int offset, unsigned int len)
 {
-    VectorizedInvertedMemcpy((void*)offset, dst, len);
+    MI_CpuCopy8((void*)offset, dst, len);
     return NITRO_RESULT_SUCCESS;
 }
 

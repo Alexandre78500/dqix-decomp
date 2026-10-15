@@ -54,8 +54,8 @@ void RenderConfig::Reset()
         GXFifoCommand_SetTexImageParams
     );
 
-    Mat4x3_WriteIdentity(&data_0210a010.viewMatrix);
-    Mat4x4_WriteIdentity(&data_0210a010.projectionMatrix);
+    MTX_Identity43_(&data_0210a010.viewMatrix);
+    MTX_Identity44_(&data_0210a010.projectionMatrix);
 
     uint32_t minusInvSqrt3 = 0x2d8;
     data_0210a010.lightVectors[0] = BUILD_LIGHT_VECTOR(0,
@@ -79,7 +79,7 @@ void RenderConfig::Reset()
     data_0210a010.objectRotationPosition.translation.y = 0;
     data_0210a010.objectRotationPosition.translation.z = 0;
 
-    Mat3x3_WriteIdentity(&data_0210a010.objectRotationPosition.rotation);
+    MTX_Identity33_(&data_0210a010.objectRotationPosition.rotation);
 
     data_0210a010.objectScale.x = 1 << 12;
     data_0210a010.objectScale.y = 1 << 12;
@@ -161,7 +161,7 @@ const Matrix4x3* RenderConfig::GetInverseViewMatrix()
 {
     if (!(data_0210a010.flags & (1 << RENDER_CONFIG_FLAG_INVERSE_VIEW_CACHE_VALID)))
     {
-        Mat4x3_Invert(&data_0210a010.viewMatrix, &data_0210a010.cachedInverseView);
+        MTX_Inverse43(&data_0210a010.viewMatrix, &data_0210a010.cachedInverseView);
         data_0210a010.flags |= (1 << RENDER_CONFIG_FLAG_INVERSE_VIEW_CACHE_VALID);
     }
     return &data_0210a010.cachedInverseView;
@@ -170,10 +170,10 @@ const Matrix4x3* RenderConfig::GetInverseViewMatrix()
 // can be made static later
 void RecalculateWorldViewAndInverse()
 {
-    Mat4x3_Multiply(&data_0210a010.objectRotationPosition, &data_0210a010.viewMatrix, &data_0210a010.cachedWorldView);
-    Mat4x3_ApplyScale(&data_0210a010.cachedWorldView, &data_0210a010.cachedWorldView,
+    MTX_Concat43(&data_0210a010.objectRotationPosition, &data_0210a010.viewMatrix, &data_0210a010.cachedWorldView);
+    MTX_ScaleApply43(&data_0210a010.cachedWorldView, &data_0210a010.cachedWorldView,
         data_0210a010.objectScale.x, data_0210a010.objectScale.y, data_0210a010.objectScale.z);
-    Mat4x3_Invert(&data_0210a010.cachedWorldView, &data_0210a010.cachedInverseWorldView);
+    MTX_Inverse43(&data_0210a010.cachedWorldView, &data_0210a010.cachedInverseWorldView);
 }
 
 const Matrix4x3* RenderConfig::GetCombinedWorldViewMatrix()

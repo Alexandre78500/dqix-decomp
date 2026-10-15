@@ -12,7 +12,7 @@ extern "C" void RenderCommand_9(RenderCommandHandler* handler, int modifier)
     
     uint8_t* instructionPtr = handler->instructionPointer_ + 3;
     
-    func_020ca458(0, &localCopy, sizeof(NSBXXInvBindMatrix));
+    MIi_CpuClearFast(0, &localCopy, sizeof(NSBXXInvBindMatrix));
     SendQueuedDataToGeometryFifo();
 
     GXFIFO_MATRIX_MODE = 0; // projection
@@ -39,7 +39,7 @@ extern "C" void RenderCommand_9(RenderCommandHandler* handler, int modifier)
                 // retrieve the local-to-world matrix from the stack
                 GXFIFO_MATRIX_GET = instructionPtr[0];
                 GXFIFO_MATRIX_MODE = 1; // position
-                func_020c51a4(invBindMatrices[inverseBindIndex].mat4x3.entries);
+                G3_MultMtx43(invBindMatrices[inverseBindIndex].mat4x3.entries);
             }
             if (termCounter != 0)
             {
@@ -58,7 +58,7 @@ extern "C" void RenderCommand_9(RenderCommandHandler* handler, int modifier)
             {
                 while (func_020c54fc(&ptr_r7->mat4x4) != 0) {}
                 GXFIFO_MATRIX_MODE = 2; // position+vector
-                func_020c51c0(invBindMatrices[inverseBindIndex].mat3x3.entries);
+                G3_MultMtx33(invBindMatrices[inverseBindIndex].mat3x3.entries);
             }
             weight = instructionPtr[5] << 4; // as int -> fixed point this is division by 256
             localCopy.mat4x3.entries[0] +=  (weight * (int64_t)ptr_r7->mat4x4.entries[ 0]) >> 12;
@@ -98,9 +98,9 @@ extern "C" void RenderCommand_9(RenderCommandHandler* handler, int modifier)
     localCopy.mat3x3.entries[7] += (uWeight * (int64_t)mat3x3_unaffr8[7]) >> 12;
     localCopy.mat3x3.entries[8] += (uWeight * (int64_t)mat3x3_unaffr8[8]) >> 12;
 
-    func_020c5188(localCopy.mat3x3.entries); // isn't this supposed to take a 3x4 matrix?
+    G3_LoadMtx43(localCopy.mat3x3.entries); // isn't this supposed to take a 3x4 matrix?
     GXFIFO_MATRIX_MODE = 1;
-    func_020c5188(localCopy.mat4x3.entries);
+    G3_LoadMtx43(localCopy.mat4x3.entries);
     GXFIFO_MATRIX_MODE = 0;
     GXFIFO_MATRIX_GET = 1;
     GXFIFO_MATRIX_MODE = 2;

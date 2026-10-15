@@ -41,7 +41,7 @@ extern "C"
 }
 
 #define BINARY_READ_AND_ADVANCE(buffer, offset, dst, len) \
-    (VectorizedInvertedMemcpy((buffer) + (offset), (dst), (len)), offset += (len))
+    (MI_CpuCopy8((buffer) + (offset), (dst), (len)), offset += (len))
 
 #define TMAPLANGDATA_READ(offset, into, len) \
     BINARY_READ_AND_ADVANCE(GameState::GetInstance()->GetTreasureMapLanguageData(), offset, into, len)
@@ -54,7 +54,7 @@ void RemoveFurigana(const char* src, char* dst)
     if (dst == NULL)
         return;
 
-    VectorizedMemset(dst, 0, 4);
+    MI_CpuFill8(dst, 0, 4);
 
     unsigned int mode = 0;
     int srcIndex;
@@ -204,7 +204,7 @@ bool GetTreasureMapTypeFromItemID(unsigned short itemID, unsigned char* out)
 
 void DetailedTreasureMapData::RegularMapData::Populate(unsigned short newseed, unsigned char newquality)
 {
-    VectorizedMemset(this, 0, sizeof(RegularMapData));
+    MI_CpuFill8(this, 0, sizeof(RegularMapData));
     seed_ = newseed;
     srand(seed_);
     quality_ = newquality;
@@ -245,7 +245,7 @@ unsigned short DetailedTreasureMapData::LegacyBossMapData::MaybeGetCurrentAltern
 
 void DetailedTreasureMapData::Clear()
 {
-    VectorizedMemset(this, 0, sizeof(DetailedTreasureMapData));
+    MI_CpuFill8(this, 0, sizeof(DetailedTreasureMapData));
 }
 
 void DetailedTreasureMapData::BlankFunction() const {}
@@ -269,8 +269,8 @@ bool DetailedTreasureMapData::UpdateFollowingCompletion(bool levelledUp, unsigne
 
     discoveryState_ = DiscoveryState_Cleared;
 
-    VectorizedMemset(clearedBy_, 0, 12);
-    VectorizedInvertedMemcpy(asciiName, clearedBy_, 10);
+    MI_CpuFill8(clearedBy_, 0, 12);
+    MI_CpuCopy8(asciiName, clearedBy_, 10);
 
     if (levelledUp && legacy_.stats_.newDropListAtNextLevel)
     {
@@ -380,7 +380,7 @@ void DetailedTreasureMapData::LegacyBossMapData::Populate(
             bossMonsterID_ = readMonsterID;
             for (int j = 0; j < 3; j++)
                 alternateVersionIDs_[j] = readAlternates[j];
-            VectorizedInvertedMemcpy(dataPtr + readOffset, bossName_, readStringLen);
+            MI_CpuCopy8(dataPtr + readOffset, bossName_, readStringLen);
             bossName_[readStringLen] = '\0';
 #if defined(jpn)
             break;
@@ -397,7 +397,7 @@ void DetailedTreasureMapData::LegacyBossMapData::Populate(
 
         if (newBossID == readBossID)
         {
-            VectorizedInvertedMemcpy(dataPtr + readOffset, mapNameNoLevel_, readStringLen);
+            MI_CpuCopy8(dataPtr + readOffset, mapNameNoLevel_, readStringLen);
             mapNameNoLevel_[readStringLen] = '\0';
             break;
         }
@@ -894,7 +894,7 @@ void DetailedTreasureMapData::RegularMapData::GenerateNameBuffers()
                     TMAPLANGDATA_READ(readOffset, &stringLength, 2);
                     if (environ_ == loopEnviron && nameIdx == readIndex)
                     {
-                        VectorizedInvertedMemcpy(langData + readOffset, tempBuffer, stringLength);
+                        MI_CpuCopy8(langData + readOffset, tempBuffer, stringLength);
                         tempBuffer[stringLength] = '\0';
                         strcat(nameNoLevel_, tempBuffer);
                         entryLoop = numEntries; // hack to escape the j-level loop
@@ -910,7 +910,7 @@ void DetailedTreasureMapData::RegularMapData::GenerateNameBuffers()
                 TMAPLANGDATA_READ(readOffset, &stringLength, 2);
                 if (nameIdx == readIndex)
                 {
-                    VectorizedInvertedMemcpy(langData + readOffset, tempBuffer, stringLength);
+                    MI_CpuCopy8(langData + readOffset, tempBuffer, stringLength);
                     tempBuffer[stringLength] = '\0';
                     strcat(nameNoLevel_, tempBuffer);
                     break;
@@ -1007,7 +1007,7 @@ void DetailedTreasureMapData::RegularMapData::GeneratePopupName()
                     TMAPLANGDATA_READ(readOffset, &stringLength, 2);
                     if (environ_ == loopEnviron && nameIdx == readIndex)
                     {
-                        VectorizedInvertedMemcpy(langData + readOffset, tempBuffer, stringLength);
+                        MI_CpuCopy8(langData + readOffset, tempBuffer, stringLength);
                         tempBuffer[stringLength] = '\0';
                         strcat(popupName_, tempBuffer);
                         entryLoop = numEntries; // hack to escape the j-level loop
@@ -1023,7 +1023,7 @@ void DetailedTreasureMapData::RegularMapData::GeneratePopupName()
                 TMAPLANGDATA_READ(readOffset, &stringLength, 2);
                 if (nameIdx == readIndex)
                 {
-                    VectorizedInvertedMemcpy(langData + readOffset, tempBuffer, stringLength);
+                    MI_CpuCopy8(langData + readOffset, tempBuffer, stringLength);
                     tempBuffer[stringLength] = '\0';
                     strcat(popupName_, tempBuffer);
                     break;
@@ -1075,7 +1075,7 @@ void DetailedTreasureMapData::RegularMapData::GenerateNameBuffers()
         TMAPLANGDATA_READ(readOffset, &stringLength, 2);
         if (prefix_ == readIndex)
         {
-            VectorizedInvertedMemcpy(langData + readOffset, tempBuffer, stringLength);
+            MI_CpuCopy8(langData + readOffset, tempBuffer, stringLength);
             tempBuffer[stringLength] = '\0';
             strcat(nameNoLevel_, tempBuffer);
             strcpy(prefixString_, tempBuffer);
@@ -1093,7 +1093,7 @@ void DetailedTreasureMapData::RegularMapData::GenerateNameBuffers()
         TMAPLANGDATA_READ(readOffset, &stringLength, 2);
         if (suffix_ == readIndex)
         {
-            VectorizedInvertedMemcpy(langData + readOffset, tempBuffer, stringLength);
+            MI_CpuCopy8(langData + readOffset, tempBuffer, stringLength);
             tempBuffer[stringLength] = '\0';
             strcat(nameNoLevel_, tempBuffer);
             strcpy(suffixString_, tempBuffer);
@@ -1142,7 +1142,7 @@ void DetailedTreasureMapData::RegularMapData::GeneratePopupName()
         TMAPLANGDATA_READ(readOffset, &stringLength, 2);
         if (prefix_ == readIndex)
         {
-            VectorizedInvertedMemcpy(langData + readOffset, tempBuffer, stringLength);
+            MI_CpuCopy8(langData + readOffset, tempBuffer, stringLength);
             tempBuffer[stringLength] = '\0';
             strcat(popupName_, tempBuffer);
             strcpy(prefixString_, tempBuffer);
@@ -1160,7 +1160,7 @@ void DetailedTreasureMapData::RegularMapData::GeneratePopupName()
         TMAPLANGDATA_READ(readOffset, &stringLength, 2);
         if (suffix_ == readIndex)
         {
-            VectorizedInvertedMemcpy(langData + readOffset, tempBuffer, stringLength);
+            MI_CpuCopy8(langData + readOffset, tempBuffer, stringLength);
             tempBuffer[stringLength] = '\0';
             strcat(popupName_, tempBuffer);
             strcpy(suffixString_, tempBuffer);
@@ -1180,7 +1180,7 @@ void DetailedTreasureMapData::RegularMapData::GeneratePopupName()
             TMAPLANGDATA_READ(readOffset, &stringLength, 2);
             if (environ_ == loopEnviron && localeRank_ == readIndex)
             {
-                VectorizedInvertedMemcpy(langData + readOffset, tempBuffer, stringLength);
+                MI_CpuCopy8(langData + readOffset, tempBuffer, stringLength);
                 tempBuffer[stringLength] = '\0';
                 strcat(popupName_, tempBuffer);
                 strcpy(localeString_, tempBuffer);

@@ -20,13 +20,13 @@
 #pragma dont_inline on
 
 #if defined(jpn)
-#define func_020c9be0 func_020cb6ac
+#define OS_Terminate func_020cb6ac
 #endif
 
 extern "C"
 {
     // something like abort() (never returns)
-    void func_020c9be0();
+    void OS_Terminate();
 }
 
 void MarkAlarmInitializationFlagBit(int bit)
@@ -193,7 +193,7 @@ void SetTimeout(Alarm* alarm, uint64_t numTicks,
     Alarm::PFNCompletion callback, ProcessorContext** ppContext)
 {
     if (alarm == NULL || alarm->completionProc != NULL)
-        func_020c9be0();
+        OS_Terminate();
 
     int priorState = DisableIRQInterrupts();
     alarm->alarmIntervalLength = 0;
@@ -209,7 +209,7 @@ void SetInterval(Alarm *alarm, uint64_t residue, uint64_t interval,
     Alarm::PFNCompletion callback, ProcessorContext **ppContext)
 {
     if (alarm == NULL || alarm->completionProc != NULL)
-        func_020c9be0();
+        OS_Terminate();
 
     int priorState = DisableIRQInterrupts();
     alarm->alarmIntervalLength = interval;

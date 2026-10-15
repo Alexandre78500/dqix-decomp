@@ -164,7 +164,7 @@ void GetCurrentPositionAndDirectionMatrices(Matrix4x3* position, Matrix3x3* dire
     {
         Matrix4x4 clipMatrix4x4;
         while (func_020c54fc(&clipMatrix4x4) != 0) {}
-        Mat4x4_ConvertTo4x3(&clipMatrix4x4, position);
+        MTX_Copy44To43_(&clipMatrix4x4, position);
     }
 
     if (direction != NULL)
@@ -211,13 +211,13 @@ int ConvertWorldToScreenCoordinates(const Vector3fix *world, int *outX, int *out
 
     Matrix4x4* proj = &data_0210a010.projectionMatrix;
 
-    Mat4x3_ApplyToVector(world, &data_0210a010.viewMatrix, &viewVector);
+    MTX_MultVec43(world, &data_0210a010.viewMatrix, &viewVector);
 
     int64_t projectedW = (uint64_t)viewVector.x * proj->entries[3] +
         (int64_t)viewVector.y * proj->entries[7] +
         (int64_t)viewVector.z * proj->entries[11];
 
-    fix32_QueueComputeReciprocal((fix32_t)(projectedW >> 12) + proj->entries[15]);
+    FX_InvAsync((fix32_t)(projectedW >> 12) + proj->entries[15]);
 
     int64_t productX = (uint64_t)viewVector.x * proj->entries[0] +
         (int64_t)viewVector.y * proj->entries[4] +
@@ -231,7 +231,7 @@ int ConvertWorldToScreenCoordinates(const Vector3fix *world, int *outX, int *out
 
     fix32_t reducedY = (fix32_t)(productY >> 12) + proj->entries[13];
 
-    int64_t largeInvW = GetHardwareDividerResult();
+    int64_t largeInvW = FX_GetDivResultFx64c();
 
     // Compute x/w and y/w using a 32-bit right shift, then transform via
     // u -> (1 + u)/2 to adjust the range from (-1, 1) to (0, 1)
