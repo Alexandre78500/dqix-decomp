@@ -1,0 +1,6 @@
+# Game functions that the linker must keep although it sees no caller: their callers in other
+# overlays go through a relocation that dsd could not resolve (an address shared by several
+# overlays, e.g. `module:overlays(1,6)` in relocs.txt). One symbol per line.
+
+# ov006, called from ov017 (0x021b1cf8, overlays(1,6))
+_ZN13AlchemyScreen9DrawModelEv

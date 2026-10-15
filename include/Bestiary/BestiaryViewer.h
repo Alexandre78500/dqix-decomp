@@ -16,8 +16,13 @@ public:
     struct Element {
         short id;
         u8 unk_2[0x14];
-        u8 visible : 1; // 0x16
-        u8 unk_16_1 : 7;
+        union {
+            u8 flags;   // 0x16
+            struct {
+                u8 visible : 1;
+                u8 unk_16_1 : 7;
+            };
+        };
         u8 unk_17;
     };
 
@@ -92,7 +97,8 @@ struct Sprite {
     int y;                  // 0x18, fixed point
     u8 unk_1c[0x6];
     u8 unk_22;
-    u8 unk_23[0x3];
+    u8 unk_23[0x2];
+    u8 unk_25;
     u8 unk_26;
     u8 unk_27;
 };
