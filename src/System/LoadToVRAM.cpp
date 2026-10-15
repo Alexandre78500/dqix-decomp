@@ -8,8 +8,8 @@
 #pragma optimize_for_size off
 
 #if defined(jpn)
-#define func_020ca3b8 func_020cbe84
-#define func_020ca408 func_020cbed4
+#define MIi_CpuCopy16 func_020cbe84
+#define MIi_CpuCopy32 func_020cbed4
 
 #define data_020ed658 data_020ed764
 #define data_020ed668 data_020ed774
@@ -67,72 +67,72 @@ extern const unsigned short data_020ed668[48];
 extern "C"
 {
     // inverted memcpy via u16s
-    void func_020ca3b8(const void* src, void* dst, unsigned len);
+    void MIi_CpuCopy16(const void* src, void* dst, unsigned len);
     // inverted memcpy via u32s
-    void func_020ca408(const void* src, void* dst, unsigned len);
+    void MIi_CpuCopy32(const void* src, void* dst, unsigned len);
 }
 
 void GX_LoadBGPltt(const void* data, unsigned int offset, unsigned int length)
 {
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000000 + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, 0x05000000 + offset, length);
     else
-        func_020ca3b8(data, (void*)(0x05000000 + offset), length);
+        MIi_CpuCopy16(data, (void*)(0x05000000 + offset), length);
 }
 
 void GXS_LoadBGPltt(const void* data, unsigned int offset, unsigned int length)
 {
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000400 + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, 0x05000400 + offset, length);
     else
-        func_020ca3b8(data, (void*)(0x05000400 + offset), length);
+        MIi_CpuCopy16(data, (void*)(0x05000400 + offset), length);
 }
 
 void GX_LoadOBJPltt(const void* data, unsigned int offset, unsigned int length)
 {
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000200 + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, 0x05000200 + offset, length);
     else
-        func_020ca3b8(data, (void*)(0x05000200 + offset), length);
+        MIi_CpuCopy16(data, (void*)(0x05000200 + offset), length);
 }
 
 void GXS_LoadOBJPltt(const void* data, unsigned int offset, unsigned int length)
 {
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000600 + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, 0x05000600 + offset, length);
     else
-        func_020ca3b8(data, (void*)(0x05000600 + offset), length);
+        MIi_CpuCopy16(data, (void*)(0x05000600 + offset), length);
 }
 
 void GX_LoadOAM(const void* data, unsigned int offset, unsigned int length)
 {
-    if (data_020f2270 != -1 && length > 48)
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, 0x07000000 + offset, length);
+    if (GXi_DmaId != -1 && length > 48)
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, 0x07000000 + offset, length);
     else
-        func_020ca408(data, (void*)(0x07000000 + offset), length);
+        MIi_CpuCopy32(data, (void*)(0x07000000 + offset), length);
 }
 
 void GXS_LoadOAM(const void* data, unsigned int offset, unsigned int length)
 {
-    if (data_020f2270 != -1 && length > 48)
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, 0x07000400 + offset, length);
+    if (GXi_DmaId != -1 && length > 48)
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, 0x07000400 + offset, length);
     else
-        func_020ca408(data, (void*)(0x07000400 + offset), length);
+        MIi_CpuCopy32(data, (void*)(0x07000400 + offset), length);
 }
 
 // not quite a match
 void GX_LoadOBJ(const void* data, unsigned int offset, unsigned int length)
 {
     int writeAddr = 0x06400000;
-    if (data_020f2270 != -1 && length > 48)
+    if (GXi_DmaId != -1 && length > 48)
     {
         writeAddr += offset;
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, writeAddr, length);
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, writeAddr, length);
     }
     else
     {
         writeAddr += offset;
-        func_020ca408(data, (void*)writeAddr, length);
+        MIi_CpuCopy32(data, (void*)writeAddr, length);
     }
 }
 
@@ -140,160 +140,160 @@ void GX_LoadOBJ(const void* data, unsigned int offset, unsigned int length)
 void GXS_LoadOBJ(const void* data, unsigned int offset, unsigned int length)
 {
     int writeAddr = 0x06600000;
-    if (data_020f2270 != -1 && length > 48)
+    if (GXi_DmaId != -1 && length > 48)
     {
         writeAddr += offset;
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, writeAddr, length);
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, writeAddr, length);
     }
     else
     {
         writeAddr += offset;
-        func_020ca408(data, (void*)writeAddr, length);
+        MIi_CpuCopy32(data, (void*)writeAddr, length);
     }
 }
 
 void GX_LoadBG0Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG0ScreenBase();
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca3b8(data, (void*)(base + offset), length);
+        MIi_CpuCopy16(data, (void*)(base + offset), length);
 }
 
 void GXS_LoadBG0Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG0ScreenBase();
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca3b8(data, (void*)(base + offset), length);
+        MIi_CpuCopy16(data, (void*)(base + offset), length);
 }
 
 void GX_LoadBG1Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG1ScreenBase();
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca3b8(data, (void*)(base + offset), length);
+        MIi_CpuCopy16(data, (void*)(base + offset), length);
 }
 
 void GXS_LoadBG1Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG1ScreenBase();
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca3b8(data, (void*)(base + offset), length);
+        MIi_CpuCopy16(data, (void*)(base + offset), length);
 }
 
 void GX_LoadBG2Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG2ScreenBase();
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca3b8(data, (void*)(base + offset), length);
+        MIi_CpuCopy16(data, (void*)(base + offset), length);
 }
 
 void GXS_LoadBG2Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG2ScreenBase();
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca3b8(data, (void*)(base + offset), length);
+        MIi_CpuCopy16(data, (void*)(base + offset), length);
 }
 
 void GX_LoadBG3Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG3ScreenBase();
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca3b8(data, (void*)(base + offset), length);
+        MIi_CpuCopy16(data, (void*)(base + offset), length);
 }
 
 void GXS_LoadBG3Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG3ScreenBase();
-    if (data_020f2270 != -1 && length > 28)
-        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 28)
+        MI_DmaCopy16(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca3b8(data, (void*)(base + offset), length);
+        MIi_CpuCopy16(data, (void*)(base + offset), length);
 }
 
 void GX_LoadBG0Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG0CharacterBase();
-    if (data_020f2270 != -1 && length > 48)
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 48)
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca408(data, (void*)(base + offset), length);
+        MIi_CpuCopy32(data, (void*)(base + offset), length);
 }
 
 void GXS_LoadBG0Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG0CharacterBase();
-    if (data_020f2270 != -1 && length > 48)
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 48)
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca408(data, (void*)(base + offset), length);
+        MIi_CpuCopy32(data, (void*)(base + offset), length);
 }
 
 void GX_LoadBG1Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG1CharacterBase();
-    if (data_020f2270 != -1 && length > 48)
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 48)
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca408(data, (void*)(base + offset), length);
+        MIi_CpuCopy32(data, (void*)(base + offset), length);
 }
 
 void GXS_LoadBG1Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG1CharacterBase();
-    if (data_020f2270 != -1 && length > 48)
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 48)
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca408(data, (void*)(base + offset), length);
+        MIi_CpuCopy32(data, (void*)(base + offset), length);
 }
 
 void GX_LoadBG2Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG2CharacterBase();
-    if (data_020f2270 != -1 && length > 48)
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 48)
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca408(data, (void*)(base + offset), length);
+        MIi_CpuCopy32(data, (void*)(base + offset), length);
 }
 
 void GXS_LoadBG2Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG2CharacterBase();
-    if (data_020f2270 != -1 && length > 48)
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 48)
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca408(data, (void*)(base + offset), length);
+        MIi_CpuCopy32(data, (void*)(base + offset), length);
 }
 
 void GX_LoadBG3Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG3CharacterBase();
-    if (data_020f2270 != -1 && length > 48)
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 48)
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca408(data, (void*)(base + offset), length);
+        MIi_CpuCopy32(data, (void*)(base + offset), length);
 }
 
 void GXS_LoadBG3Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG3CharacterBase();
-    if (data_020f2270 != -1 && length > 48)
-        DMAMemcpySynchronous(data_020f2270, (unsigned int)data, base + offset, length);
+    if (GXi_DmaId != -1 && length > 48)
+        DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, base + offset, length);
     else
-        func_020ca408(data, (void*)(base + offset), length);
+        MIi_CpuCopy32(data, (void*)(base + offset), length);
 }
 
 void GX_BeginLoadBGExtPltt()
@@ -322,16 +322,16 @@ void GX_BeginLoadBGExtPltt()
 void GX_LoadBGExtPltt(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int dest = data_02111240.mainBGExtPaletteMapAddress_250_ + offset - data_02111240.mainBGExtPaletteInitialOffset_24c_;
-    if (data_020f2270 != -1)
-        DMAMemcpyAsync(data_020f2270, (unsigned int)data, dest, length, NULL, 0);
+    if (GXi_DmaId != -1)
+        DMAMemcpyAsync(GXi_DmaId, (unsigned int)data, dest, length, NULL, 0);
     else
-        func_020ca408(data, (void*)dest, length);
+        MIi_CpuCopy32(data, (void*)dest, length);
 }
 
 void GX_EndLoadBGExtPltt()
 {
-    if (data_020f2270 != -1)
-        AwaitDMACompletion(data_020f2270);
+    if (GXi_DmaId != -1)
+        AwaitDMACompletion(GXi_DmaId);
 
     MapVRAMBanksToMainBGExtendedPalette(data_02111240.mainBGExtPaletteBanks_254_);
     data_02111240.mainBGExtPaletteBanks_254_ = 0;
@@ -357,18 +357,18 @@ void GX_BeginLoadOBJExtPltt()
 
 void GX_LoadOBJExtPltt(const void* data, unsigned int offset, unsigned int length)
 {
-    int dmaChannel = data_020f2270;
+    int dmaChannel = GXi_DmaId;
     unsigned int dest = data_02111240.mainObjExtPaletteMapAddress_244_ + offset;
     if (dmaChannel != -1)
         DMAMemcpyAsync(dmaChannel, (unsigned int)data, dest, length, NULL, 0);
     else
-        func_020ca408(data, (void*)dest, length);
+        MIi_CpuCopy32(data, (void*)dest, length);
 }
 
 void GX_EndLoadOBJExtPltt()
 {
-    if (data_020f2270 != -1)
-        AwaitDMACompletion(data_020f2270);
+    if (GXi_DmaId != -1)
+        AwaitDMACompletion(GXi_DmaId);
 
     MapVRAMBanksToMainObjExtendedPalette(data_02111240.mainObjExtPaletteBanks_248_);
     data_02111240.mainObjExtPaletteBanks_248_ = 0;
@@ -382,16 +382,16 @@ void GXS_BeginLoadBGExtPltt()
 
 void GXS_LoadBGExtPltt(const void* data, unsigned int offset, unsigned int length)
 {
-    if (data_020f2270 != -1)
-        DMAMemcpyAsync(data_020f2270, (unsigned int)data, 0x06898000 + offset, length, NULL, 0);
+    if (GXi_DmaId != -1)
+        DMAMemcpyAsync(GXi_DmaId, (unsigned int)data, 0x06898000 + offset, length, NULL, 0);
     else
-        func_020ca408(data, (void*)(0x06898000 + offset), length);
+        MIi_CpuCopy32(data, (void*)(0x06898000 + offset), length);
 }
 
 void GXS_EndLoadBGExtPltt()
 {
-    if (data_020f2270 != -1)
-        AwaitDMACompletion(data_020f2270);
+    if (GXi_DmaId != -1)
+        AwaitDMACompletion(GXi_DmaId);
     
     MapVRAMBanksToSubBGExtendedPalette(data_02111240.subBGExtPaletteBanks_240_);
     data_02111240.subBGExtPaletteBanks_240_ = 0;
@@ -404,16 +404,16 @@ void GXS_BeginLoadOBJExtPltt()
 
 void GXS_LoadOBJExtPltt(const void* data, unsigned int offset, unsigned int length)
 {
-    if (data_020f2270 != -1)
-        DMAMemcpyAsync(data_020f2270, (unsigned int)data, 0x068a0000 + offset, length, NULL, 0);
+    if (GXi_DmaId != -1)
+        DMAMemcpyAsync(GXi_DmaId, (unsigned int)data, 0x068a0000 + offset, length, NULL, 0);
     else
-        func_020ca408(data, (void*)(0x068a0000 + offset), length);
+        MIi_CpuCopy32(data, (void*)(0x068a0000 + offset), length);
 }
 
 void GXS_EndLoadOBJExtPltt()
 {
-    if (data_020f2270 != -1)
-        AwaitDMACompletion(data_020f2270);
+    if (GXi_DmaId != -1)
+        AwaitDMACompletion(GXi_DmaId);
 
     MapVRAMBanksToSubObjExtendedPalette(data_02111240.subObjExtPaletteBanks_258_);
     data_02111240.subObjExtPaletteBanks_258_ = 0;
@@ -457,28 +457,28 @@ void GX_LoadTex(const void* data, unsigned int offset, unsigned int length)
         firstBlockWriteAddr = data_0211125c.textureImageFirstMapAddress_260_ + offset;
         unsigned int firstWriteSize = data_0211125c.textureImageFirstMapRegionSize_278_ - offset;
         
-        if (data_020f2270 != -1 && firstWriteSize > 48)
-            DMAMemcpySynchronous(data_020f2270, (unsigned int)data, firstBlockWriteAddr, firstWriteSize);
+        if (GXi_DmaId != -1 && firstWriteSize > 48)
+            DMAMemcpySynchronous(GXi_DmaId, (unsigned int)data, firstBlockWriteAddr, firstWriteSize);
         else
-            func_020ca408(data, (void*)firstBlockWriteAddr, firstWriteSize);
+            MIi_CpuCopy32(data, (void*)firstBlockWriteAddr, firstWriteSize);
 
-        if (data_020f2270 != -1)
-            DMAMemcpyAsync(data_020f2270, (unsigned int)data + firstWriteSize, secondBlockStart, length - firstWriteSize, NULL, 0);
+        if (GXi_DmaId != -1)
+            DMAMemcpyAsync(GXi_DmaId, (unsigned int)data + firstWriteSize, secondBlockStart, length - firstWriteSize, NULL, 0);
         else
-            func_020ca408((const void*)((unsigned int)data + firstWriteSize), (void*)secondBlockStart, length - firstWriteSize);
+            MIi_CpuCopy32((const void*)((unsigned int)data + firstWriteSize), (void*)secondBlockStart, length - firstWriteSize);
         return;
     }
 
-    if (data_020f2270 != -1)
-        DMAMemcpyAsync(data_020f2270, (unsigned int)data, firstBlockWriteAddr, length, NULL, 0);
+    if (GXi_DmaId != -1)
+        DMAMemcpyAsync(GXi_DmaId, (unsigned int)data, firstBlockWriteAddr, length, NULL, 0);
     else
-        func_020ca408(data, (void*)firstBlockWriteAddr, length);
+        MIi_CpuCopy32(data, (void*)firstBlockWriteAddr, length);
 }
 
 void GX_EndLoadTex()
 {
-    if (data_020f2270 != -1)
-        AwaitDMACompletion(data_020f2270);
+    if (GXi_DmaId != -1)
+        AwaitDMACompletion(GXi_DmaId);
     MapVRAMBanksToTextureImage(data_0211125c.textureImageBanks_270_);
     data_0211125c.textureImageFirstMapRegionSize_278_ = 0;
     data_0211125c.textureImageSecondMapAddress_274_ = 0;
@@ -495,18 +495,18 @@ void GX_BeginLoadTexPltt()
 
 void GX_LoadTexPltt(const void* data, unsigned int offset, unsigned int length)
 {
-    int dmaChannel = data_020f2270;
+    int dmaChannel = GXi_DmaId;
     unsigned int writeAddr = data_0211125c.texturePaletteMapAddress_264_ + offset;
     if (dmaChannel != -1)
         DMAMemcpyAsync(dmaChannel, (unsigned int)data, writeAddr, length, NULL, 0);
     else
-        func_020ca408(data, (void*)writeAddr, length);
+        MIi_CpuCopy32(data, (void*)writeAddr, length);
 }
 
 void GX_EndLoadTexPltt()
 {
-    if (data_020f2270 != -1)
-        AwaitDMACompletion(data_020f2270);
+    if (GXi_DmaId != -1)
+        AwaitDMACompletion(GXi_DmaId);
     MapVRAMBanksToTexturePalette(data_0211125c.texturePaletteBanks_268_);
     data_0211125c.texturePaletteBanks_268_ = 0;
     data_0211125c.texturePaletteMapAddress_264_ = 0;
@@ -537,27 +537,27 @@ void GX_BeginLoadClearImage()
 
 void GX_LoadClearImageColor(const void* data, unsigned int length)
 {
-    int dmaChannel = data_020f2270;
+    int dmaChannel = GXi_DmaId;
     unsigned int writeAddr = data_0211125c.clearTextureMapAddress_26c_;
     if (dmaChannel != -1)
         DMAMemcpyAsync(dmaChannel, (unsigned int)data, writeAddr, length, NULL, 0);
     else
-        func_020ca408(data, (void*)writeAddr, length);
+        MIi_CpuCopy32(data, (void*)writeAddr, length);
 }
 
 void GX_LoadClearImageDepth(const void* data, unsigned int length)
 {
     unsigned int writeAddr = data_0211125c.clearTextureMapAddress_26c_ + 0x20000;
-    if (data_020f2270 != -1)
-        DMAMemcpyAsync(data_020f2270, (unsigned int)data, writeAddr, length, NULL, 0);
+    if (GXi_DmaId != -1)
+        DMAMemcpyAsync(GXi_DmaId, (unsigned int)data, writeAddr, length, NULL, 0);
     else
-        func_020ca408(data, (void*)writeAddr, length);
+        MIi_CpuCopy32(data, (void*)writeAddr, length);
 }
 
 void GX_EndLoadClearImage()
 {
-    if (data_020f2270 != -1)
-        AwaitDMACompletion(data_020f2270);
+    if (GXi_DmaId != -1)
+        AwaitDMACompletion(GXi_DmaId);
 
     MapVRAMBanksToClearTextures(data_0211125c.clearTextureBanks_25c_);
     data_0211125c.clearTextureBanks_25c_ = 0;

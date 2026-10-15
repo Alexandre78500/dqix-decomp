@@ -7,7 +7,7 @@
 #if defined(jpn)
 #define MIi_CpuClear16 func_020cbe5c
 
-#define data_020f1c74 data_020f1de0
+#define gAnmCalcFuncNsBca data_020f1de0
 #endif
 
 extern "C"
@@ -43,13 +43,13 @@ static inline void CalculateThirdRowByCrossProduct(Matrix3x3* mat)
 }
 
 // processing callback for J.AC animations
-extern void (*data_020f1c74)(void*, AnimationData*, int);
+extern void (*gAnmCalcFuncNsBca)(void*, AnimationData*, int);
 
 extern "C" void NNSi_G3dAnmObjInitNsBca(AnimationData* anim, void* pvJAC, NSBXXInternalModel* model)
 {
     NSBXXAnimationJAC* jac = (NSBXXAnimationJAC*)pvJAC;
     anim->pRawData_ = jac;
-    anim->callback_ = data_020f1c74;
+    anim->callback_ = gAnmCalcFuncNsBca;
     anim->numEntries_ = model->numBoneMatrices_;
     MIi_CpuClear16(0, anim->entries_, 2 * anim->numEntries_);
 
@@ -82,7 +82,7 @@ extern "C" void NNSi_G3dAnmCalcNsBca(void* data, AnimationData* anim, int arg)
 
 extern "C" void getMdlTrans_(BoneMatrixRenderData* bmrd)
 {
-    RenderCommandHandler* handler = data_0210a274;
+    RenderCommandHandler* handler = gCurrentRenderState;
     // this is super cursed, but I guess this executes during command 6 when
     // ip[1] holds the bone index to apply stuff to
     NSBXXBoneMatrix* boneMatrix = handler->boneList_->GetEntryFromu32Offset_v2<NSBXXBoneMatrix>(handler->instructionPointer_[1]);
@@ -101,7 +101,7 @@ extern "C" void getMdlTrans_(BoneMatrixRenderData* bmrd)
 
 extern "C" void getMdlScale_(BoneMatrixRenderData* bmrd)
 {
-    RenderCommandHandler* handler = data_0210a274;
+    RenderCommandHandler* handler = gCurrentRenderState;
     uint8_t* ip = handler->instructionPointer_;
     NSBXXBoneMatrix* boneMatrix = handler->boneList_->GetEntryFromu32Offset_v2<NSBXXBoneMatrix>(ip[1]);
     intptr_t addrScaling = (intptr_t)(boneMatrix + 1);
@@ -121,7 +121,7 @@ extern "C" void getMdlScale_(BoneMatrixRenderData* bmrd)
 // not quite a match, some register nonsense
 extern "C" void getMdlRot_(BoneMatrixRenderData* bmrd)
 {  
-    RenderCommandHandler* handler = data_0210a274;
+    RenderCommandHandler* handler = gCurrentRenderState;
     NSBXXBoneMatrix* boneMatrix = handler->boneList_->GetEntryFromu32Offset_v2<NSBXXBoneMatrix>(handler->instructionPointer_[1]);
 
     intptr_t addrRotation = (intptr_t)(boneMatrix + 1);
@@ -138,22 +138,22 @@ extern "C" void getMdlRot_(BoneMatrixRenderData* bmrd)
             fix32_t entryA = pivot->a;
             fix32_t entryB = pivot->b;
 
-            func_020ca7d0(&bmrd->rotationMatrix_);
+            MI_Zero36B(&bmrd->rotationMatrix_);
             fix32_t unit = (boneMatrix->flags_ & 0x100) ? -1 << 12 : 1 << 12;
 
-            int indexA = data_020e9284[pivotForm].a;
-            int indexB = data_020e9284[pivotForm].b;
+            int indexA = gJntAnmPivotMtxIndices[pivotForm].a;
+            int indexB = gJntAnmPivotMtxIndices[pivotForm].b;
             
             bmrd->rotationMatrix_.entries[pivotForm] = unit;
             bmrd->rotationMatrix_.entries[indexA] = entryA;
             bmrd->rotationMatrix_.entries[indexB] = entryB;
 
             fix32_t entryC = (boneMatrix->flags_ & 0x200) ? -entryB : entryB;
-            int indexC = data_020e9284[pivotForm].c;
-            bmrd->rotationMatrix_.entries[data_020e9284[pivotForm].c] = entryC;
+            int indexC = gJntAnmPivotMtxIndices[pivotForm].c;
+            bmrd->rotationMatrix_.entries[gJntAnmPivotMtxIndices[pivotForm].c] = entryC;
 
             fix32_t entryD = (boneMatrix->flags_ & 0x400) ? -entryA : entryA;
-            int indexD = data_020e9284[pivotForm].d;
+            int indexD = gJntAnmPivotMtxIndices[pivotForm].d;
             bmrd->rotationMatrix_.entries[indexD] = entryD;
         }
         else // generic 3x3 matrix format
@@ -355,7 +355,7 @@ void getJntSRTAnmResult_(NSBXXAnimationJAC* jac, int arg, fix32_t time, BoneMatr
     }
 
     int boneMatrixFlags = (bmrd->flags_ & 1) ? 4 : 0;
-    data_0210a274->boneMatrixRenderDataScalePopulateProc_(bmrd, &scaleData, data_0210a274->instructionPointer_, boneMatrixFlags);
+    gCurrentRenderState->boneMatrixRenderDataScalePopulateProc_(bmrd, &scaleData, gCurrentRenderState->instructionPointer_, boneMatrixFlags);
 }
 
 void getTransData_(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
@@ -1089,14 +1089,14 @@ bool getRotDataByIdx_(Matrix3x3* out, intptr_t pivotList, intptr_t basisList, in
         int form = pivot->flags & 0xf;
         out->entries[form] = (pivot->flags & 0x10) ? -1 << 12 : 1 << 12;
 
-        out->entries[data_020e9284[form].a] = entryA;
-        out->entries[data_020e9284[form].b] = entryB;
+        out->entries[gJntAnmPivotMtxIndices[form].a] = entryA;
+        out->entries[gJntAnmPivotMtxIndices[form].b] = entryB;
 
         fix32_t entryC = (pivot->flags & 0x20) ? -entryB : entryB;
-        out->entries[data_020e9284[form].c] = entryC;
+        out->entries[gJntAnmPivotMtxIndices[form].c] = entryC;
         
         fix32_t entryD = (pivot->flags & 0x40) ? -entryA : entryA;
-        out->entries[data_020e9284[form].d] = entryD;
+        out->entries[gJntAnmPivotMtxIndices[form].d] = entryD;
 
         return false;
     }

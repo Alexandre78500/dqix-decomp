@@ -21,7 +21,7 @@
 
 #if defined(jpn)
 #define OS_GetDTCMAddress func_020ca4b0
-#define func_020ca8e8 func_020cc3b4
+#define MIi_CardDmaCopy32 func_020cc3b4
 #define func_020d1118 func_020d2be4
 #define func_020d1234 SND_GetNextInstData
 #endif
@@ -35,7 +35,7 @@ extern "C"
 
     // Seems to set up DMA to repeatedly read from the read parameter into write
     // pointer, incrementing the write pointer but not the read pointer.
-    void func_020ca8e8(unsigned int dmaChannel, const void* readFrom, void* writeTo, unsigned int length);
+    void MIi_CardDmaCopy32(unsigned int dmaChannel, const void* readFrom, void* writeTo, unsigned int length);
     
     void func_020d1118();
 
@@ -100,7 +100,7 @@ void ReadSingleSegmentFromCartridge()
 
     DECLARE_ASM_NOP();
 
-    func_020ca8e8(readManager->dmaChannel, gamecardReceivedDataRegister, readManager->writeDst, 0x200);
+    MIi_CardDmaCopy32(readManager->dmaChannel, gamecardReceivedDataRegister, readManager->writeDst, 0x200);
     unsigned int offset = readManager->cartridgeReadOffset;
     SendGamecardBusCommand(0xb7000000 | (offset >> 8), offset << 24);
     *(unsigned int*)ADDR_GAMECARD_BUS_ROMCTRL = ps1f20->control_4;

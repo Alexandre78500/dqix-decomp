@@ -16,11 +16,11 @@ struct DMARegisterSet
 };
 
 #if defined(jpn)
-#define data_020f2270 data_020f23dc
+#define GXi_DmaId data_020f23dc
 #endif
 
 // DMA channel for general use
-extern int data_020f2270;
+extern int GXi_DmaId;
 
 // ITCM functions. The atomic operations are wrapped with OS_DisableInterrupts()
 // and OS_RestoreInterrupts(), 

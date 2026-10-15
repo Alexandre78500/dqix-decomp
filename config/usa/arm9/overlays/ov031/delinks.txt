@@ -56,3 +56,189 @@ libs/misc/src/nitrocrypto_rc4.c:
 libs/NitroDWC/src/http_socket_worker.c:
     complete
     .text start:0x0224185c end:0x02243008
+
+libs/libCPS/src/cps_reset.c:
+    complete
+    .text start:0x02200160 end:0x02200264
+
+libs/libCPS/src/cps_util.c:
+    complete
+    .text start:0x02200264 end:0x0220028c
+
+libs/libCPS/src/cps_control.c:
+    complete
+    .text start:0x022004d4 end:0x022005b4
+
+libs/libCPS/src/cps_link.c:
+    complete
+    .text start:0x022005b4 end:0x02200bfc
+
+libs/libCPS/src/cps_arp.c:
+    complete
+    .text start:0x02200bfc end:0x02200f74
+
+libs/libCPS/src/cps_send.c:
+    complete
+    .text start:0x02200f74 end:0x02201364
+
+libs/libCPS/src/cps_recv.c:
+    complete
+    .text start:0x022017c4 end:0x02201c84
+
+libs/libCPS/src/cps_tcp.c:
+    complete
+    .text start:0x02201c84 end:0x0220296c
+
+libs/libCPS/src/cps_udp.c:
+    complete
+    .text start:0x0220296c end:0x02202b78
+
+libs/libCPS/src/cps_ip_frag.c:
+    complete
+    .text start:0x02202b78 end:0x02202e44
+
+libs/libCPS/src/cps_socket.c:
+    complete
+    .text start:0x02203078 end:0x022036a8
+
+libs/libCPS/src/cps_tcp_write.c:
+    complete
+    .text start:0x022036a8 end:0x02203bcc
+
+libs/libCPS/src/cps_scavenger.c:
+    complete
+    .text start:0x02203bcc end:0x02203fdc
+
+libs/libCPS/src/cps_dhcp.c:
+    complete
+    .text start:0x02203fdc end:0x02204878
+
+libs/libCPS/src/cps_dns.c:
+    complete
+    .text start:0x02204878 end:0x02204c84
+
+libs/NitroWiFi/src/socl_command.c:
+    complete
+    .text start:0x02205030 end:0x022052b4
+
+libs/NitroWiFi/src/socl_socket.c:
+    complete
+    .text start:0x02205364 end:0x022058f0
+
+libs/NitroWiFi/src/socl_read.c:
+    complete
+    .text start:0x022058f0 end:0x02206150
+
+libs/NitroWiFi/src/socl_write.c:
+    complete
+    .text start:0x02206150 end:0x022067f0
+
+libs/NitroWiFi/src/socl_close.c:
+    complete
+    .text start:0x022067f0 end:0x02206e0c
+
+libs/NitroWiFi/src/socl_resolver.c:
+    complete
+    .text start:0x02206e0c end:0x02206fa4
+
+libs/NitroWiFi/src/socl_status.c:
+    complete
+    .text start:0x02206fa4 end:0x022070c8
+
+libs/NitroWiFi/src/socl_list.c:
+    complete
+    .text start:0x022070c8 end:0x022071d8
+
+libs/NitroWiFi/src/soc_inet.c:
+    complete
+    .text start:0x02207500 end:0x022078f0
+
+libs/NitroWiFi/src/socl_ssl.c:
+    complete
+    .text start:0x022078f0 end:0x02207a10
+
+libs/libCPS/src/cps_ssl_session.c:
+    complete
+    .text start:0x02207a10 end:0x02207c98
+
+libs/libCPS/src/cps_ssl_util.c:
+    complete
+    .text start:0x02207c98 end:0x02207d88
+
+libs/libCPS/src/cps_ssl_cert.c:
+    complete
+    .text start:0x02207d88 end:0x02208940
+
+libs/libCPS/src/cps_ssl_record.c:
+    complete
+    .text start:0x022093d0 end:0x02209cf8
+
+libs/libCPS/src/cps_ssl_random.c:
+    complete
+    .text start:0x02209cf8 end:0x02209e98
+
+libs/libCPS/src/cps_ssl_handshake.c:
+    complete
+    .text start:0x02209e98 end:0x0220a594
+
+libs/NitroWiFi/src/wcm.c:
+    complete
+    .text start:0x0220c970 end:0x0220d61c
+
+libs/NitroWiFi/src/wcm_control.c:
+    complete
+    .text start:0x0220d61c end:0x0220db6c
+
+libs/NitroWiFi/src/wcm_callback.c:
+    complete
+    .text start:0x0220db6c end:0x0220eadc
+
+libs/NitroWiFi/src/wcm_aplist.c:
+    complete
+    .text start:0x0220eadc end:0x0220ef5c
+
+libs/NitroWiFi/src/wcm_cpsif.c:
+    complete
+    .text start:0x0220ef5c end:0x0220f3f4
+
+libs/misc/src/nitrocrypto_rc4_init.c:
+    complete
+    .text start:0x022118a8 end:0x02211938
+
+libs/NitroDWC/src/auth_client.c:
+    complete
+    .text start:0x022167c8 end:0x02216ca0
+    .data start:0x02249b54 end:0x02249b70
+
+libs/NitroDWC/src/auth_http.c:
+    complete
+    .text start:0x02217d1c end:0x02218e2c
+
+libs/NitroDWC/src/dwc_nvram.c:
+    complete
+    .text start:0x0221b284 end:0x0221b8e4
+
+libs/NitroDWC/src/dwc_bm_init.c:
+    complete
+    .text start:0x0221b8e4 end:0x0221be64
+
+libs/NitroDWC/src/dwc_auth_wifi_id.c:
+    complete
+    .text start:0x0221be64 end:0x0221c49c
+
+libs/NitroSDK/src/card/card_spi_wait_cycles.c:
+    complete
+    .text start:0x02230ef0 end:0x02230f00
+
+libs/NitroDWC/src/http_engine_init.c:
+    complete
+    .text start:0x0223e348 end:0x0223e9d4
+    .bss start:0x02290e4c end:0x02290e54
+
+libs/NitroDWC/src/http_socket_queue.c:
+    complete
+    .text start:0x0223fcd4 end:0x02240890
+
+libs/NitroDWC/src/http_socket_request.c:
+    complete
+    .text start:0x02240890 end:0x0224185c

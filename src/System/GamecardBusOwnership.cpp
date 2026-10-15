@@ -26,7 +26,7 @@ extern int data_021112dc;
 
 extern "C"
 {
-    void WaitByLoop(int);
+    void SVC_WaitByLoop(int);
 
     // aligned memset clone
     void MIi_CpuClear32(int val, void* dst, unsigned len);
@@ -64,7 +64,7 @@ extern "C" void OS_InitLock()
     {
         do
         {
-            WaitByLoop(0x400);
+            SVC_WaitByLoop(0x400);
         } while (ndsLock->unknown_6);
     }
 
@@ -86,7 +86,7 @@ int LockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onLo
     if (TryLockGamecardBusLock(owner, lock, onLock, strict) > 0)
     {
         do {
-            WaitByLoop(0x400);
+            SVC_WaitByLoop(0x400);
         } while (TryLockGamecardBusLock(owner, lock, onLock, strict) > 0);
     }
 }

@@ -143,7 +143,7 @@ fix32_t Vector3fixSquaredDistance(const Vector3fix* a, const Vector3fix* b)
 fix32_t Vector3fixAngleToPoint(const Vector3fix* source, const Vector3fix* target)
 {
     Vector3fix difference;
-    Vector3fix_Subtract(target, source, &difference);
+    VEC_Subtract(target, source, &difference);
     difference.y = 0;
     // not sure why we need this. is it just numerical stability?
     VEC_Normalize(&difference, &difference);

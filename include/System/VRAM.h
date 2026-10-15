@@ -98,7 +98,7 @@ extern "C"
 
     // Disable (set control = 0) VRAM banks specified by the mask,
     // set the mask to zero and return the old mask. It also calls 
-    // func_020c9a88 which handles some data that might be shared with the arm7?
+    // OSi_UnlockVram which handles some data that might be shared with the arm7?
     // it uses the same mechanism of acquiring a uint16 owner id as seen in
     // the gamecard bus ownership stuff
     unsigned int DisableAssignedVRAMBanksByUsage(unsigned short* usage);

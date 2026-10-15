@@ -3,13 +3,13 @@
 #pragma optimize_for_size off
 
 #if defined(jpn)
-#define func_020ca408 func_020cbed4
+#define MIi_CpuCopy32 func_020cbed4
 #define MIi_CpuClearFast func_020cbf24
 #endif
 
 extern "C"
 {
-    void func_020ca408(const void* src, void* dst, unsigned len);
+    void MIi_CpuCopy32(const void* src, void* dst, unsigned len);
     void MIi_CpuClearFast(int value, void* data, unsigned len);
 }
 
@@ -124,8 +124,8 @@ bool ProcessJointAnimationsOnBoneMatrix(BoneMatrixRenderData* bone, AnimationDat
             anim->callback_(&tempData, anim, anim->entries_[boneIdx] & 0xff);
             if (numAnimsProcessed == 0)
             {
-                func_020ca408(&tempData.rotationMatrix_.rows[0], &rootRotationTopRow, sizeof(Vector3fix));
-                func_020ca408(&tempData.rotationMatrix_.rows[2], &rootRotationBottomRow, sizeof(Vector3fix));
+                MIi_CpuCopy32(&tempData.rotationMatrix_.rows[0], &rootRotationTopRow, sizeof(Vector3fix));
+                MIi_CpuCopy32(&tempData.rotationMatrix_.rows[2], &rootRotationBottomRow, sizeof(Vector3fix));
             }
 
             fix32_t thisIntensity = (totalWeight == 0x1000) ? anim->weight_ : FX_Div(anim->weight_, totalWeight);
@@ -169,7 +169,7 @@ bool ProcessJointAnimationsOnBoneMatrix(BoneMatrixRenderData* bone, AnimationDat
 
     if (bone->rotationMatrix_.rows[0].x == 0 && bone->rotationMatrix_.rows[0].y == 0 && bone->rotationMatrix_.rows[0].z == 0)
     {
-        func_020ca408(&rootRotationTopRow, &bone->rotationMatrix_.rows[0], sizeof(Vector3fix));
+        MIi_CpuCopy32(&rootRotationTopRow, &bone->rotationMatrix_.rows[0], sizeof(Vector3fix));
     }
     else
     {
@@ -178,7 +178,7 @@ bool ProcessJointAnimationsOnBoneMatrix(BoneMatrixRenderData* bone, AnimationDat
 
     if (bone->rotationMatrix_.rows[2].x == 0 && bone->rotationMatrix_.rows[2].y == 0 && bone->rotationMatrix_.rows[2].z == 0)
     {
-        func_020ca408(&rootRotationBottomRow, &bone->rotationMatrix_.rows[2], sizeof(Vector3fix));
+        MIi_CpuCopy32(&rootRotationBottomRow, &bone->rotationMatrix_.rows[2], sizeof(Vector3fix));
     }
     else
     {

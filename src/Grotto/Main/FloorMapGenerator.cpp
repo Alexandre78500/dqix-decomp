@@ -698,17 +698,17 @@ bool FloorMapGenerator::RoutineJ()
             else if (tileE != 1 && tileE != 3)
             {
                 map->fpUpStairRotation = 0x1921;
-                Mat3x3_WriteRotationY(&map->unknown1, 0x1000, 0);
+                MTX_RotY33_(&map->unknown1, 0x1000, 0);
             }
             else if (tileW != 1 && tileW != 3)
             {
                 map->fpUpStairRotation = 0x3243;
-                Mat3x3_WriteRotationY(&map->unknown1, 0, -0x1000);
+                MTX_RotY33_(&map->unknown1, 0, -0x1000);
             }
             else if (tileN != 1 && tileN != 3)
             {
                 map->fpUpStairRotation = 0x4b65;
-                Mat3x3_WriteRotationY(&map->unknown1, -0x1000, 0);
+                MTX_RotY33_(&map->unknown1, -0x1000, 0);
             }
             map->upStairWorldX = (int)((float)posX * 8.0f * 4096.0f);
             map->upStairWorldY = 0;

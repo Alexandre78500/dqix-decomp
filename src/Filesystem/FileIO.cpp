@@ -35,7 +35,7 @@ extern "C"
     // Looks like a custom implementation of strstr
     char* func_020d2f88(char* searchString, const char* targetString);
     // Custom implementation of strlen
-    int func_020d2ff0(const char* str);
+    int STD_GetStringLength(const char* str);
 
     void LZ77UnCompReadNormalWrite8bit(const void* src, void* dst);
 }
@@ -399,14 +399,14 @@ char* StringReplaceLanguageTag(const char* input, char* output, int language)
     
     const char* replacement = data_020f0da0[language];
 
-    int replacementStringLength = func_020d2ff0(replacement);
+    int replacementStringLength = STD_GetStringLength(replacement);
     // difference between length of e.g. "en" and "<LG>" (in practice always -2)
-    int lengthDifference = func_020d2ff0(replacement) - func_020d2ff0(searchTag);
+    int lengthDifference = STD_GetStringLength(replacement) - STD_GetStringLength(searchTag);
     while (firstTagOccurrence != NULL)
     {
         if (lengthDifference > 0)
         {
-            int lengthRemaining = func_020d2ff0(firstTagOccurrence);
+            int lengthRemaining = STD_GetStringLength(firstTagOccurrence);
             // difference > 0: replacing with a longer substring. Move everything
             // to the right of the tag to the right. For convenience, we can also
             // move the tag itself
@@ -414,7 +414,7 @@ char* StringReplaceLanguageTag(const char* input, char* output, int language)
         }
         else if (lengthDifference < 0)
         {
-            int lengthRemaining = func_020d2ff0(firstTagOccurrence);
+            int lengthRemaining = STD_GetStringLength(firstTagOccurrence);
             // difference < 0: replacing with a shorter substring. Move everything
             // to the left (including the later part of the tag)
             memmove(firstTagOccurrence, firstTagOccurrence - lengthDifference, lengthDifference + lengthRemaining + 1);

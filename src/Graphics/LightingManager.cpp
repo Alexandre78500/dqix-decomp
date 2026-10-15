@@ -11,9 +11,9 @@
 #define func_0205ec34 func_0205ff20
 #define func_0206dfb0 func_0206f104
 #define func_0207ba28 func_0207c860
-#define func_020c54a4 func_020c6f70
-#define func_020c555c func_020c7028
-#define func_020c5574 func_020c7040
+#define G3X_SetFog func_020c6f70
+#define G3X_SetEdgeColorTable func_020c7028
+#define G3X_SetFogTable func_020c7040
 
 #define func_ov000_02160fd4 func_ov000_02162740
 
@@ -85,11 +85,11 @@ extern "C"
 
     void func_0207ba28(LightingInfo*, int, float*, float*, float*);
 
-    void func_020c54a4(int, int, int, int);
+    void G3X_SetFog(int, int, int, int);
     // set edge colors
-    void func_020c555c(unsigned short*);
+    void G3X_SetEdgeColorTable(unsigned short*);
     // set fog table
-    void func_020c5574(void*);
+    void G3X_SetFogTable(void*);
 
     // do bitmask of something
     int func_ov000_02160fd4(void*, int);
@@ -815,21 +815,21 @@ void LightingManager::ProcessZoneChange(Zone3D *newZone)
         spriteDiffuseColor_ = info->basic_.spriteDiffuseColor[index];
         modelDiffuseColor_ = info->basic_.modelDiffuseColor[index];
         edgeColor_ = info->basic_.edgeColor[index];
-        func_020c54a4(true, fog->type, fog->depthShift, fog->offset);
+        G3X_SetFog(true, fog->type, fog->depthShift, fog->offset);
         GX_FOG_COLOR = fog->color | (fog->alpha << 16);
-        func_020c5574(fog->densityTable);
+        G3X_SetFogTable(fog->densityTable);
         unsigned short edgeColors[8] = {
             edgeColor_, edgeColor_, edgeColor_, edgeColor_,
             edgeColor_, edgeColor_, edgeColor_, edgeColor_
         };
-        func_020c555c(edgeColors);
+        G3X_SetEdgeColorTable(edgeColors);
         RenderConfig::SetDiffuseAmbientColors(modelDiffuseColor_, 0, false);
         func_ov017_021901ac(GetGameResources());
         tint_4a_ = modelDiffuseColor_;
     }
     else // lighting mode is not 1 or 2
     {
-        func_020c54a4(0, 0, 1, 0x5800);
+        G3X_SetFog(0, 0, 1, 0x5800);
         maybePotBarrelDiffuseColor_ = 0x7fff;
         spriteDiffuseColor_ = 0x7fff;
         modelDiffuseColor_ = 0x7fff;
@@ -838,7 +838,7 @@ void LightingManager::ProcessZoneChange(Zone3D *newZone)
             edgeColor_, edgeColor_, edgeColor_, edgeColor_,
             edgeColor_, edgeColor_, edgeColor_, edgeColor_
         };
-        func_020c555c(edgeColors);
+        G3X_SetEdgeColorTable(edgeColors);
         RenderConfig::SetDiffuseAmbientColors(modelDiffuseColor_, 0, false);
         func_ov017_021901ac(GetGameResources());
         tint_4a_ = modelDiffuseColor_;
@@ -954,9 +954,9 @@ void LightingManager::RecomputeAdvancedLighting()
     ComputeFogInfo(&fogInfo_);
     if (fogEnabled_)
     {
-        func_020c54a4(true, fogInfo_.type, fogInfo_.depthShift, fogInfo_.offset);
+        G3X_SetFog(true, fogInfo_.type, fogInfo_.depthShift, fogInfo_.offset);
         GX_FOG_COLOR = (fogInfo_.color) | (fogInfo_.alpha << 16);
-        func_020c5574(fogInfo_.densityTable);
+        G3X_SetFogTable(fogInfo_.densityTable);
     }
 }
 
@@ -984,7 +984,7 @@ void LightingManager::SubmitToRenderConfig()
             edgeColor_, edgeColor_, edgeColor_, edgeColor_,
             edgeColor_, edgeColor_, edgeColor_, edgeColor_
         };
-        func_020c555c(edgeColors);
+        G3X_SetEdgeColorTable(edgeColors);
     }
 }
 
@@ -1000,7 +1000,7 @@ void LightingManager::MaybeComputeHorizonPosition()
     Vector3fix* maybeCameraEye = (Vector3fix*)((char*)maybeCameraData + 0x120);
 
     Vector3fix cameraRay;
-    Vector3fix_Subtract(maybeCameraTarget, maybeCameraEye, &cameraRay);
+    VEC_Subtract(maybeCameraTarget, maybeCameraEye, &cameraRay);
     fix32_t rayY = cameraRay.y;
     cameraRay.y = 0;
     VEC_Normalize(&cameraRay, &cameraRay);

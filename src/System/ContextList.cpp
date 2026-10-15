@@ -185,7 +185,7 @@ void SwitchContext()
 
     if (outgoing->blockState != CONTEXT_STATE_INVALID)
     {
-        if (SaveContext(outgoing) != 0)
+        if (OS_SaveContext(outgoing) != 0)
             return;
     }
 
@@ -196,5 +196,5 @@ void SwitchContext()
         contextData->switchContextProcB(outgoing, incoming);
 
     data_021112e0.substruct_24.activeContext = incoming;
-    RestoreContext(incoming);
+    OS_LoadContext(incoming);
 }

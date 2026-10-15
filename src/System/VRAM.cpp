@@ -6,14 +6,14 @@
 #if defined(jpn)
 #define data_02111222 data_02110ec2
 
-#define func_020c9a88 func_020cb554
+#define OSi_UnlockVram func_020cb554
 #endif
 
 extern unsigned short data_02111222;
 
 extern "C"
 {
-    void func_020c9a88(unsigned short banks, unsigned short owner);
+    void OSi_UnlockVram(unsigned short banks, unsigned short owner);
 }
 
 void InitializeVRAM()
@@ -578,7 +578,7 @@ unsigned int DisableAssignedVRAMBanksByUsage(unsigned short* usage)
         VRAMCNT_H = 0;
     if (banks & VRAM_BANK_I)
         VRAMCNT_I = 0;
-    func_020c9a88(banks, data_02111222);
+    OSi_UnlockVram(banks, data_02111222);
     return banks;
 }
 

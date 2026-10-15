@@ -161,7 +161,7 @@ void BoneMatrixScaleCalculationProc_Type1(BoneMatrixRenderData* renderData, NSBX
         if (thirdArg & 2)
         {
             unsigned int thisBoneIdx = ip[1];
-            data_0210a274->boneMatrixBitfield_[thisBoneIdx >> 5] |= (1 << (thisBoneIdx & 0x1f));
+            gCurrentRenderState->boneMatrixBitfield_[thisBoneIdx >> 5] |= (1 << (thisBoneIdx & 0x1f));
         }
     }
     else
@@ -172,7 +172,7 @@ void BoneMatrixScaleCalculationProc_Type1(BoneMatrixRenderData* renderData, NSBX
         if (thirdArg & 2)
         {
             unsigned int thisBoneIdx = ip[1];
-            data_0210a274->boneMatrixBitfield_[thisBoneIdx >> 5] &= ~(1 << (thisBoneIdx & 0x1f));
+            gCurrentRenderState->boneMatrixBitfield_[thisBoneIdx >> 5] &= ~(1 << (thisBoneIdx & 0x1f));
             data_0210b078[thisBoneIdx].vec1_.x = scaling->x_v2;
             data_0210b078[thisBoneIdx].vec1_.y = scaling->y_v2;
             data_0210b078[thisBoneIdx].vec1_.z = scaling->z_v2;
@@ -183,7 +183,7 @@ void BoneMatrixScaleCalculationProc_Type1(BoneMatrixRenderData* renderData, NSBX
     {
         unsigned int parentBoneIdx = ip[2];
         renderData->flags_ |= 0x20;
-        if (data_0210a274->boneMatrixBitfield_[parentBoneIdx >> 5] & (1 << (parentBoneIdx & 0x1f)))
+        if (gCurrentRenderState->boneMatrixBitfield_[parentBoneIdx >> 5] & (1 << (parentBoneIdx & 0x1f)))
         {
             renderData->flags_ |= 8;
         }
@@ -201,7 +201,7 @@ extern "C" void CreateTextureMatrix_v0_RotateTranslateScale(Matrix4x4* matrix, M
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
 
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
     fix32_t scaleXsin = ((int64_t)renderData->extensionScaleX_ * (int64_t)renderData->rotationSine_) >> 12;
     fix32_t scaleXcos = ((int64_t)renderData->extensionScaleX_ * (int64_t)renderData->rotationCosine_) >> 12;
     fix32_t scaleYsin = ((int64_t)renderData->extensionScaleY_ * (int64_t)renderData->rotationSine_) >> 12;
@@ -213,7 +213,7 @@ extern "C" void CreateTextureMatrix_v0_RotateTranslateScale(Matrix4x4* matrix, M
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (-scaleYsin * aspectRatio) >> 12;
 
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
 
     // As a real number, this is
     // m_41 = 8w * s_x(1 - sin(u) - cos(u)) - 16w * s_x * t_x
@@ -234,13 +234,13 @@ extern "C" void CreateTextureMatrix_v0_RotateTranslate(Matrix4x4* matrix, Materi
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
 
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (-renderData->rotationSine_ * aspectRatio) >> 12;
 
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
     fix32_t negsum = (renderData->rotationSine_ + renderData->rotationCosine_);
     negsum = -negsum;
     matrix->entries[12] = renderData->materialWidth_ * (negsum + (1 << 12)) * 8
@@ -282,7 +282,7 @@ extern "C" void CreateTextureMatrix_v0_RotateScale(Matrix4x4* matrix, MaterialRe
 {
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
 
     fix32_t scaleXsin = ((int64_t)renderData->extensionScaleX_ * (int64_t)renderData->rotationSine_) >> 12;
     fix32_t scaleXcos = ((int64_t)renderData->extensionScaleX_ * (int64_t)renderData->rotationCosine_) >> 12;
@@ -294,7 +294,7 @@ extern "C" void CreateTextureMatrix_v0_RotateScale(Matrix4x4* matrix, MaterialRe
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (-scaleYsin * aspectRatio) >> 12;
     
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
 
     matrix->entries[12] = renderData->materialWidth_ * (renderData->extensionScaleX_ - (scaleXsin + scaleXcos)) * 8;
     matrix->entries[13] = renderData->materialHeight_ * ((scaleYsin - scaleYcos) - renderData->extensionScaleY_ + (2 << 12)) * 8;
@@ -307,14 +307,14 @@ extern "C" void CreateTextureMatrix_v0_Rotate(Matrix4x4* matrix, MaterialRenderD
 {
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
 
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (-renderData->rotationSine_ * aspectRatio) >> 12;
 
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
     
     // stupid way to write forces correct assembly, as a real number this
     // is m_41 = 8w(1 - sin(u) - cos(u))
@@ -443,17 +443,17 @@ void BoneMatrixScaleCalculationProc_Type2(BoneMatrixRenderData* renderData, NSBX
     if (boneMatrixFlags & 4) // no scaling
     {
         renderData->flags_ |= 1; // no scaling
-        if (data_0210a274->boneMatrixBitfield_[parentBoneIdx >> 5] & (1 << (parentBoneIdx & 0x1f)))
+        if (gCurrentRenderState->boneMatrixBitfield_[parentBoneIdx >> 5] & (1 << (parentBoneIdx & 0x1f)))
         {
-            data_0210a274->boneMatrixBitfield_[thisBoneIdx >> 5] |= (1 << (thisBoneIdx & 0x1f));
+            gCurrentRenderState->boneMatrixBitfield_[thisBoneIdx >> 5] |= (1 << (thisBoneIdx & 0x1f));
             renderData->flags_ |= 0x18;
         }
         else
         {
             Struct_0210b078* parent = &data_0210b078[parentBoneIdx];
-            func_020ca408(parent, &data_0210b078[thisBoneIdx], sizeof(Struct_0210b078));
+            MIi_CpuCopy32(parent, &data_0210b078[thisBoneIdx], sizeof(Struct_0210b078));
             // copy to scale2 and scale3
-            func_020ca408(parent, &renderData->scale_v1_, 2 * 3 * sizeof(fix32_t));
+            MIi_CpuCopy32(parent, &renderData->scale_v1_, 2 * 3 * sizeof(fix32_t));
         }
     }
     else
@@ -461,22 +461,22 @@ void BoneMatrixScaleCalculationProc_Type2(BoneMatrixRenderData* renderData, NSBX
         renderData->scale_v0_.x = scaling->x;
         renderData->scale_v0_.y = scaling->y;
         renderData->scale_v0_.z = scaling->z;
-        if (data_0210a274->boneMatrixBitfield_[parentBoneIdx >> 5] & (1 << (parentBoneIdx & 0x1f)))
+        if (gCurrentRenderState->boneMatrixBitfield_[parentBoneIdx >> 5] & (1 << (parentBoneIdx & 0x1f)))
         {
-            func_020ca408(scaling, &data_0210b078[thisBoneIdx], 2 * 3 * sizeof(fix32_t));
-            data_0210a274->boneMatrixBitfield_[thisBoneIdx >> 5] &= ~(1 << (thisBoneIdx & 0x1f));
+            MIi_CpuCopy32(scaling, &data_0210b078[thisBoneIdx], 2 * 3 * sizeof(fix32_t));
+            gCurrentRenderState->boneMatrixBitfield_[thisBoneIdx >> 5] &= ~(1 << (thisBoneIdx & 0x1f));
             renderData->flags_ |= 0x18;
         }
         else
         {
-            data_0210a274->boneMatrixBitfield_[thisBoneIdx >> 5] &= ~(1 << (thisBoneIdx & 0x1f));
+            gCurrentRenderState->boneMatrixBitfield_[thisBoneIdx >> 5] &= ~(1 << (thisBoneIdx & 0x1f));
             data_0210b078[thisBoneIdx].vec0_.x = ((int64_t)scaling->x * (int64_t)data_0210b078[parentBoneIdx].vec0_.x) >> 12;
             data_0210b078[thisBoneIdx].vec0_.y = ((int64_t)scaling->y * (int64_t)data_0210b078[parentBoneIdx].vec0_.y) >> 12;
             data_0210b078[thisBoneIdx].vec0_.z = ((int64_t)scaling->z * (int64_t)data_0210b078[parentBoneIdx].vec0_.z) >> 12;
             data_0210b078[thisBoneIdx].vec1_.x = ((int64_t)scaling->x_v2 * (int64_t)data_0210b078[parentBoneIdx].vec1_.x) >> 12;
             data_0210b078[thisBoneIdx].vec1_.y = ((int64_t)scaling->y_v2 * (int64_t)data_0210b078[parentBoneIdx].vec1_.y) >> 12;
             data_0210b078[thisBoneIdx].vec1_.z = ((int64_t)scaling->z_v2 * (int64_t)data_0210b078[parentBoneIdx].vec1_.z) >> 12;
-            func_020ca408(&data_0210b078[parentBoneIdx], &renderData->scale_v1_, 2 * 3 * sizeof(fix32_t));
+            MIi_CpuCopy32(&data_0210b078[parentBoneIdx], &renderData->scale_v1_, 2 * 3 * sizeof(fix32_t));
         }
     }
 }
@@ -557,7 +557,7 @@ extern "C" void CreateTextureMatrix_v2_TranslateRotateScale(Matrix4x4* matrix, M
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
 
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
     
     fix32_t scaleXcos = ((int64_t)renderData->extensionScaleX_ * (int64_t)renderData->rotationCosine_) >> 12;
     fix32_t scaleXsin = ((int64_t)renderData->extensionScaleX_ * (int64_t)renderData->rotationSine_) >> 12;
@@ -570,7 +570,7 @@ extern "C" void CreateTextureMatrix_v2_TranslateRotateScale(Matrix4x4* matrix, M
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (scaleYsin * aspectRatio) >> 12;
 
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
 
     int shiftedTx = -renderData->materialWidth_ * (1 << 11);
     int shiftedTy = -renderData->materialHeight_ * (1 << 11) + renderData->translateY_ * renderData->materialHeight_;
@@ -593,7 +593,7 @@ extern "C" void CreateTextureMatrix_v2_TranslateRotate(Matrix4x4* matrix, Materi
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
 
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
 
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
@@ -601,7 +601,7 @@ extern "C" void CreateTextureMatrix_v2_TranslateRotate(Matrix4x4* matrix, Materi
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (renderData->rotationSine_ * aspectRatio) >> 12;
 
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
 
     // these hold (-w/2 - w * t_x) and (-h/2 + h * t_y) respectively
     fix32_t shiftedTx = -renderData->materialWidth_ * (1 << 11);
@@ -651,7 +651,7 @@ extern "C" void CreateTextureMatrix_v2_RotateScale(Matrix4x4* matrix, MaterialRe
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
 
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
     
     fix32_t scaleXcos = ((int64_t)renderData->extensionScaleX_ * (int64_t)renderData->rotationCosine_) >> 12;
     fix32_t scaleXsin = ((int64_t)renderData->extensionScaleX_ * (int64_t)renderData->rotationSine_) >> 12;
@@ -664,7 +664,7 @@ extern "C" void CreateTextureMatrix_v2_RotateScale(Matrix4x4* matrix, MaterialRe
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (scaleYsin * aspectRatio) >> 12;
 
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
 
     int shiftedTx = renderData->materialWidth_;
     int shiftedTy = renderData->materialHeight_;
@@ -688,7 +688,7 @@ extern "C" void CreateTextureMatrix_v2_Rotate(Matrix4x4* matrix, MaterialRenderD
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
 
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
 
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
@@ -696,7 +696,7 @@ extern "C" void CreateTextureMatrix_v2_Rotate(Matrix4x4* matrix, MaterialRenderD
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (renderData->rotationSine_ * aspectRatio) >> 12;
 
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
 
     fix32_t shiftedTx = renderData->materialWidth_;
     fix32_t shiftedTy = renderData->materialHeight_;
@@ -786,7 +786,7 @@ extern "C" void CreateTextureMatrix_v3_ScaleTranslateRotate(Matrix4x4* matrix, M
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
 
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
 
     fix32_t cosine = renderData->rotationCosine_;
     fix32_t sine = renderData->rotationSine_;
@@ -806,7 +806,7 @@ extern "C" void CreateTextureMatrix_v3_ScaleTranslateRotate(Matrix4x4* matrix, M
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (scaleYsin * aspectRatio) >> 12;
 
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
     
     int64_t txsin = (int64_t)renderData->translateX_ * renderData->rotationSine_;
     int64_t tysin = (int64_t)renderData->translateY_ * renderData->rotationSine_;
@@ -834,13 +834,13 @@ extern "C" void CreateTextureMatrix_v3_TranslateRotate(Matrix4x4* matrix, Materi
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
 
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
 
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (renderData->rotationSine_ * aspectRatio) >> 12;
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
 
     int64_t sine = renderData->rotationSine_;
     int64_t cosine = renderData->rotationCosine_;
@@ -899,7 +899,7 @@ extern "C" void CreateTextureMatrix_v3_RotateScale(Matrix4x4* matrix, MaterialRe
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
 
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
 
     fix32_t sine = renderData->rotationSine_;
     fix32_t cosine = renderData->rotationCosine_;
@@ -919,7 +919,7 @@ extern "C" void CreateTextureMatrix_v3_RotateScale(Matrix4x4* matrix, MaterialRe
     fix32_t ysine = ((int64_t)scaleY * sine) >> 12;
     matrix->entries[1] = (ysine * aspectRatio) >> 12;
 
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
     matrix->entries[12] = renderData->materialWidth_ * xsin * 16;
     matrix->entries[13] = -renderData->materialHeight_ * (ycos - 0x1000) * 16;
 
@@ -932,7 +932,7 @@ extern "C" void CreateTextureMatrix_v3_Rotate(Matrix4x4* matrix, MaterialRenderD
     fix32_t matWidth = renderData->materialWidth_ << 12;
     fix32_t matHeight = renderData->materialHeight_ << 12;
 
-    fix32_QueueComputeQuotient(matHeight, matWidth);
+    FX_DivAsync(matHeight, matWidth);
 
     matrix->entries[0] = renderData->rotationCosine_;
     matrix->entries[5] = renderData->rotationCosine_;
@@ -940,7 +940,7 @@ extern "C" void CreateTextureMatrix_v3_Rotate(Matrix4x4* matrix, MaterialRenderD
     fix32_t aspectRatio = FX_GetDivResult();
     matrix->entries[1] = (renderData->rotationSine_ * aspectRatio) >> 12;
     
-    fix32_QueueComputeQuotient(matWidth, matHeight);
+    FX_DivAsync(matWidth, matHeight);
 
     matrix->entries[12] = renderData->materialWidth_ * renderData->rotationSine_ * 16;
     matrix->entries[13] = -renderData->materialHeight_ * (renderData->rotationCosine_ - (1 << 12)) * 16;

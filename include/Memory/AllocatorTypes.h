@@ -71,5 +71,5 @@ struct AllocatorTypeB : public AllocatorBase // nonvirtual inheritance
 // It appears that it is never used in the context of polymorphic allocators,
 // but does see some use elsewhere. It also appears to be much more complicated
 // and its underlying functions are in a different region of memory
-// (func_020c8854 to allocate, func_020c985c to free) so I'm leaving it out 
+// (OS_AllocFromHeap to allocate, func_020c985c to free) so I'm leaving it out 
 // for now.

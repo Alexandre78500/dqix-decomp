@@ -81,7 +81,7 @@ void ExitContext(ProcessorContext *context, int exitCode)
         context->userModeRegisters[0] = exitCode;
         context->programStatusRegister |= (1 << 7); // disable IRQ interrupts here
         context->blockState = 1;
-        RestoreContext(context);
+        OS_LoadContext(context);
     }
     else
     {

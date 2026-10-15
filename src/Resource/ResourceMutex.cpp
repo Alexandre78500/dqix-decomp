@@ -2,7 +2,7 @@
 
 #ifdef jpn
 #define func_020c745c func_020c8f28
-#define func_020c75a4 func_020c9070
+#define OS_IsThreadAvailable func_020c9070
 #endif
 
 struct ResourceMutex
@@ -22,12 +22,12 @@ extern "C"
     // set up the main context
     void func_020c745c();
     // check if the main context has been set up
-    bool func_020c75a4();
+    bool OS_IsThreadAvailable();
 }
 
 void InitializeResourceMutex()
 {
-    if (!func_020c75a4())
+    if (!OS_IsThreadAvailable())
         func_020c745c();
 
     OS_InitMutex(&s_resourceMutex.mutex_);

@@ -530,17 +530,17 @@ void Object3D::ApplyTextures()
 
 void CreateRotationX(Matrix3x3* out, fix32_t s, fix32_t c)
 {
-    Mat3x3_WriteRotationX(out, s, c);
+    MTX_RotX33_(out, s, c);
 }
 
 void CreateRotationY(Matrix3x3* out, fix32_t s, fix32_t c)
 {
-    Mat3x3_WriteRotationY(out, s, c);
+    MTX_RotY33_(out, s, c);
 }
 
 void CreateRotationZ(Matrix3x3* out, fix32_t s, fix32_t c)
 {
-    Mat3x3_WriteRotationZ(out, s, c);
+    MTX_RotZ33_(out, s, c);
 }
 
 void Object3D::PopulateRenderConfigWorld()
@@ -583,7 +583,7 @@ void Object3D::PopulateRenderConfigWorld()
         RenderConfig::SetObjectScale(&multipliedScale);
         Vector3fix multipliedPosition;
         Vector3fixMultiply(&position_, &multipliedScale, &multipliedPosition);
-        Vector3fix_Add(&data_0210a010.objectRotationPosition.translation, &multipliedPosition, &multipliedPosition);
+        VEC_Add(&data_0210a010.objectRotationPosition.translation, &multipliedPosition, &multipliedPosition);
         RenderConfig::SetObjectPosition(&multipliedPosition);
     }
     else
@@ -848,7 +848,7 @@ void Object3D::MaybeUpdateBonePositions()
     fix32_t sine = fix32sin(rotation_.y);
 
     Matrix3x3 rotationMatrix;
-    Mat3x3_WriteRotationY(&rotationMatrix, sine, cosine);
+    MTX_RotY33_(&rotationMatrix, sine, cosine);
     func_02016d8c(&rotationMatrix);
     Vector3fix scale = { 0x1000, 0x1000, 0x1000 };
     RenderConfig::SetObjectScale(&scale);
@@ -2066,6 +2066,6 @@ Vector3fix Object3D::GetPointInFront(fix32_t distance) const
     forward.z = fix32cos(ownRot.y);
     Vector3fix output;
     Vector3fixMultiplyScalar(&forward, distance, &output);
-    Vector3fix_Add(&output, &ownPos, &output);
+    VEC_Add(&output, &ownPos, &output);
     return output;
 }

@@ -16,10 +16,10 @@ struct DTCMData
     unsigned int interruptJumpAddress; // holds 0x01ff8000
 };
 
-extern DTCMData data_027e0000;
+extern DTCMData SDK_AUTOLOAD_DTCM_START;
 
 #define DTCM_DATA (*(DTCMData*)0x027e0000)
-#define DTCM_DATA_INTERRUPTS_FIRED (*(unsigned int*)((int)&data_027e0000 + 0x3ff8))
+#define DTCM_DATA_INTERRUPTS_FIRED (*(unsigned int*)((int)&SDK_AUTOLOAD_DTCM_START + 0x3ff8))
 
 inline BlockedContextList& GetInterruptDataBlockedContextList()
 {
