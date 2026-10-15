@@ -54,11 +54,11 @@ extern ActiveAlarmList data_02111648;
 void MarkAlarmInitializationFlagBit(int);
 
 void Initialize64BitTimer();
-int Is64BitTimerInitialized();
+extern "C" int OS_IsTickAvailable();
 void On16BitTimerOverflow(int);
 
-uint64_t GetCurrentTimestamp();
-unsigned short GetMain16BitTimerCounter();
+extern "C" uint64_t OS_GetTick();
+extern "C" unsigned short OS_GetTickLo();
 
 void MarkNextAlarmToSound(Alarm* timing);
 

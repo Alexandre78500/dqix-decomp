@@ -147,7 +147,7 @@ bool GetFileInNarc(const void *narcBuffer, const char *targetFilePath,
     if (handle.Initialize(data_020f0db8, (const unsigned char*)narcBuffer))
     {
         NitroVM machine;
-        NitroVM_Initialize(&machine);
+        FS_InitFile(&machine);
         unsigned int idx = firstFileIdx;
         unsigned int prefixLength = strlen(data_020f0dbc);
         while (PrepareReadFileInNARCByID(&machine, &handle, idx))
@@ -164,7 +164,7 @@ bool GetFileInNarc(const void *narcBuffer, const char *targetFilePath,
                 strrchr(targetFilePath, '/');
                 success = true;
             }
-            NitroVM_FinishRead(&machine);
+            FS_CloseFile(&machine);
             if ((int)success > 0)
                 break;
             idx++;
@@ -187,7 +187,7 @@ bool GetFileInNarcPermissive(const void *narcBuffer, const char *targetFilePath,
         char loopFilePathOutput[80];
         char loopFilePathUpperCase[80];
         char targetUpperCase[80];
-        NitroVM_Initialize(&machine);
+        FS_InitFile(&machine);
 
         int fileSearchMinIdx = 0;
         int fileSearchMaxIdx = 1000;
@@ -227,7 +227,7 @@ bool GetFileInNarcPermissive(const void *narcBuffer, const char *targetFilePath,
                 else
                     fileSearchMaxIdx = midpoint - 1;
                 
-                NitroVM_FinishRead(&machine);
+                FS_CloseFile(&machine);
             }
             else
                 fileSearchMaxIdx = midpoint - 1;
@@ -264,7 +264,7 @@ unsigned int FindFilesInNarcBySubstring(const void* narcBuffer, const char* subs
     {
         NitroVM machine;
         char loopFilename[80];
-        NitroVM_Initialize(&machine);
+        FS_InitFile(&machine);
         unsigned int idx = numFound; // 0
         DECLARE_ASM_NOP();
         maxOutputs = maxOut;
@@ -286,11 +286,11 @@ unsigned int FindFilesInNarcBySubstring(const void* narcBuffer, const char* subs
                 numFound++;
                 if (maxOutputs <= numFound)
                 {
-                    NitroVM_FinishRead(&machine);
+                    FS_CloseFile(&machine);
                     break;
                 }
             }
-            NitroVM_FinishRead(&machine);
+            FS_CloseFile(&machine);
             idx++;
         }
         handle.Destroy();

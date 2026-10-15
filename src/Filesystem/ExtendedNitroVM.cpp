@@ -67,7 +67,7 @@ bool Decompressor::InitAndDecompress(void *out, unsigned int outCapacity, const 
     if (out == NULL || in == NULL || inLength < 4)
         return false;
     
-    CleanInvalidateCacheRange(in, inLength);
+    DC_FlushRange(in, inLength);
     unsigned int compressionType = ((const CompressionPrefix*)in)->compressionType;
     if (compressionType >= 5)
         return false;
@@ -131,7 +131,7 @@ bool Decompressor::ProcessBytes(const void* input, unsigned int inputLength)
             remainingOutputBytes -= func_020d8524(writeStart + probablyDecompressedSize - remainingOutputBytes, input, inputLength);
             break;
         }
-        CleanInvalidateCacheRange(writeStart, writeOutputPtr - writeStart);
+        DC_FlushRange(writeStart, writeOutputPtr - writeStart);
         success = true;
     }
     UnlockResourceMutex();
@@ -238,7 +238,7 @@ bool ExtendedNitroVM::Seek(unsigned int where)
     switch (status)
     {
     case Status_Open:
-        return NitroVM_Seek(&machine, where, 0);
+        return FS_SeekFile(&machine, where, 0);
     case Status_2_Unknown:
         return false;
     }
@@ -252,7 +252,7 @@ bool ExtendedNitroVM::Close()
     if (status != Status_Open)
     {
     }
-    else if (NitroVM_FinishRead(&machine))
+    else if (FS_CloseFile(&machine))
         didSomething = true;
 
     func_020d84f8(this, sizeof(ExtendedNitroVM));
@@ -300,7 +300,7 @@ bool ExtendedNitroVM::Open(const char *filePath, bool skip)
         }
         else
         {
-            if (NitroVM_PrepareReadFileByPath(&machine, filePath))
+            if (FS_OpenFile(&machine, filePath))
                 status = Status_Open;
         }
     }
@@ -329,7 +329,7 @@ unsigned int ExtendedNitroVM::Read(void* into, unsigned int capacity)
     }
 
     if (!isBadState)
-        CleanInvalidateCacheRange(into, length);
+        DC_FlushRange(into, length);
     else
         length = 0;
 
@@ -401,7 +401,7 @@ unsigned int ExtendedNitroVM::DecompressWithScratchSpace(Decompressor& decompres
         scratchSpaceUsedAmount = scratchSpaceCapacity;
     func_020d84f8((unsigned char*)scratchSpace + decompressor.probablyDecompressedSize, 
         scratchSpaceUsedAmount - decompressor.probablyDecompressedSize);
-    CleanInvalidateCacheRange(scratchSpace, scratchSpaceUsedAmount);
+    DC_FlushRange(scratchSpace, scratchSpaceUsedAmount);
     outDecompressedLength = decompressor.probablyDecompressedSize;
     return readPosTracker; 
 }

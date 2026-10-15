@@ -51,7 +51,7 @@ void Initialize64BitTimer()
     data_02111638.reloadTimerOnNextInterrupt = false;
 }
 
-int Is64BitTimerInitialized()
+int OS_IsTickAvailable()
 {
     return data_02111638.isInitialized;
 }
@@ -70,27 +70,27 @@ void On16BitTimerOverflow(int)
     SetTimerOverflowCallback(0, &On16BitTimerOverflow, 0);
 }
 
-uint64_t GetCurrentTimestamp()
+uint64_t OS_GetTick()
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     volatile unsigned short lowBits = TIMER_N_COUNTER(0);
 
     volatile uint64_t highBits = data_02111638.numTimerOverflows & 0xffffffffffff;
     if ((INTERRUPT_REQUEST_FLAGS & IRQ_MASK_TIMER_0_OVERFLOW) && !(lowBits & 0x8000))
         highBits++;
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
     return (highBits << 16) | lowBits;
 }
 
-unsigned short GetMain16BitTimerCounter()
+unsigned short OS_GetTickLo()
 {
     return TIMER_N_COUNTER(0);
 }
 
 void MarkNextAlarmToSound(Alarm *timing)
 {
-    uint64_t now = GetCurrentTimestamp();
+    uint64_t now = OS_GetTick();
     TIMER_N_CONTROL(1) = 0;
     int64_t timeRemaining = timing->alarmTime - now;
     SetTimerOverflowCallback(1, &Timer1OverflowInterruptRoutine, 0);
@@ -136,7 +136,7 @@ void RegisterAlarm(Alarm* alarm, uint64_t ringTime)
 {
     if (alarm->alarmIntervalLength != 0)
     {
-        uint64_t now = GetCurrentTimestamp();
+        uint64_t now = OS_GetTick();
         ringTime = alarm->alarmIntervalResidue;
         if (alarm->alarmIntervalResidue < now)
         {
@@ -195,14 +195,14 @@ void SetTimeout(Alarm* alarm, uint64_t numTicks,
     if (alarm == NULL || alarm->completionProc != NULL)
         OS_Terminate();
 
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     alarm->alarmIntervalLength = 0;
     alarm->completionProc = callback;
     alarm->ppContext = ppContext;
 
-    uint64_t now = GetCurrentTimestamp();
+    uint64_t now = OS_GetTick();
     RegisterAlarm(alarm, numTicks + now);
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 void SetInterval(Alarm *alarm, uint64_t residue, uint64_t interval,
@@ -211,23 +211,23 @@ void SetInterval(Alarm *alarm, uint64_t residue, uint64_t interval,
     if (alarm == NULL || alarm->completionProc != NULL)
         OS_Terminate();
 
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     alarm->alarmIntervalLength = interval;
     alarm->alarmIntervalResidue = residue;
     alarm->completionProc = callback;
     alarm->ppContext = ppContext;
 
     RegisterAlarm(alarm, 0);
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 void CancelAlarm(Alarm *alarm)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     if (alarm->completionProc == NULL)
     {
-        SetIRQInterruptState(priorState);
+        OS_RestoreInterrupts(priorState);
         return;
     }
 
@@ -251,7 +251,7 @@ void CancelAlarm(Alarm *alarm)
 
     alarm->completionProc = NULL;
     alarm->alarmIntervalLength = 0;
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 #ifdef __MWERKS__
@@ -274,7 +274,7 @@ void HandleTimer1Overflow()
     TIMER_N_CONTROL(1) = 0;
     DisableSpecificInterrupts(IRQ_MASK_TIMER_1_OVERFLOW);
     DTCM_DATA_INTERRUPTS_FIRED |= IRQ_MASK_TIMER_1_OVERFLOW;
-    uint64_t now = GetCurrentTimestamp();
+    uint64_t now = OS_GetTick();
 
     Alarm* firstAlarm = data_02111648.pFirstAlarm;
     if (firstAlarm == NULL)

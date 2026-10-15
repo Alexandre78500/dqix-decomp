@@ -68,7 +68,7 @@ void Model3D::LoadFromFile(const char* path, AllocatorUnion* alloc, TextureStagi
     }
     else
     {
-        CleanInvalidateCacheRange(scratchData, length);
+        DC_FlushRange(scratchData, length);
         CopyAndProcessRawFile(alloc, scratchData, length, stagingMode);
     }
     BackgroundLoader::RemoveLockGlobal();
@@ -81,7 +81,7 @@ void Model3D::CopyAndProcessRawFile(AllocatorUnion* alloc, const void* data,
         return;
 
     CopyRawFile(alloc, data, length);
-    CleanInvalidateCacheRange(rawBMD_, rawBMDFileSize_);
+    DC_FlushRange(rawBMD_, rawBMDFileSize_);
     ProcessRawFile(stagingMode);
 }
 
@@ -89,7 +89,7 @@ void Model3D::SetAndProcessRawFile(void* data, unsigned int length, TextureStagi
 {
     rawBMD_ = data;
     rawBMDFileSize_ = length;
-    CleanInvalidateCacheRange(rawBMD_, rawBMDFileSize_);
+    DC_FlushRange(rawBMD_, rawBMDFileSize_);
     ProcessRawFile(stagingMode);
 }
 
@@ -115,7 +115,7 @@ void Model3D::SetRawFile(void* data, unsigned int length)
 
 void Model3D::ClearRawFileCache()
 {
-    CleanInvalidateCacheRange(rawBMD_, rawBMDFileSize_);
+    DC_FlushRange(rawBMD_, rawBMDFileSize_);
 }
 
 void Model3D::ProcessRawFile(TextureStagingMode stagingMode)

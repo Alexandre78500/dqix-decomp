@@ -3,9 +3,9 @@
 void InvalidateDataCache();
 void CleanDataCache();
 void CleanInvalidateDataCache();
-void InvalidateDataCacheRange(const void* where, unsigned int len);
-void CleanCacheRange(const void* where, unsigned int len);
-void CleanInvalidateCacheRange(const void* where, unsigned int len);
-void DrainWriteBuffer();
+extern "C" void DC_InvalidateRange(const void* where, unsigned int len);
+extern "C" void DC_StoreRange(const void* where, unsigned int len);
+extern "C" void DC_FlushRange(const void* where, unsigned int len);
+extern "C" void DC_WaitWriteBufferEmpty();
 void InvalidateInstructionCache();
 void InvalidateInstructionCacheRange(const void* where, unsigned int len);

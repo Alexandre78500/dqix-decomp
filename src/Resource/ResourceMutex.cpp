@@ -48,7 +48,7 @@ void LockResourceMutex()
 {
     if (s_resourceMutex.lockPrerequisiteB_ && s_resourceMutex.lockPrerequisiteA_)
     {
-        LockMutex(&s_resourceMutex.mutex_);
+        OS_LockMutex(&s_resourceMutex.mutex_);
         s_resourceMutex.lockCount_++;
     }
 }
@@ -58,12 +58,12 @@ void UnlockResourceMutex()
     if (s_resourceMutex.lockPrerequisiteB_ && s_resourceMutex.lockPrerequisiteA_)
     {
         s_resourceMutex.lockCount_--;
-        UnlockMutex(&s_resourceMutex.mutex_);
+        OS_UnlockMutex(&s_resourceMutex.mutex_);
     }
 }
 
 void SleepIfResourceMutexNotLocked(unsigned int milliseconds)
 {
     if (s_resourceMutex.lockCount_ == 0)
-        SleepCurrentContext(milliseconds);
+        OS_Sleep(milliseconds);
 }

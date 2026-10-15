@@ -22,16 +22,16 @@ struct DMARegisterSet
 // DMA channel for general use
 extern int data_020f2270;
 
-// ITCM functions. The atomic operations are wrapped with DisableIRQInterrupts()
-// and SetIRQInterruptState(), 
-void ConfigureDMATransferAtomic(int channel, unsigned src, unsigned dst, unsigned ctrl);
+// ITCM functions. The atomic operations are wrapped with OS_DisableInterrupts()
+// and OS_RestoreInterrupts(), 
+extern "C" void MIi_DmaSetParams(int channel, unsigned src, unsigned dst, unsigned ctrl);
 void ConfigureDMATransferSafeAtomic(int channel, unsigned src, unsigned dst, unsigned ctrl);
 void ConfigureDMATransfer(int channel, unsigned src, unsigned dst, unsigned ctrl);
 void ConfigureDMATransferSafe(int channel, unsigned src, unsigned dst, unsigned ctrl);
 
 void DMAMemsetSynchronous(int channel, unsigned int dst, unsigned int value, unsigned int len);
 void DMAMemcpySynchronous(int channel, unsigned int src, unsigned int dst, unsigned int len);
-void DMAMemcpySynchronous16Bit(int channel, unsigned int src, unsigned int dst, unsigned int len);
+extern "C" void MI_DmaCopy16(int channel, unsigned int src, unsigned int dst, unsigned int len);
 
 // Because immediate mode DMA transfers block the CPU until done, this isn't
 // actually async, just set up to look like it
@@ -41,8 +41,8 @@ void DMAMemcpyAsync(int channel, unsigned int src, unsigned int dst, unsigned in
     DMACompletionCallback onCompletion, int callbackUserdata);
 
 void AwaitDMACompletion(int channel);
-void ResetDMAChannel(int channel);
+extern "C" void MI_StopDma(int channel);
 void ResetAllDMAChannels();
 
-void VerifyDMATimingChangePermitted_020c9fd0(int channel, unsigned int newTimingFlags);
-void VerifyDMASource(int channel, unsigned int source, unsigned int length, unsigned int sourceCtrlFlags);
+extern "C" void MIi_CheckAnotherAutoDMA(int channel, unsigned int newTimingFlags);
+extern "C" void MIi_CheckDma0SourceAddress(int channel, unsigned int source, unsigned int length, unsigned int sourceCtrlFlags);

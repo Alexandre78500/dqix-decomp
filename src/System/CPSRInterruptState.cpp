@@ -21,7 +21,7 @@ int EnableIRQInterrupts()
     return oldState & BITMASK_IRQ_INTERRUPTS_DISABLED;
 }
 
-int DisableIRQInterrupts()
+int OS_DisableInterrupts()
 {
     int oldState;
     __asm("mrs oldState, cpsr");
@@ -30,7 +30,7 @@ int DisableIRQInterrupts()
     return oldState & BITMASK_IRQ_INTERRUPTS_DISABLED;
 }
 
-int SetIRQInterruptState(int to)
+int OS_RestoreInterrupts(int to)
 {
     int oldState;
     __asm("mrs oldState, cpsr");
@@ -66,7 +66,7 @@ int GetIRQInterruptState()
     return state & BITMASK_IRQ_INTERRUPTS_DISABLED;
 }
 
-int GetProcessorMode()
+int OS_GetProcMode()
 {
     int state;
     __asm("mrs state, cpsr");

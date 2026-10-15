@@ -75,7 +75,7 @@ extern "C"
 void LoadToMainBGStandardPalette(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, 0x05000000 + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000000 + offset, length);
     else
         func_020ca3b8(data, (void*)(0x05000000 + offset), length);
 }
@@ -83,7 +83,7 @@ void LoadToMainBGStandardPalette(const void* data, unsigned int offset, unsigned
 void LoadToSubBGStandardPalette(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, 0x05000400 + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000400 + offset, length);
     else
         func_020ca3b8(data, (void*)(0x05000400 + offset), length);
 }
@@ -91,7 +91,7 @@ void LoadToSubBGStandardPalette(const void* data, unsigned int offset, unsigned 
 void LoadToMainObjStandardPalette(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, 0x05000200 + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000200 + offset, length);
     else
         func_020ca3b8(data, (void*)(0x05000200 + offset), length);
 }
@@ -99,7 +99,7 @@ void LoadToMainObjStandardPalette(const void* data, unsigned int offset, unsigne
 void LoadToSubObjStandardPalette(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, 0x05000600 + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000600 + offset, length);
     else
         func_020ca3b8(data, (void*)(0x05000600 + offset), length);
 }
@@ -156,7 +156,7 @@ void LoadToMainBG0ScreenData(const void* data, unsigned int offset, unsigned int
 {
     unsigned int base = GetMainBG0ScreenBase();
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, base + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
     else
         func_020ca3b8(data, (void*)(base + offset), length);
 }
@@ -165,7 +165,7 @@ void LoadToSubBG0ScreenData(const void* data, unsigned int offset, unsigned int 
 {
     unsigned int base = GetSubBG0ScreenBase();
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, base + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
     else
         func_020ca3b8(data, (void*)(base + offset), length);
 }
@@ -174,7 +174,7 @@ void LoadToMainBG1ScreenData(const void* data, unsigned int offset, unsigned int
 {
     unsigned int base = GetMainBG1ScreenBase();
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, base + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
     else
         func_020ca3b8(data, (void*)(base + offset), length);
 }
@@ -183,7 +183,7 @@ void LoadToSubBG1ScreenData(const void* data, unsigned int offset, unsigned int 
 {
     unsigned int base = GetSubBG1ScreenBase();
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, base + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
     else
         func_020ca3b8(data, (void*)(base + offset), length);
 }
@@ -192,7 +192,7 @@ void LoadToMainBG2ScreenData(const void* data, unsigned int offset, unsigned int
 {
     unsigned int base = GetMainBG2ScreenBase();
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, base + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
     else
         func_020ca3b8(data, (void*)(base + offset), length);
 }
@@ -201,7 +201,7 @@ void LoadToSubBG2ScreenData(const void* data, unsigned int offset, unsigned int 
 {
     unsigned int base = GetSubBG2ScreenBase();
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, base + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
     else
         func_020ca3b8(data, (void*)(base + offset), length);
 }
@@ -210,7 +210,7 @@ void LoadToMainBG3ScreenData(const void* data, unsigned int offset, unsigned int
 {
     unsigned int base = GetMainBG3ScreenBase();
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, base + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
     else
         func_020ca3b8(data, (void*)(base + offset), length);
 }
@@ -219,7 +219,7 @@ void LoadToSubBG3ScreenData(const void* data, unsigned int offset, unsigned int 
 {
     unsigned int base = GetSubBG3ScreenBase();
     if (data_020f2270 != -1 && length > 28)
-        DMAMemcpySynchronous16Bit(data_020f2270, (unsigned int)data, base + offset, length);
+        MI_DmaCopy16(data_020f2270, (unsigned int)data, base + offset, length);
     else
         func_020ca3b8(data, (void*)(base + offset), length);
 }

@@ -171,7 +171,7 @@ void SwitchContext()
     Struct_02111304* contextData = &data_021112e0.substruct_24;
 
     // 0x12 = interrupt handling mode
-    if (data_021112e0.substruct_24.unknown_2 != 0 || GetProcessorMode() == 0x12)
+    if (data_021112e0.substruct_24.unknown_2 != 0 || OS_GetProcMode() == 0x12)
     {
         contextData->unknown_0 = true;
         return;

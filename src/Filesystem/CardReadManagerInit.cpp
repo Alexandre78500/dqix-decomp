@@ -32,11 +32,11 @@ void MarkCardReadManagerInitialized(int to);
 void SendTaskToReadContext(CardReadManager::ReadProc task)
 {
     CardReadManager* readManager = (CardReadManager*)&cardi_common;
-    ChangeContextPriority(&readManager->cartridgeReadContext, cardi_common.contextPriority_108);
+    OS_SetThreadPriority(&readManager->cartridgeReadContext, cardi_common.contextPriority_108);
     readManager->currentTaskExecutionContext = &readManager->cartridgeReadContext;
     readManager->cartridgeReadProc = task;
     readManager->flags |= (1 << READ_MANAGER_FLAG_CONTEXT_HAS_TASK_PENDING);
-    MarkContextReadyAndSwitch(&readManager->cartridgeReadContext);
+    OS_WakeupThreadDirect(&readManager->cartridgeReadContext);
 }
 
 void LockCardReadManager(unsigned short ownerID, int taskType)
@@ -45,7 +45,7 @@ void LockCardReadManager(unsigned short ownerID, int taskType)
     volatile CardReadManager* volMan = manager;
     // here we access owner & multiplicity via volatile, but 
     // owner & taskType works too.
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     if (volMan->lock.owner == ownerID)
     {
         if (manager->lock.taskType != taskType)
@@ -54,21 +54,21 @@ void LockCardReadManager(unsigned short ownerID, int taskType)
     else
     {
         while (volMan->lock.owner != -3)
-            BlockCurrentContext(&manager->lock.waitingContexts);
+            OS_SleepThread(&manager->lock.waitingContexts);
         volMan->lock.owner = ownerID;
         manager->lock.taskType = taskType;
     }
     
     volMan->lock.multiplicity++;
     manager->pSharedData->unknown_0 = 0;
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 void UnlockCardReadManager(unsigned short ownerID, int taskType)
 {
     CardReadManager* manager = &cardi_common;
     volatile CardReadManager* volMan = manager;
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     if (volMan->lock.owner != ownerID || volMan->lock.multiplicity == 0)
     {
         OS_Terminate();
@@ -84,12 +84,12 @@ void UnlockCardReadManager(unsigned short ownerID, int taskType)
         {
             volMan->lock.owner = -3;
             manager->lock.taskType = 0;
-            UnblockContexts(&manager->lock.waitingContexts);
+            OS_WakeupThread(&manager->lock.waitingContexts);
         }
     }
     
     manager->pSharedData->unknown_0 = 0;
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 void InitializeCardReadManager()
@@ -104,7 +104,7 @@ void InitializeCardReadManager()
     manager->pSharedData = &data_02111880;
     
     MIi_CpuClearFast(0, &data_02111880, sizeof(Arm7CardReadData));
-    CleanInvalidateCacheRange(&data_02111880, sizeof(Arm7CardReadData));
+    DC_FlushRange(&data_02111880, sizeof(Arm7CardReadData));
     manager->instructionCacheCleanThreshold = 0xffffffff;
     manager->dataCacheCleanThreshold = 0xffffffff;
     
@@ -117,9 +117,9 @@ void InitializeCardReadManager()
     manager->ongoingReadBlock.last = 0;
     manager->ongoingReadBlock.first = 0;
 
-    PopulateContext(&manager->cartridgeReadContext, (unsigned int)&CartridgeReadContextLoop, 0, (unsigned int)(&cardi_common + 1), 0x400, manager->contextPriority_108);
-    MarkContextReadyAndSwitch(&manager->cartridgeReadContext);
-    SetArm9IPCCommandHandler(11, &IPCCommand11Proc);
+    OS_CreateThread(&manager->cartridgeReadContext, (unsigned int)&CartridgeReadContextLoop, 0, (unsigned int)(&cardi_common + 1), 0x400, manager->contextPriority_108);
+    OS_WakeupThreadDirect(&manager->cartridgeReadContext);
+    PXI_SetFifoRecvCallback(11, &IPCCommand11Proc);
 
     if (IsDownloadPlay())
     {
@@ -148,10 +148,10 @@ void MarkCardReadManagerInitialized(int to)
 bool AwaitCardReadManagerIdle()
 {
     CardReadManager* manager = &cardi_common;
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     while (manager->flags & (1 << READ_MANAGER_FLAG_HARDWARE_READ_IN_PROGRESS))
-        BlockCurrentContext(&manager->ongoingReadBlock);
-    SetIRQInterruptState(priorState);
+        OS_SleepThread(&manager->ongoingReadBlock);
+    OS_RestoreInterrupts(priorState);
     return manager->pSharedData->unknown_0 == 0;
 }
 

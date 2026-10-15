@@ -57,7 +57,7 @@ void InvalidateCacheAndZeroOverlay(const OverlayMetadata &overlay)
     unsigned int totalSize = copySize + overlay.bssSectionSize;
 
     InvalidateInstructionCacheRange(startAddr, totalSize);
-    InvalidateDataCacheRange(startAddr, totalSize);
+    DC_InvalidateRange(startAddr, totalSize);
     MI_CpuFill8(startAddr + copySize, 0, totalSize - copySize);
 }
 
@@ -96,7 +96,7 @@ bool LoadOverlayMetadataFromNitro(OverlayMetadata *into, bool isArm7,
         return false;
 
     NitroVM machine;
-    NitroVM_Initialize(&machine);
+    FS_InitFile(&machine);
     // The compiler loves combining shifts into additions, so elides offset by
     // just using start + (overlayIdx << 5). But the target assembly performs
     // the shift early, so some inline assembly can forcefully cancel this optimization
@@ -114,18 +114,18 @@ bool LoadOverlayMetadataFromNitro(OverlayMetadata *into, bool isArm7,
     arg_readEnd = start + size;
     DECLARE_ASM_NOP();
 
-    // equiv to NitroVM_PrepareRead(&machine, romHandle, start + (overlayIdx << 5), start + size, -1)
-    if (!NitroVM_PrepareRead(arg_machine, arg_handle, arg_readStart, arg_readEnd, arg_capacity))
+    // equiv to FS_OpenFileDirect(&machine, romHandle, start + (overlayIdx << 5), start + size, -1)
+    if (!FS_OpenFileDirect(arg_machine, arg_handle, arg_readStart, arg_readEnd, arg_capacity))
         return false;
     }
 
-    if (NitroVM_ReadSync(&machine, into, 0x20) != 0x20)
+    if (FS_ReadFile(&machine, into, 0x20) != 0x20)
     {
-        NitroVM_FinishRead(&machine);
+        FS_CloseFile(&machine);
         return false;
     }
 
-    NitroVM_FinishRead(&machine);
+    FS_CloseFile(&machine);
     into->isArm7 = isArm7;
 
     NitroFileAccessor overlayAccessor;
@@ -135,7 +135,7 @@ bool LoadOverlayMetadataFromNitro(OverlayMetadata *into, bool isArm7,
     
     into->romStorageOffset = machine.fileInfo.startOffset;
     into->romStorageSize = machine.fileInfo.endOffset - machine.fileInfo.startOffset;
-    NitroVM_FinishRead(&machine);
+    FS_CloseFile(&machine);
     return true;
 }
 
@@ -159,7 +159,7 @@ bool LoadOverlayMetadata(OverlayMetadata* into, bool isArm7, unsigned int idx)
         into->isArm7 = isArm7;
 
         NitroVM machine;
-        NitroVM_Initialize(&machine);
+        FS_InitFile(&machine);
         NitroFileAccessor accessor;
         CreateFileAccessorForOverlay(&accessor, *into);
         if (!NitroVM_PrepareReadFileByID(&machine, accessor))
@@ -167,7 +167,7 @@ bool LoadOverlayMetadata(OverlayMetadata* into, bool isArm7, unsigned int idx)
 
         into->romStorageOffset = machine.fileInfo.startOffset;
         into->romStorageSize = machine.fileInfo.endOffset - machine.fileInfo.startOffset;
-        NitroVM_FinishRead(&machine);
+        FS_CloseFile(&machine);
         return true;
     }
     else
@@ -182,7 +182,7 @@ bool LoadOverlayMetadata(OverlayMetadata* into, bool isArm7, unsigned int idx)
 
 bool LoadCompressedOverlay(const OverlayMetadata &overlay, NitroVM *machine)
 {
-    NitroVM_Initialize(machine);
+    FS_InitFile(machine);
     NitroFileAccessor accessor;
     CreateFileAccessorForOverlay(&accessor, overlay);
     if (!NitroVM_PrepareReadFileByID(machine, accessor))
@@ -192,7 +192,7 @@ bool LoadCompressedOverlay(const OverlayMetadata &overlay, NitroVM *machine)
     InvalidateCacheAndZeroOverlay(overlay);
     if (NitroVM_ReadAsync(machine, (void*)overlay.loadAddress, cartridgeSize) != cartridgeSize)
     {
-        NitroVM_FinishRead(machine);
+        FS_CloseFile(machine);
         return false;
     }
 
@@ -202,7 +202,7 @@ bool LoadCompressedOverlay(const OverlayMetadata &overlay, NitroVM *machine)
 bool LoadCompressedOverlay(const OverlayMetadata& overlay)
 {
     NitroVM machine;
-    NitroVM_Initialize(&machine);
+    FS_InitFile(&machine);
     NitroFileAccessor accessor;
     CreateFileAccessorForOverlay(&accessor, overlay);
     if (!NitroVM_PrepareReadFileByID(&machine, accessor))
@@ -210,13 +210,13 @@ bool LoadCompressedOverlay(const OverlayMetadata& overlay)
     
     unsigned int cartridgeSize = GetOverlaySizeOnCartridge(overlay);
     InvalidateCacheAndZeroOverlay(overlay);
-    if (NitroVM_ReadSync(&machine, (void*)overlay.loadAddress, cartridgeSize) != cartridgeSize)
+    if (FS_ReadFile(&machine, (void*)overlay.loadAddress, cartridgeSize) != cartridgeSize)
     {
-        NitroVM_FinishRead(&machine);
+        FS_CloseFile(&machine);
         return false;
     }
 
-    NitroVM_FinishRead(&machine);
+    FS_CloseFile(&machine);
     return true;
 }
 
@@ -275,7 +275,7 @@ void DecompressAndStaticInitializeOverlay(const OverlayMetadata& overlay)
     if (overlay.overlayFlags & (1 << OVERLAY_FLAG_COMPRESSED))
         func_02000970(overlay.loadAddress + initialSize);
     
-    CleanInvalidateCacheRange((void*)overlay.loadAddress, overlay.uncompressedSize);
+    DC_FlushRange((void*)overlay.loadAddress, overlay.uncompressedSize);
     OverlayMetadata::StaticInitializer* pInitializer = overlay.staticInitStart;
     OverlayMetadata::StaticInitializer* initializerEnd = overlay.staticInitEnd;
     if (pInitializer < initializerEnd)

@@ -14,21 +14,21 @@ inline volatile DMARegisterSet& DMARegisters(int n)
     return *(volatile DMARegisterSet*)(12 * n + 0x040000b0);
 }
 
-void ConfigureDMATransferAtomic(int channel, unsigned src, unsigned dst, unsigned ctrl)
+void MIi_DmaSetParams(int channel, unsigned src, unsigned dst, unsigned ctrl)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     volatile DMARegisterSet& regs = DMARegisters(channel);
     regs.sourceAddr = src;
     regs.destAddr = dst;
     regs.controlAndSize.u32 = ctrl;
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 void ConfigureDMATransferSafeAtomic(int channel, unsigned src, unsigned dst, unsigned ctrl)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     volatile DMARegisterSet& regs = DMARegisters(channel);
     regs.sourceAddr = src;
@@ -50,7 +50,7 @@ void ConfigureDMATransferSafeAtomic(int channel, unsigned src, unsigned dst, uns
         regs.controlAndSize.u32 = DMA_CHANNEL_0_DEFAULT_CONTROL;
     }
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 void ConfigureDMATransfer(int channel, unsigned src, unsigned dst, unsigned ctrl)

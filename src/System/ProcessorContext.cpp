@@ -26,11 +26,11 @@ extern "C"
     void MIi_CpuClear32(int value, void* dst, unsigned len);
 }
 
-void PopulateContext(ProcessorContext *context, unsigned int startAddress,
+void OS_CreateThread(ProcessorContext *context, unsigned int startAddress,
     unsigned int userdata, unsigned int stackBottom,
     unsigned int stackSize, unsigned int priority)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     int uniqueID = GenerateUniqueContextID();
     context->priority = priority;
     context->uniqueID = uniqueID;
@@ -48,7 +48,7 @@ void PopulateContext(ProcessorContext *context, unsigned int startAddress,
     InitializeContextRegisters(context, startAddress, stackBottom - 4);
     context->userModeRegisters[0] = userdata;
     // when the function at startAddress returns, go here
-    context->userModeRegisters[14] = (unsigned int)&ContextExecutionReturnProc;
+    context->userModeRegisters[14] = (unsigned int)&OS_ExitThread;
 
     MIi_CpuClear32(0, (void*)(stackBottom - stackSize + 4), stackSize - 8);
     context->blockingMutex = NULL;
@@ -62,12 +62,12 @@ void PopulateContext(ProcessorContext *context, unsigned int startAddress,
     MIi_CpuClear32(0, &context->unknown_A4, 12);
     context->sleepAlarm = NULL;
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
-void ContextExecutionReturnProc()
+void OS_ExitThread()
 {
-    DisableIRQInterrupts();
+    OS_DisableInterrupts();
     ExitContext(data_021112e0.substruct_24.activeContext, 0);
 }
 
@@ -97,7 +97,7 @@ void ExitCurrentContext(int code)
     {
         context->exitProc = NULL;
         proc(code);
-        DisableIRQInterrupts();
+        OS_DisableInterrupts();
     }
     ShutdownCurrentContext();
 }
@@ -105,27 +105,27 @@ void ExitCurrentContext(int code)
 void ShutdownCurrentContext()
 {
     ProcessorContext* context = *data_021112e0.ppActiveContext;
-    AddContextSwitchLock();
+    OS_DisableScheduler();
     UnlockAllMutexesLockedByContext(context);
     if (context->containerBlockedQueue != NULL)
         context->containerBlockedQueue->Remove(context);
 
     RemoveContextFromGlobalList(context);
     context->blockState = CONTEXT_STATE_INVALID;
-    UnblockContexts(&context->contextsAwaitingThisCompletion);
-    RemoveContextSwitchLock();
-    SwitchContextUninterrupted();
+    OS_WakeupThread(&context->contextsAwaitingThisCompletion);
+    OS_EnableScheduler();
+    OS_RescheduleThread();
     OS_Terminate();
 }
 
-void ShutdownContext(ProcessorContext* context)
+void OS_DestroyThread(ProcessorContext* context)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     if (data_021112e0.substruct_24.activeContext == context)
         ShutdownCurrentContext(); // function call will not return
 
-    AddContextSwitchLock();
+    OS_DisableScheduler();
     UnlockAllMutexesLockedByContext(context);
     CancelContextSleepAlarm(context);
     if (context->containerBlockedQueue != NULL)
@@ -133,11 +133,11 @@ void ShutdownContext(ProcessorContext* context)
 
     RemoveContextFromGlobalList(context);
     context->blockState = CONTEXT_STATE_INVALID;
-    UnblockContexts(&context->contextsAwaitingThisCompletion);
-    RemoveContextSwitchLock();
-    SetIRQInterruptState(priorState);
+    OS_WakeupThread(&context->contextsAwaitingThisCompletion);
+    OS_EnableScheduler();
+    OS_RestoreInterrupts(priorState);
 
-    SwitchContextUninterrupted();
+    OS_RescheduleThread();
 }
 
 void CancelContextSleepAlarm(ProcessorContext *context)
@@ -148,22 +148,22 @@ void CancelContextSleepAlarm(ProcessorContext *context)
     CancelAlarm(context->sleepAlarm);
 }
 
-void AwaitContextCompletion(ProcessorContext *context) 
+void OS_JoinThread(ProcessorContext *context) 
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     if (context->blockState != CONTEXT_STATE_INVALID)
-        BlockCurrentContext(&context->contextsAwaitingThisCompletion);
-    SetIRQInterruptState(priorState);
+        OS_SleepThread(&context->contextsAwaitingThisCompletion);
+    OS_RestoreInterrupts(priorState);
 }
 
-bool IsContextInactive(ProcessorContext* context)
+extern "C" bool OS_IsThreadTerminated(ProcessorContext* context)
 {
     return context->blockState == CONTEXT_STATE_INVALID;
 }
 
-void BlockCurrentContext(BlockedContextList* blockQueue)
+void OS_SleepThread(BlockedContextList* blockQueue)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     ProcessorContext* current = *data_021112e0.ppActiveContext;
     if (blockQueue != NULL)
@@ -173,12 +173,12 @@ void BlockCurrentContext(BlockedContextList* blockQueue)
     }
     current->blockState = CONTEXT_STATE_BLOCKED;
     SwitchContext();
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
-void UnblockContexts(BlockedContextList* blockQueue)
+void OS_WakeupThread(BlockedContextList* blockQueue)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     if (blockQueue->first != NULL)
     {
         // wtf?
@@ -197,15 +197,15 @@ void UnblockContexts(BlockedContextList* blockQueue)
         blockQueue->first = NULL;
         SwitchContext();
     }
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
-void MarkContextReadyAndSwitch(ProcessorContext* context)
+void OS_WakeupThreadDirect(ProcessorContext* context)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     context->blockState = CONTEXT_STATE_READY;
     SwitchContext();
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 ProcessorContext* GetFirstReadyContext()
@@ -218,14 +218,14 @@ ProcessorContext* GetFirstReadyContext()
     return context;
 }
 
-void SwitchContextUninterrupted()
+void OS_RescheduleThread()
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     SwitchContext();
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
-void CycleCurrentPriorityContexts()
+void OS_YieldThread()
 {
     ProcessorContext* contextBeforeActive = NULL;
     ProcessorContext* lastEqualPriorityContext = NULL;
@@ -234,7 +234,7 @@ void CycleCurrentPriorityContexts()
     int priorState;
 
     ProcessorContext* active = data_021112e0.substruct_24.activeContext;
-    priorState = DisableIRQInterrupts();
+    priorState = OS_DisableInterrupts();
     
 
     ProcessorContext* loopPrevContext = NULL;    
@@ -259,7 +259,7 @@ void CycleCurrentPriorityContexts()
 
     if (numEqualPriorityContexts <= 1 || lastEqualPriorityContext == active)
     {
-        SetIRQInterruptState(priorState);
+        OS_RestoreInterrupts(priorState);
         return;
     }
     
@@ -276,7 +276,7 @@ void CycleCurrentPriorityContexts()
     active->pNext = lastEqualPriorityContext->pNext;
     lastEqualPriorityContext->pNext = active;
     SwitchContext();
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
     return;
 }
 
@@ -289,11 +289,11 @@ void MarkContextStackTopUnknownSubspace(ProcessorContext *context, unsigned int 
     }
 }
 
-bool ChangeContextPriority(ProcessorContext* context, unsigned int newPriority)
+bool OS_SetThreadPriority(ProcessorContext* context, unsigned int newPriority)
 {
     ProcessorContext* loopContext = data_021112e0.substruct_24.firstContext;
     ProcessorContext* prevContext = NULL;
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     for (; loopContext != NULL && loopContext != context; loopContext = loopContext->pNext)
     {
@@ -302,7 +302,7 @@ bool ChangeContextPriority(ProcessorContext* context, unsigned int newPriority)
 
     if (loopContext == NULL || loopContext == &data_021112e0.contextA)
     {
-        SetIRQInterruptState(priorState);
+        OS_RestoreInterrupts(priorState);
         return false;
     }
 
@@ -321,22 +321,22 @@ bool ChangeContextPriority(ProcessorContext* context, unsigned int newPriority)
         InsertContextIntoGlobalList(context);
         SwitchContext();
     }
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
     return true;
 }
 
-unsigned int GetContextPriority(ProcessorContext* context)
+unsigned int OS_GetThreadPriority(ProcessorContext* context)
 {
     return context->priority;
 }
 
-void SleepCurrentContext(unsigned int milliseconds)
+void OS_Sleep(unsigned int milliseconds)
 {
     Alarm timing;
     ZeroInitializeAlarm(&timing);
     ProcessorContext* context = *data_021112e0.ppActiveContext;
 
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     uint64_t numTicks = (uint64_t)milliseconds * TIMER_TICKS_PER_MILLISECOND >> 6;
     context->sleepAlarm = &timing;
@@ -345,11 +345,11 @@ void SleepCurrentContext(unsigned int milliseconds)
     if (context != NULL)
     {
         do {
-            BlockCurrentContext(NULL);
+            OS_SleepThread(NULL);
         } while (context != NULL);
     }
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 void SleepCompletionProc(ProcessorContext **ppContext)
@@ -357,15 +357,15 @@ void SleepCompletionProc(ProcessorContext **ppContext)
     ProcessorContext* context = *ppContext;
     *ppContext = NULL;
     context->sleepAlarm = NULL;
-    MarkContextReadyAndSwitch(context);
+    OS_WakeupThreadDirect(context);
 }
 
 PFNSwitchContextProc SetSwitchContextProcB(PFNSwitchContextProc proc)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     PFNSwitchContextProc oldProc = data_021112e0.substruct_24.switchContextProcB;
     data_021112e0.substruct_24.switchContextProcB = proc;
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
     return oldProc;
 }
 
@@ -376,9 +376,9 @@ void InterruptWaitLoopFunction(void* unusedUserdata)
         OS_Halt();
 }
 
-unsigned int AddContextSwitchLock()
+unsigned int OS_DisableScheduler()
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     unsigned int oldCount;
     if (data_021112e0.contextSwitchLock < (unsigned int)-1)
@@ -387,13 +387,13 @@ unsigned int AddContextSwitchLock()
         data_021112e0.contextSwitchLock++;
     }
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
     return oldCount;
 }
 
-unsigned int RemoveContextSwitchLock()
+unsigned int OS_EnableScheduler()
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     unsigned int oldCount = 0;
     if (data_021112e0.contextSwitchLock > 0)
@@ -402,7 +402,7 @@ unsigned int RemoveContextSwitchLock()
         data_021112e0.contextSwitchLock--;
     }
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
     return oldCount;
 }
 

@@ -36,8 +36,8 @@ extern "C"
 }
 
 int TryLockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onLock)(), bool strict);
-int WeakLockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onLock)());
-int WeakUnlockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onUnlock)());
+extern "C" int OS_LockByWord(unsigned short owner, GamecardBusLock* lock, void (*onLock)());
+extern "C" int OS_UnlockByWord(unsigned short owner, GamecardBusLock* lock, void (*onUnlock)());
 
 void MarkGBABusAcquired(); // acquire gba bus
 void MarkGBABusReleased(); // release gba bus
@@ -47,7 +47,7 @@ void MarkNDSBusReleased();
 
 #if false
 // this is almost correct except the first bit, excluding it for now
-void InitializeGamecardBusOwnership()
+extern "C" void OS_InitLock()
 {
     if (data_021112dc)
     {
@@ -58,7 +58,7 @@ void InitializeGamecardBusOwnership()
     data_021112dc = true;
     ndsLock->atomic = 0;
     
-    WeakLockGamecardBusLock(126, ndsLock, NULL);
+    OS_LockByWord(126, ndsLock, NULL);
 
     if (ndsLock->unknown_6)
     {
@@ -75,8 +75,8 @@ void InitializeGamecardBusOwnership()
     REG_EXTMEMCTRL |= EXTMEMCTRL_FLAG_RELINQUISH_NDS_BUS;
     REG_EXTMEMCTRL |= EXTMEMCTRL_FLAG_RELINQUISH_GBA_BUS;
 
-    WeakUnlockGamecardBusLock(126, ndsLock, NULL);
-    WeakLockGamecardBusLock(127, ndsLock, NULL);
+    OS_UnlockByWord(126, ndsLock, NULL);
+    OS_LockByWord(127, ndsLock, NULL);
 }
 #endif
 
@@ -92,7 +92,7 @@ int LockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onLo
 }
 
 // can be static
-int WeakLockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onLock)())
+int OS_LockByWord(unsigned short owner, GamecardBusLock* lock, void (*onLock)())
 {
     return LockGamecardBusLock(owner, lock, onLock, false);
 }
@@ -107,7 +107,7 @@ int UnlockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*on
     if (strict)
         priorState = DisableIRQAndFIQInterrupts();
     else
-        priorState = DisableIRQInterrupts();
+        priorState = OS_DisableInterrupts();
 
     lock->ownerID = 0;
     if (onUnlock != NULL)
@@ -118,12 +118,12 @@ int UnlockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*on
     if (strict)
         SetIRQAndFIQInterruptState(priorState);
     else
-        SetIRQInterruptState(priorState);
+        OS_RestoreInterrupts(priorState);
     return 0;
 }
 
 // can be static
-int WeakUnlockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onUnlock)())
+int OS_UnlockByWord(unsigned short owner, GamecardBusLock* lock, void (*onUnlock)())
 {
     return UnlockGamecardBusLock(owner, lock, onUnlock, false);
 }
@@ -135,7 +135,7 @@ int TryLockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*o
     if (strict)
         priorState = DisableIRQAndFIQInterrupts();
     else
-        priorState = DisableIRQInterrupts();
+        priorState = OS_DisableInterrupts();
 
     int oldAtomic = MI_SwapWord(owner, &lock->atomic);
     if (oldAtomic == 0)
@@ -148,7 +148,7 @@ int TryLockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*o
     if (strict)
         SetIRQAndFIQInterruptState(priorState);
     else
-        SetIRQInterruptState(priorState);
+        OS_RestoreInterrupts(priorState);
     return oldAtomic;
 }
 
@@ -193,13 +193,13 @@ void MarkGBABusReleased()
 // must be exposed
 int AcquireNDSBus(unsigned short owner)
 {
-    return WeakLockGamecardBusLock(owner, PTR_NDS_BUS_LOCK, &MarkNDSBusAcquired);
+    return OS_LockByWord(owner, PTR_NDS_BUS_LOCK, &MarkNDSBusAcquired);
 }
 
 // must be exposed
 int ReleaseNDSBus(unsigned short owner)
 {
-    return WeakUnlockGamecardBusLock(owner, PTR_NDS_BUS_LOCK, &MarkNDSBusReleased);
+    return OS_UnlockByWord(owner, PTR_NDS_BUS_LOCK, &MarkNDSBusReleased);
 }
 
 // can be static

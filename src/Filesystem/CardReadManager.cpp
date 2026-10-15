@@ -108,7 +108,7 @@ void ReadSingleSegmentFromCartridge()
 
 void DMAChainSegmentInterruptHandler()
 {
-    ResetDMAChannel(cardi_common.dmaChannel);
+    MI_StopDma(cardi_common.dmaChannel);
 
     CardReadManager* manager = &cardi_common;
     
@@ -130,13 +130,13 @@ void DMAChainSegmentInterruptHandler()
         CardReadManager::CompletionCallback cleanProc = readManager->onComplete;
         NitroHandle* handle = readManager->handle;
 
-        int oldState = DisableIRQInterrupts();
+        int oldState = OS_DisableInterrupts();
         readManager->flags &= ~((1 << READ_MANAGER_FLAG_HARDWARE_READ_IN_PROGRESS) | (1 << READ_MANAGER_FLAG_CONTEXT_HAS_TASK_PENDING) | (1 << CARTRIDGE_READ_CONTEXT_FLAG_6));
-        UnblockContexts(&readManager->ongoingReadBlock);
+        OS_WakeupThread(&readManager->ongoingReadBlock);
 
         if (readManager->flags & (1 << CARTRIDGE_READ_CONTEXT_FLAG_4))
-            MarkContextReadyAndSwitch(&readManager->cartridgeReadContext);
-        SetIRQInterruptState(oldState);
+            OS_WakeupThreadDirect(&readManager->cartridgeReadContext);
+        OS_RestoreInterrupts(oldState);
 
         if (cleanProc != NULL)
             cleanProc(handle);
@@ -190,7 +190,7 @@ extern "C" bool TryReadViaDMA(Struct_02111f20* handler)
     
     if (canDoDMARead)
     {
-        int oldState = DisableIRQInterrupts();
+        int oldState = OS_DisableInterrupts();
         if (length < readManager->instructionCacheCleanThreshold)
             InvalidateInstructionCacheRange((void*)destination, length);
         else
@@ -201,12 +201,12 @@ extern "C" bool TryReadViaDMA(Struct_02111f20* handler)
             if (alignmentMod32 != 0)
             {
                 destination -= alignmentMod32;
-                CleanCacheRange((void*)destination, 0x20);
-                CleanCacheRange((void*)(destination + length), 0x20);
+                DC_StoreRange((void*)destination, 0x20);
+                DC_StoreRange((void*)(destination + length), 0x20);
                 length += 0x20;
             }
-            InvalidateDataCacheRange((void*)destination, length);
-            DrainWriteBuffer();
+            DC_InvalidateRange((void*)destination, length);
+            DC_WaitWriteBufferEmpty();
         }
         else
         {
@@ -216,7 +216,7 @@ extern "C" bool TryReadViaDMA(Struct_02111f20* handler)
         SetInterruptHandler(IRQ_MASK_GAMECARD_DATA_TRANSFER_DONE, &DMAChainSegmentInterruptHandler);
         AcknowledgeSpecificInterrupts(IRQ_MASK_GAMECARD_DATA_TRANSFER_DONE);
         EnableSpecificInterrupts(IRQ_MASK_GAMECARD_DATA_TRANSFER_DONE);
-        SetIRQInterruptState(oldState);
+        OS_RestoreInterrupts(oldState);
         ReadSingleSegmentFromCartridge();
     }
 
@@ -319,13 +319,13 @@ extern "C" void SafeReadBlocksFromCartridge(CardReadManager*)
     CardReadManager::CompletionCallback callback = readManager->onComplete;
     NitroHandle* handle = readManager->handle;
 
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
     readManager->flags &= ~((1 << READ_MANAGER_FLAG_HARDWARE_READ_IN_PROGRESS) | (1 << READ_MANAGER_FLAG_CONTEXT_HAS_TASK_PENDING) | (1 << CARTRIDGE_READ_CONTEXT_FLAG_6));
-    UnblockContexts(&readManager->ongoingReadBlock);
+    OS_WakeupThread(&readManager->ongoingReadBlock);
 
     if (readManager->flags & (1 << CARTRIDGE_READ_CONTEXT_FLAG_4))
-        MarkContextReadyAndSwitch(&readManager->cartridgeReadContext);
-    SetIRQInterruptState(oldState);
+        OS_WakeupThreadDirect(&readManager->cartridgeReadContext);
+    OS_RestoreInterrupts(oldState);
     
     if (callback != NULL)
         callback(handle);
@@ -341,23 +341,23 @@ void LoadDataFromCartridgeToMemory(unsigned int dmaChannel,
     CardReadManager* readManager = &cardi_common;
     VerifyCardReadManagerInitialized();
 
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
 
     while (readManager->flags & (1 << READ_MANAGER_FLAG_HARDWARE_READ_IN_PROGRESS))
     {
-        BlockCurrentContext(&readManager->ongoingReadBlock);
+        OS_SleepThread(&readManager->ongoingReadBlock);
     }
     readManager->flags |= (1 << READ_MANAGER_FLAG_HARDWARE_READ_IN_PROGRESS);
     readManager->onComplete = onComplete;
     readManager->handle = handle;
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
     readManager->cartridgeReadOffset = cartridgeOffset + data_02111f00.number;
     readManager->dmaChannel = dmaChannel;
     readManager->writeDst = (unsigned char*)dest;
     readManager->writeLength = length;
 
     if (dmaChannel <= 3)
-        ResetDMAChannel(dmaChannel);
+        MI_StopDma(dmaChannel);
 
     if (TryReadViaDMA(rawHandler))
     {
@@ -415,7 +415,7 @@ void IPCCommand11Proc(unsigned int command, unsigned int argument, unsigned int 
     ProcessorContext* context = manager->currentTaskExecutionContext;
     manager->flags &= ~(1 << READ_MANAGER_FLAG_AWAITING_ARM7_ACTION);
     
-    MarkContextReadyAndSwitch(context);
+    OS_WakeupThreadDirect(context);
 }
 
 void CartridgeReadContextLoop()
@@ -423,14 +423,14 @@ void CartridgeReadContextLoop()
     CardReadManager* readManager = &cardi_common;
     while (true)
     {
-        int priorState = DisableIRQInterrupts();
+        int priorState = OS_DisableInterrupts();
         if (!(readManager->flags & (1 << READ_MANAGER_FLAG_CONTEXT_HAS_TASK_PENDING)))
         {
             do {
-                BlockCurrentContext(NULL);
+                OS_SleepThread(NULL);
             } while (!(readManager->flags & (1 << READ_MANAGER_FLAG_CONTEXT_HAS_TASK_PENDING)));
         }
-        SetIRQInterruptState(priorState);
+        OS_RestoreInterrupts(priorState);
         readManager->cartridgeReadProc(readManager);
     }
 }

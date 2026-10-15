@@ -306,9 +306,9 @@ int VRAMStagingManager::Stage(VRAMSubregion subregion, const void* data, unsigne
                 MemoryMapTextureImage();
                 break;
             }
-            CleanInvalidateCacheRange(data, length);
+            DC_FlushRange(data, length);
             g_vramSubregionLoadFunctions[subregion](data, offset, length);
-            CleanCacheRange(data, length);
+            DC_StoreRange(data, length);
             switch (region)
             {
             case VRAMRegion_TexturePalette:
@@ -338,7 +338,7 @@ int VRAMStagingManager::Stage(VRAMSubregion subregion, const void* data, unsigne
                         memcpy(allocSpace, data, length);
                         allocSpaceData = GetStagingSpaceAllocation(allocSpace);
                         stagingSpace = allocSpace;
-                        CleanInvalidateCacheRange(allocSpace, length);
+                        DC_FlushRange(allocSpace, length);
                     }
                 }
                 if (stagingSpace != NULL)
@@ -641,10 +641,10 @@ void VRAMStagingManager::SendReadyDataToVRAM()
             }
             copySource = (const void*)((intptr_t)pTask->copySource_ + pTask->wordsCopied_ * 4);
             destination = (pTask->destinationOffset_ + pTask->wordsCopied_) * 4;
-            CleanInvalidateCacheRange(copySource, amountToCopyThisTask);
+            DC_FlushRange(copySource, amountToCopyThisTask);
             // e.g. LoadToTexturePalette
             g_vramSubregionLoadFunctions[pTask->subregion_](copySource, destination, amountToCopyThisTask);
-            CleanCacheRange(copySource, amountToCopyThisTask);
+            DC_StoreRange(copySource, amountToCopyThisTask);
             amountCopiedThisGroup += amountToCopyThisTask;
             pTask->wordsCopied_ += amountToCopyThisTask >> 2;
             if (pTask->wordsCopied_ < pTask->numWordsToCopy_)

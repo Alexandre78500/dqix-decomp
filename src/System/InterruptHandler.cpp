@@ -41,12 +41,12 @@ inline int& CallbackUserdataByIndex(int n, int base = 0)
 
 // Start of exposed functions
 
-void WaitForInterrupt(bool onlySubsequent, unsigned int mask)
+void OS_WaitIrq(bool onlySubsequent, unsigned int mask)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     if (onlySubsequent)
         DTCM_DATA.interruptsFired &= ~mask;
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
     
     if (!(mask & DTCM_DATA.interruptsFired))
     {
@@ -54,7 +54,7 @@ void WaitForInterrupt(bool onlySubsequent, unsigned int mask)
         unsigned int* pData;
         do {
             pData = &DTCM_DATA.interruptsFired;
-            BlockCurrentContext(list);
+            OS_SleepThread(list);
         } while (!(mask & *pData));
     }
     DECLARE_ASM_NOP();

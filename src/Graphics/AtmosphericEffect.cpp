@@ -366,7 +366,7 @@ void AtmosphericEffectSet::ProcessArchive(AtmosphericEffectSet *target, SafeAllo
     {
         NitroVM vm;
         fileID = 0;
-        NitroVM_Initialize(&vm);
+        FS_InitFile(&vm);
         while (PrepareReadFileInNARCByID(&vm, &narc, fileID))
         {
             char innerFilePath[80];
@@ -374,12 +374,12 @@ void AtmosphericEffectSet::ProcessArchive(AtmosphericEffectSet *target, SafeAllo
             const char* extension = strrchr(innerFilePath, '.');
             if (extension == NULL)
             {
-                NitroVM_FinishRead(&vm);
+                FS_CloseFile(&vm);
                 fileID++;
                 continue;
             }
             unsigned int innerFileLength = vm.fileInfo.endOffset - vm.fileInfo.startOffset;
-            NitroVM_FinishRead(&vm);
+            FS_CloseFile(&vm);
             const void* innerFile = narc.GetFileByIndex(fileID);
             if (strcmp(".cmed", extension) == 0)
             {
@@ -420,7 +420,7 @@ void AtmosphericEffectSet::ProcessArchive(AtmosphericEffectSet *target, SafeAllo
         {
             fileID = 0;
             NitroVM vm;
-            NitroVM_Initialize(&vm);
+            FS_InitFile(&vm);
             ObjectArchiveLoadInfo loadInfo;
             loadInfo.unk_0 = 0;
             loadInfo.fileData = NULL;
@@ -438,12 +438,12 @@ void AtmosphericEffectSet::ProcessArchive(AtmosphericEffectSet *target, SafeAllo
                 const char* filename = strrchr(innerFilePath, '/');
                 if (extension == NULL)
                 {
-                    NitroVM_FinishRead(&vm);
+                    FS_CloseFile(&vm);
                     fileID++;
                     continue;
                 }
                 unsigned int innerFileLength = vm.fileInfo.endOffset - vm.fileInfo.startOffset;
-                NitroVM_FinishRead(&vm);
+                FS_CloseFile(&vm);
                 const void* innerFile = narc.GetFileByIndex(fileID);
                 if (strcmp(".chr", extension) == 0)
                 {
