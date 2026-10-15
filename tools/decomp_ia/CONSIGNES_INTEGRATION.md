@@ -9,9 +9,9 @@ des noms qui ont du sens, sans perdre la correspondance.
 
 - Tu écris seulement les fichiers qu'on t'indique dans `src/` et `include/`. Tu ne touches ni à
   `config/` (symbols.txt, delinks.txt), ni au build, ni à git : l'orchestrateur s'en charge.
-- Commentaires et noms en anglais, comme le reste du dépôt ; style des fichiers existants
-  (`src/World/LootableContainer.cpp`, `include/World/LootableContainer.h`) : accolades sur leur
-  propre ligne pour les fonctions, 4 espaces, `#pragma once` dans les en-têtes.
+- Commentaires et noms en anglais, comme le reste du dépôt (`src/World/LootableContainer.cpp`,
+  `include/World/LootableContainer.h`), `#pragma once` dans les en-têtes. Formate à la fin avec
+  le clang-format du dépôt : `.venv/bin/pre-commit run --files <tes fichiers>`, puis revérifie.
 
 ## Étapes
 

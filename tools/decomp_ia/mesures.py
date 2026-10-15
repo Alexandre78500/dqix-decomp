@@ -90,7 +90,7 @@ def main():
     lignes = charger()
     if args.csv:
         with open(args.csv, "w", newline="") as f:
-            w = csv.DictWriter(f, fieldnames=list(lignes[0]))
+            w = csv.DictWriter(f, fieldnames=list(lignes[0]), lineterminator="\n")
             w.writeheader()
             w.writerows(lignes)
     t = tableau(lignes)
