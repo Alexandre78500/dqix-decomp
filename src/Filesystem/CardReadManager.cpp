@@ -210,7 +210,7 @@ extern "C" bool TryReadViaDMA(Struct_02111f20* handler)
         }
         else
         {
-            CleanInvalidateDataCache();
+            DC_FlushAll();
         }
 
         SetInterruptHandler(IRQ_MASK_GAMECARD_DATA_TRANSFER_DONE, &DMAChainSegmentInterruptHandler);

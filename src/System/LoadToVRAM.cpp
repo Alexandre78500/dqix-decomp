@@ -72,7 +72,7 @@ extern "C"
     void func_020ca408(const void* src, void* dst, unsigned len);
 }
 
-void LoadToMainBGStandardPalette(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadBGPltt(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1 && length > 28)
         MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000000 + offset, length);
@@ -80,7 +80,7 @@ void LoadToMainBGStandardPalette(const void* data, unsigned int offset, unsigned
         func_020ca3b8(data, (void*)(0x05000000 + offset), length);
 }
 
-void LoadToSubBGStandardPalette(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadBGPltt(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1 && length > 28)
         MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000400 + offset, length);
@@ -88,7 +88,7 @@ void LoadToSubBGStandardPalette(const void* data, unsigned int offset, unsigned 
         func_020ca3b8(data, (void*)(0x05000400 + offset), length);
 }
 
-void LoadToMainObjStandardPalette(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadOBJPltt(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1 && length > 28)
         MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000200 + offset, length);
@@ -96,7 +96,7 @@ void LoadToMainObjStandardPalette(const void* data, unsigned int offset, unsigne
         func_020ca3b8(data, (void*)(0x05000200 + offset), length);
 }
 
-void LoadToSubObjStandardPalette(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadOBJPltt(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1 && length > 28)
         MI_DmaCopy16(data_020f2270, (unsigned int)data, 0x05000600 + offset, length);
@@ -104,7 +104,7 @@ void LoadToSubObjStandardPalette(const void* data, unsigned int offset, unsigned
         func_020ca3b8(data, (void*)(0x05000600 + offset), length);
 }
 
-void LoadToMainOAM(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadOAM(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1 && length > 48)
         DMAMemcpySynchronous(data_020f2270, (unsigned int)data, 0x07000000 + offset, length);
@@ -112,7 +112,7 @@ void LoadToMainOAM(const void* data, unsigned int offset, unsigned int length)
         func_020ca408(data, (void*)(0x07000000 + offset), length);
 }
 
-void LoadToSubOAM(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadOAM(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1 && length > 48)
         DMAMemcpySynchronous(data_020f2270, (unsigned int)data, 0x07000400 + offset, length);
@@ -121,7 +121,7 @@ void LoadToSubOAM(const void* data, unsigned int offset, unsigned int length)
 }
 
 // not quite a match
-void LoadToMainObjVRAM(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadOBJ(const void* data, unsigned int offset, unsigned int length)
 {
     int writeAddr = 0x06400000;
     if (data_020f2270 != -1 && length > 48)
@@ -137,7 +137,7 @@ void LoadToMainObjVRAM(const void* data, unsigned int offset, unsigned int lengt
 }
 
 // not quite a match
-void LoadToSubObjVRAM(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadOBJ(const void* data, unsigned int offset, unsigned int length)
 {
     int writeAddr = 0x06600000;
     if (data_020f2270 != -1 && length > 48)
@@ -152,7 +152,7 @@ void LoadToSubObjVRAM(const void* data, unsigned int offset, unsigned int length
     }
 }
 
-void LoadToMainBG0ScreenData(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadBG0Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG0ScreenBase();
     if (data_020f2270 != -1 && length > 28)
@@ -161,7 +161,7 @@ void LoadToMainBG0ScreenData(const void* data, unsigned int offset, unsigned int
         func_020ca3b8(data, (void*)(base + offset), length);
 }
 
-void LoadToSubBG0ScreenData(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadBG0Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG0ScreenBase();
     if (data_020f2270 != -1 && length > 28)
@@ -170,7 +170,7 @@ void LoadToSubBG0ScreenData(const void* data, unsigned int offset, unsigned int 
         func_020ca3b8(data, (void*)(base + offset), length);
 }
 
-void LoadToMainBG1ScreenData(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadBG1Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG1ScreenBase();
     if (data_020f2270 != -1 && length > 28)
@@ -179,7 +179,7 @@ void LoadToMainBG1ScreenData(const void* data, unsigned int offset, unsigned int
         func_020ca3b8(data, (void*)(base + offset), length);
 }
 
-void LoadToSubBG1ScreenData(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadBG1Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG1ScreenBase();
     if (data_020f2270 != -1 && length > 28)
@@ -188,7 +188,7 @@ void LoadToSubBG1ScreenData(const void* data, unsigned int offset, unsigned int 
         func_020ca3b8(data, (void*)(base + offset), length);
 }
 
-void LoadToMainBG2ScreenData(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadBG2Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG2ScreenBase();
     if (data_020f2270 != -1 && length > 28)
@@ -197,7 +197,7 @@ void LoadToMainBG2ScreenData(const void* data, unsigned int offset, unsigned int
         func_020ca3b8(data, (void*)(base + offset), length);
 }
 
-void LoadToSubBG2ScreenData(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadBG2Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG2ScreenBase();
     if (data_020f2270 != -1 && length > 28)
@@ -206,7 +206,7 @@ void LoadToSubBG2ScreenData(const void* data, unsigned int offset, unsigned int 
         func_020ca3b8(data, (void*)(base + offset), length);
 }
 
-void LoadToMainBG3ScreenData(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadBG3Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG3ScreenBase();
     if (data_020f2270 != -1 && length > 28)
@@ -215,7 +215,7 @@ void LoadToMainBG3ScreenData(const void* data, unsigned int offset, unsigned int
         func_020ca3b8(data, (void*)(base + offset), length);
 }
 
-void LoadToSubBG3ScreenData(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadBG3Scr(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG3ScreenBase();
     if (data_020f2270 != -1 && length > 28)
@@ -224,7 +224,7 @@ void LoadToSubBG3ScreenData(const void* data, unsigned int offset, unsigned int 
         func_020ca3b8(data, (void*)(base + offset), length);
 }
 
-void LoadToMainBG0CharacterData(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadBG0Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG0CharacterBase();
     if (data_020f2270 != -1 && length > 48)
@@ -233,7 +233,7 @@ void LoadToMainBG0CharacterData(const void* data, unsigned int offset, unsigned 
         func_020ca408(data, (void*)(base + offset), length);
 }
 
-void LoadToSubBG0CharacterData(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadBG0Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG0CharacterBase();
     if (data_020f2270 != -1 && length > 48)
@@ -242,7 +242,7 @@ void LoadToSubBG0CharacterData(const void* data, unsigned int offset, unsigned i
         func_020ca408(data, (void*)(base + offset), length);
 }
 
-void LoadToMainBG1CharacterData(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadBG1Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG1CharacterBase();
     if (data_020f2270 != -1 && length > 48)
@@ -251,7 +251,7 @@ void LoadToMainBG1CharacterData(const void* data, unsigned int offset, unsigned 
         func_020ca408(data, (void*)(base + offset), length);
 }
 
-void LoadToSubBG1CharacterData(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadBG1Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG1CharacterBase();
     if (data_020f2270 != -1 && length > 48)
@@ -260,7 +260,7 @@ void LoadToSubBG1CharacterData(const void* data, unsigned int offset, unsigned i
         func_020ca408(data, (void*)(base + offset), length);
 }
 
-void LoadToMainBG2CharacterData(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadBG2Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG2CharacterBase();
     if (data_020f2270 != -1 && length > 48)
@@ -269,7 +269,7 @@ void LoadToMainBG2CharacterData(const void* data, unsigned int offset, unsigned 
         func_020ca408(data, (void*)(base + offset), length);
 }
 
-void LoadToSubBG2CharacterData(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadBG2Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG2CharacterBase();
     if (data_020f2270 != -1 && length > 48)
@@ -278,7 +278,7 @@ void LoadToSubBG2CharacterData(const void* data, unsigned int offset, unsigned i
         func_020ca408(data, (void*)(base + offset), length);
 }
 
-void LoadToMainBG3CharacterData(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadBG3Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetMainBG3CharacterBase();
     if (data_020f2270 != -1 && length > 48)
@@ -287,7 +287,7 @@ void LoadToMainBG3CharacterData(const void* data, unsigned int offset, unsigned 
         func_020ca408(data, (void*)(base + offset), length);
 }
 
-void LoadToSubBG3CharacterData(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadBG3Char(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int base = GetSubBG3CharacterBase();
     if (data_020f2270 != -1 && length > 48)
@@ -296,7 +296,7 @@ void LoadToSubBG3CharacterData(const void* data, unsigned int offset, unsigned i
         func_020ca408(data, (void*)(base + offset), length);
 }
 
-void MemoryMapMainBGExtendedPalette()
+void GX_BeginLoadBGExtPltt()
 {
     data_02111240.mainBGExtPaletteBanks_254_ = ReleaseMainBGExtendedPaletteVRAMBanks();
     switch (data_02111240.mainBGExtPaletteBanks_254_)
@@ -319,7 +319,7 @@ void MemoryMapMainBGExtendedPalette()
     }
 }
 
-void LoadToMainBGExtendedPalette(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadBGExtPltt(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int dest = data_02111240.mainBGExtPaletteMapAddress_250_ + offset - data_02111240.mainBGExtPaletteInitialOffset_24c_;
     if (data_020f2270 != -1)
@@ -328,7 +328,7 @@ void LoadToMainBGExtendedPalette(const void* data, unsigned int offset, unsigned
         func_020ca408(data, (void*)dest, length);
 }
 
-void MemoryUnmapMainBGExtendedPalette()
+void GX_EndLoadBGExtPltt()
 {
     if (data_020f2270 != -1)
         AwaitDMACompletion(data_020f2270);
@@ -339,7 +339,7 @@ void MemoryUnmapMainBGExtendedPalette()
     data_02111240.mainBGExtPaletteInitialOffset_24c_ = 0;
 }
 
-void MemoryMapMainObjExtendedPalette()
+void GX_BeginLoadOBJExtPltt()
 {
     data_02111240.mainObjExtPaletteBanks_248_ = ReleaseMainObjExtendedPaletteVRAMBanks();
     switch (data_02111240.mainObjExtPaletteBanks_248_)
@@ -355,7 +355,7 @@ void MemoryMapMainObjExtendedPalette()
     }
 }
 
-void LoadToMainObjExtendedPalette(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadOBJExtPltt(const void* data, unsigned int offset, unsigned int length)
 {
     int dmaChannel = data_020f2270;
     unsigned int dest = data_02111240.mainObjExtPaletteMapAddress_244_ + offset;
@@ -365,7 +365,7 @@ void LoadToMainObjExtendedPalette(const void* data, unsigned int offset, unsigne
         func_020ca408(data, (void*)dest, length);
 }
 
-void MemoryUnmapMainObjExtendedPalette()
+void GX_EndLoadOBJExtPltt()
 {
     if (data_020f2270 != -1)
         AwaitDMACompletion(data_020f2270);
@@ -375,12 +375,12 @@ void MemoryUnmapMainObjExtendedPalette()
     data_02111240.mainObjExtPaletteMapAddress_244_ = 0;
 }
 
-void MemoryMapSubBGExtendedPalette()
+void GXS_BeginLoadBGExtPltt()
 {
     data_02111240.subBGExtPaletteBanks_240_ = ReleaseSubBGExtendedPaletteVRAMBanks();
 }
 
-void LoadToSubBGExtendedPalette(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadBGExtPltt(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1)
         DMAMemcpyAsync(data_020f2270, (unsigned int)data, 0x06898000 + offset, length, NULL, 0);
@@ -388,7 +388,7 @@ void LoadToSubBGExtendedPalette(const void* data, unsigned int offset, unsigned 
         func_020ca408(data, (void*)(0x06898000 + offset), length);
 }
 
-void MemoryUnmapSubBGExtendedPalette()
+void GXS_EndLoadBGExtPltt()
 {
     if (data_020f2270 != -1)
         AwaitDMACompletion(data_020f2270);
@@ -397,12 +397,12 @@ void MemoryUnmapSubBGExtendedPalette()
     data_02111240.subBGExtPaletteBanks_240_ = 0;
 }
 
-void MemoryMapSubObjExtendedPalette()
+void GXS_BeginLoadOBJExtPltt()
 {
     data_02111240.subObjExtPaletteBanks_258_ = ReleaseSubObjExtendedPaletteVRAMBanks();
 }
 
-void LoadToSubObjExtendedPalette(const void* data, unsigned int offset, unsigned int length)
+void GXS_LoadOBJExtPltt(const void* data, unsigned int offset, unsigned int length)
 {
     if (data_020f2270 != -1)
         DMAMemcpyAsync(data_020f2270, (unsigned int)data, 0x068a0000 + offset, length, NULL, 0);
@@ -410,7 +410,7 @@ void LoadToSubObjExtendedPalette(const void* data, unsigned int offset, unsigned
         func_020ca408(data, (void*)(0x068a0000 + offset), length);
 }
 
-void MemoryUnmapSubObjExtendedPalette()
+void GXS_EndLoadOBJExtPltt()
 {
     if (data_020f2270 != -1)
         AwaitDMACompletion(data_020f2270);
@@ -419,7 +419,7 @@ void MemoryUnmapSubObjExtendedPalette()
     data_02111240.subObjExtPaletteBanks_258_ = 0;
 }
 
-void MemoryMapTextureImage()
+void GX_BeginLoadTex()
 {
     int banks = ReleaseTextureImageVRAMBanks();
     data_0211125c.textureImageBanks_270_ = banks;
@@ -438,7 +438,7 @@ void MemoryMapTextureImage()
     data_0211125c.textureImageFirstMapRegionSize_278_ = thirdBlockLookup[banks].entry << 12;
 }
 
-void LoadToTextureImage(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadTex(const void* data, unsigned int offset, unsigned int length)
 {
     unsigned int secondBlockStart = data_0211125c.textureImageSecondMapAddress_274_;
     unsigned int firstBlockWriteAddr;
@@ -475,7 +475,7 @@ void LoadToTextureImage(const void* data, unsigned int offset, unsigned int leng
         func_020ca408(data, (void*)firstBlockWriteAddr, length);
 }
 
-void MemoryUnmapTextureImage()
+void GX_EndLoadTex()
 {
     if (data_020f2270 != -1)
         AwaitDMACompletion(data_020f2270);
@@ -486,14 +486,14 @@ void MemoryUnmapTextureImage()
     data_0211125c.textureImageBanks_270_ = 0;
 }
 
-void MemoryMapTexturePalette()
+void GX_BeginLoadTexPltt()
 {
     int banks = ReleaseTexturePaletteVRAMBanks();
     data_0211125c.texturePaletteBanks_268_ = banks;
     data_0211125c.texturePaletteMapAddress_264_ = data_020ed658[banks >> 4] << 12;
 }
 
-void LoadToTexturePalette(const void* data, unsigned int offset, unsigned int length)
+void GX_LoadTexPltt(const void* data, unsigned int offset, unsigned int length)
 {
     int dmaChannel = data_020f2270;
     unsigned int writeAddr = data_0211125c.texturePaletteMapAddress_264_ + offset;
@@ -503,7 +503,7 @@ void LoadToTexturePalette(const void* data, unsigned int offset, unsigned int le
         func_020ca408(data, (void*)writeAddr, length);
 }
 
-void MemoryUnmapTexturePalette()
+void GX_EndLoadTexPltt()
 {
     if (data_020f2270 != -1)
         AwaitDMACompletion(data_020f2270);
@@ -512,7 +512,7 @@ void MemoryUnmapTexturePalette()
     data_0211125c.texturePaletteMapAddress_264_ = 0;
 }
 
-void MemoryMapClearTexture()
+void GX_BeginLoadClearImage()
 {
     int banks = ReleaseClearTextureVRAMBanks();
     data_0211125c.clearTextureBanks_25c_ = banks;
@@ -535,7 +535,7 @@ void MemoryMapClearTexture()
     }
 }
 
-void LoadClearImage(const void* data, unsigned int length)
+void GX_LoadClearImageColor(const void* data, unsigned int length)
 {
     int dmaChannel = data_020f2270;
     unsigned int writeAddr = data_0211125c.clearTextureMapAddress_26c_;
@@ -545,7 +545,7 @@ void LoadClearImage(const void* data, unsigned int length)
         func_020ca408(data, (void*)writeAddr, length);
 }
 
-void LoadClearDepthBuffer(const void* data, unsigned int length)
+void GX_LoadClearImageDepth(const void* data, unsigned int length)
 {
     unsigned int writeAddr = data_0211125c.clearTextureMapAddress_26c_ + 0x20000;
     if (data_020f2270 != -1)
@@ -554,7 +554,7 @@ void LoadClearDepthBuffer(const void* data, unsigned int length)
         func_020ca408(data, (void*)writeAddr, length);
 }
 
-void MemoryUnmapClearTexture()
+void GX_EndLoadClearImage()
 {
     if (data_020f2270 != -1)
         AwaitDMACompletion(data_020f2270);

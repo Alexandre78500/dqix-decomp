@@ -9,7 +9,7 @@ extern "C"
 void AddMutexToContextLockedList(ProcessorContext* context, Mutex* mutex);
 void RemoveMutexFromContextLockedList(ProcessorContext* context, Mutex* mutex);
 
-void ZeroInitializeMutex(Mutex* mutex)
+void OS_InitMutex(Mutex* mutex)
 {
     mutex->waitingContexts_.first = mutex->waitingContexts_.last = NULL;
     mutex->ownedContext_ = NULL;

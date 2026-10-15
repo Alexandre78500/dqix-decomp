@@ -145,7 +145,7 @@ void CancelContextSleepAlarm(ProcessorContext *context)
     if (context->sleepAlarm == NULL)
         return;
 
-    CancelAlarm(context->sleepAlarm);
+    OS_CancelAlarm(context->sleepAlarm);
 }
 
 void OS_JoinThread(ProcessorContext *context) 
@@ -333,14 +333,14 @@ unsigned int OS_GetThreadPriority(ProcessorContext* context)
 void OS_Sleep(unsigned int milliseconds)
 {
     Alarm timing;
-    ZeroInitializeAlarm(&timing);
+    OS_CreateAlarm(&timing);
     ProcessorContext* context = *data_021112e0.ppActiveContext;
 
     int priorState = OS_DisableInterrupts();
 
     uint64_t numTicks = (uint64_t)milliseconds * TIMER_TICKS_PER_MILLISECOND >> 6;
     context->sleepAlarm = &timing;
-    SetTimeout(&timing, numTicks, &SleepCompletionProc, &context);
+    OS_SetAlarm(&timing, numTicks, &SleepCompletionProc, &context);
 
     if (context != NULL)
     {

@@ -77,7 +77,7 @@ inline volatile unsigned int& DMARegisterFill(int n)
     return *(volatile unsigned int*)(n * 4 + DMA_REGISTER_FILL_BASE);
 }
 
-void DMAMemsetSynchronous(int channel, unsigned int dst, unsigned int value, unsigned int len)
+void MI_DmaFill32(int channel, unsigned int dst, unsigned int value, unsigned int len)
 {
     if (len == 0)
         return;
@@ -126,7 +126,7 @@ void MI_DmaCopy16(int channel, unsigned int src, unsigned int dst, unsigned int 
     while (DMARegisterControl(channel) & DMA_CONTROL_ENABLE) {}
 }
 
-void DMAMemsetAsync(int channel, unsigned int dst, unsigned int value, unsigned int len,
+void MI_DmaFill32Async(int channel, unsigned int dst, unsigned int value, unsigned int len,
     DMACompletionCallback onCompletion, int callbackUserdata)
 {
     if (len == 0)

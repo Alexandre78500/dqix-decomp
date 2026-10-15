@@ -160,20 +160,20 @@ int InternalReleaseGBABus(unsigned short owner)
 
 // must be exposed
 #ifdef __MWERKS__
-asm int ReleaseGBABus(unsigned short owner)
+asm int OS_UnLockCartridge(unsigned short owner)
 {
     ldr r1, =InternalReleaseGBABus
     bx r1
 }
 #else
-int ReleaseGBABus(unsigned short owner)
+int OS_UnLockCartridge(unsigned short owner)
 {
     return InternalReleaseGBABus(owner);
 }
 #endif
 
 // must be exposed
-int TryAcquireGBABus(unsigned short owner)
+int OS_TryLockCartridge(unsigned short owner)
 {
     return TryLockGamecardBusLock(owner, PTR_GBA_BUS_LOCK, &MarkGBABusAcquired, true);
 }
@@ -215,7 +215,7 @@ void MarkNDSBusReleased()
 }
 
 // must be exposed
-unsigned short GetLockOwner(GamecardBusLock* lock)
+extern "C" unsigned short OS_ReadOwnerOfLockWord(GamecardBusLock* lock)
 {
     return lock->ownerID;
 }
@@ -227,6 +227,6 @@ inline int leadZeroCount(unsigned int what)
     return ret;
 }
 
-// GenerateLockOwnerID and ReleaseLockOwnerID are the next two functions,
+// OS_GetLockID and ReleaseLockOwnerID are the next two functions,
 // but they appear to be written in assembly (they use clz which the compiler
 // never emits, and more generally are quite weird for compiled code)

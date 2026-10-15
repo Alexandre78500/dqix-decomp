@@ -35,7 +35,7 @@ void CleanDataCache()
     } while (wayId != 0);
 }
 
-void CleanInvalidateDataCache()
+void DC_FlushAll()
 {
     int setId;
     int wayId;

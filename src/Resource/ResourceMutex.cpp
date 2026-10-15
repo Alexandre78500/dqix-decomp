@@ -30,7 +30,7 @@ void InitializeResourceMutex()
     if (!func_020c75a4())
         func_020c745c();
 
-    ZeroInitializeMutex(&s_resourceMutex.mutex_);
+    OS_InitMutex(&s_resourceMutex.mutex_);
     s_resourceMutex.lockPrerequisiteB_ = true;
     s_resourceMutex.unknown_0 = 1;
     s_resourceMutex.lockPrerequisiteA_ = true;

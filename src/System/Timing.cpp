@@ -34,7 +34,7 @@ void MarkAlarmInitializationFlagBit(int bit)
     data_02111634 |= (1 << bit);
 }
 
-void Initialize64BitTimer()
+void OS_InitTick()
 {
     if (data_02111638.isInitialized)
         return;
@@ -109,7 +109,7 @@ void MarkNextAlarmToSound(Alarm *timing)
     EnableSpecificInterrupts(IRQ_MASK_TIMER_1_OVERFLOW);
 }
 
-void InitializeActiveAlarmList()
+void OS_InitAlarm()
 {
     if (data_02111648.isInitialized)
         return;
@@ -121,12 +121,12 @@ void InitializeActiveAlarmList()
     DisableSpecificInterrupts(IRQ_MASK_TIMER_1_OVERFLOW);
 }
 
-int IsAlarmListInitialized()
+int OS_IsAlarmAvailable()
 {
     return data_02111648.isInitialized;
 }
 
-void ZeroInitializeAlarm(Alarm* alarm)
+void OS_CreateAlarm(Alarm* alarm)
 {
     alarm->completionProc = NULL;
     alarm->unknown_8 = 0;
@@ -189,7 +189,7 @@ void RegisterAlarm(Alarm* alarm, uint64_t ringTime)
     }
 }
 
-void SetTimeout(Alarm* alarm, uint64_t numTicks,
+void OS_SetAlarm(Alarm* alarm, uint64_t numTicks,
     Alarm::PFNCompletion callback, ProcessorContext** ppContext)
 {
     if (alarm == NULL || alarm->completionProc != NULL)
@@ -221,7 +221,7 @@ void SetInterval(Alarm *alarm, uint64_t residue, uint64_t interval,
     OS_RestoreInterrupts(priorState);
 }
 
-void CancelAlarm(Alarm *alarm)
+void OS_CancelAlarm(Alarm *alarm)
 {
     int priorState = OS_DisableInterrupts();
 

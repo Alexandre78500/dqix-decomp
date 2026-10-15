@@ -9,12 +9,12 @@ struct GamecardBusLock
 
 //void OS_InitLock();
 
-int ReleaseGBABus(unsigned short owner);
-int TryAcquireGBABus(unsigned short owner);
+extern "C" int OS_UnLockCartridge(unsigned short owner);
+extern "C" int OS_TryLockCartridge(unsigned short owner);
 
 int AcquireNDSBus(unsigned short owner);
 int ReleaseNDSBus(unsigned short owner);
 
-unsigned int GenerateLockOwnerID();
+extern "C" unsigned int OS_GetLockID();
 // parameter might be unsigned int
 void ReleaseLockOwnerID(unsigned short id);

@@ -300,10 +300,10 @@ int VRAMStagingManager::Stage(VRAMSubregion subregion, const void* data, unsigne
             switch (region)
             {
             case VRAMRegion_TexturePalette:
-                MemoryMapTexturePalette();
+                GX_BeginLoadTexPltt();
                 break;
             case VRAMRegion_TextureImage:
-                MemoryMapTextureImage();
+                GX_BeginLoadTex();
                 break;
             }
             DC_FlushRange(data, length);
@@ -312,10 +312,10 @@ int VRAMStagingManager::Stage(VRAMSubregion subregion, const void* data, unsigne
             switch (region)
             {
             case VRAMRegion_TexturePalette:
-                MemoryUnmapTexturePalette();
+                GX_EndLoadTexPltt();
                 break;
             case VRAMRegion_TextureImage:
-                MemoryUnmapTextureImage();
+                GX_EndLoadTex();
                 break;
             }
             textureLockMask_ >>= 1;
@@ -611,10 +611,10 @@ void VRAMStagingManager::SendReadyDataToVRAM()
         switch (region)
         {
         case VRAMRegion_TexturePalette:
-            MemoryMapTexturePalette();
+            GX_BeginLoadTexPltt();
             break;
         case VRAMRegion_TextureImage:
-            MemoryMapTextureImage();
+            GX_BeginLoadTex();
             break;
         }
 
@@ -642,7 +642,7 @@ void VRAMStagingManager::SendReadyDataToVRAM()
             copySource = (const void*)((intptr_t)pTask->copySource_ + pTask->wordsCopied_ * 4);
             destination = (pTask->destinationOffset_ + pTask->wordsCopied_) * 4;
             DC_FlushRange(copySource, amountToCopyThisTask);
-            // e.g. LoadToTexturePalette
+            // e.g. GX_LoadTexPltt
             g_vramSubregionLoadFunctions[pTask->subregion_](copySource, destination, amountToCopyThisTask);
             DC_StoreRange(copySource, amountToCopyThisTask);
             amountCopiedThisGroup += amountToCopyThisTask;
@@ -657,10 +657,10 @@ void VRAMStagingManager::SendReadyDataToVRAM()
         switch (groupingData[0]) // region
         {
         case VRAMRegion_TexturePalette:
-            MemoryUnmapTexturePalette();
+            GX_EndLoadTexPltt();
             break;
         case VRAMRegion_TextureImage:
-            MemoryUnmapTextureImage();
+            GX_EndLoadTex();
             break;
         }
     }

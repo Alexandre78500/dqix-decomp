@@ -240,7 +240,7 @@ int UnsupportedFilesystemOpcodeOverride(NitroVM*, int)
 void InitializeROMFilesystem_Internal(unsigned int channel)
 {
     data_0211173c.dmaChannel = channel;
-    data_0211173c.busHolderID = GenerateLockOwnerID();
+    data_0211173c.busHolderID = OS_GetLockID();
     data_0211173c.arm9Data.start = NULL;
     data_0211173c.arm9Data.size = 0;
     data_0211173c.arm7Data.start = NULL;

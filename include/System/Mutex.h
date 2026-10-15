@@ -15,7 +15,7 @@ struct Mutex
 };
 
 // usa: func_020c805c
-void ZeroInitializeMutex(Mutex* mutex);
+extern "C" void OS_InitMutex(Mutex* mutex);
 // usa: func_020c8074
 extern "C" void OS_LockMutex(Mutex* mutex);
 // usa: func_020c80f8

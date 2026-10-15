@@ -29,13 +29,13 @@ void ConfigureDMATransferSafeAtomic(int channel, unsigned src, unsigned dst, uns
 void ConfigureDMATransfer(int channel, unsigned src, unsigned dst, unsigned ctrl);
 void ConfigureDMATransferSafe(int channel, unsigned src, unsigned dst, unsigned ctrl);
 
-void DMAMemsetSynchronous(int channel, unsigned int dst, unsigned int value, unsigned int len);
+extern "C" void MI_DmaFill32(int channel, unsigned int dst, unsigned int value, unsigned int len);
 void DMAMemcpySynchronous(int channel, unsigned int src, unsigned int dst, unsigned int len);
 extern "C" void MI_DmaCopy16(int channel, unsigned int src, unsigned int dst, unsigned int len);
 
 // Because immediate mode DMA transfers block the CPU until done, this isn't
 // actually async, just set up to look like it
-void DMAMemsetAsync(int channel, unsigned int dst, unsigned int value, unsigned int len,
+extern "C" void MI_DmaFill32Async(int channel, unsigned int dst, unsigned int value, unsigned int len,
     DMACompletionCallback onCompletion, int callbackUserdata);
 void DMAMemcpyAsync(int channel, unsigned int src, unsigned int dst, unsigned int len,
     DMACompletionCallback onCompletion, int callbackUserdata);

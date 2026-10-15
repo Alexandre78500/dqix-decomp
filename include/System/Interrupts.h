@@ -82,7 +82,7 @@ copied from GBATek documentation:
 #define IRQ_MASK_ARM7_SPI_BUS (1 << 23)
 #define IRQ_MASK_ARM7_WIFI (1 << 24)
 
-unsigned int SetSpecificInterruptsEnabled(unsigned int which);
+extern "C" unsigned int OS_SetIrqMask(unsigned int which);
 // Returns the previous state of interrupts enabled
 unsigned int EnableSpecificInterrupts(unsigned int flagMask);
 // Returns the previous state of interrupts enabled

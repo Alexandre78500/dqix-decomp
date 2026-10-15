@@ -4,7 +4,7 @@
 #define INTERRUPT_ENABLE (*(volatile unsigned int*)0x04000210)
 #define INTERRUPT_REQUEST_FLAGS (*(volatile unsigned int*)0x04000214)
 
-unsigned int SetSpecificInterruptsEnabled(unsigned int which)
+unsigned int OS_SetIrqMask(unsigned int which)
 {
     unsigned int oldIME = INTERRUPT_MASTER_ENABLE;
     INTERRUPT_MASTER_ENABLE = 0;
