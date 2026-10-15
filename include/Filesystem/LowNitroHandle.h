@@ -3,7 +3,7 @@
 #include "NitroVM.h"
 
 void NitroHandle_Initialize(NitroHandle*);
-NitroHandle* NitroHandle_FindBySignature(const char* str, int len);
+extern "C" NitroHandle* FS_FindArchive(const char* str, int len);
 CBool NitroHandle_AddToHandleList(NitroHandle*, const char* sig, int len);
 void NitroHandle_RemoveFromHandleList(NitroHandle*);
 
@@ -33,7 +33,7 @@ void NitroHandle_OnTaskCompletion(NitroHandle*, int result);
 
 void InitializeCartridgeFilesystem(int unknown);
 
-void NitroVM_Initialize(NitroVM*);
+extern "C" void FS_InitFile(NitroVM*);
 
 // Can be used with a temporary VM, and doesn't need a nitro handle
 // attached - it will be assigned by the function itself

@@ -26,7 +26,7 @@ extern int data_021112dc;
 
 extern "C"
 {
-    void WaitByLoop(int);
+    void SVC_WaitByLoop(int);
 
     // aligned memset clone
     void MIi_CpuClear32(int val, void* dst, unsigned len);
@@ -36,8 +36,8 @@ extern "C"
 }
 
 int TryLockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onLock)(), bool strict);
-int WeakLockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onLock)());
-int WeakUnlockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onUnlock)());
+extern "C" int OS_LockByWord(unsigned short owner, GamecardBusLock* lock, void (*onLock)());
+extern "C" int OS_UnlockByWord(unsigned short owner, GamecardBusLock* lock, void (*onUnlock)());
 
 void MarkGBABusAcquired(); // acquire gba bus
 void MarkGBABusReleased(); // release gba bus
@@ -47,7 +47,7 @@ void MarkNDSBusReleased();
 
 #if false
 // this is almost correct except the first bit, excluding it for now
-void InitializeGamecardBusOwnership()
+extern "C" void OS_InitLock()
 {
     if (data_021112dc)
     {
@@ -58,13 +58,13 @@ void InitializeGamecardBusOwnership()
     data_021112dc = true;
     ndsLock->atomic = 0;
     
-    WeakLockGamecardBusLock(126, ndsLock, NULL);
+    OS_LockByWord(126, ndsLock, NULL);
 
     if (ndsLock->unknown_6)
     {
         do
         {
-            WaitByLoop(0x400);
+            SVC_WaitByLoop(0x400);
         } while (ndsLock->unknown_6);
     }
 
@@ -75,8 +75,8 @@ void InitializeGamecardBusOwnership()
     REG_EXTMEMCTRL |= EXTMEMCTRL_FLAG_RELINQUISH_NDS_BUS;
     REG_EXTMEMCTRL |= EXTMEMCTRL_FLAG_RELINQUISH_GBA_BUS;
 
-    WeakUnlockGamecardBusLock(126, ndsLock, NULL);
-    WeakLockGamecardBusLock(127, ndsLock, NULL);
+    OS_UnlockByWord(126, ndsLock, NULL);
+    OS_LockByWord(127, ndsLock, NULL);
 }
 #endif
 
@@ -86,13 +86,13 @@ int LockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onLo
     if (TryLockGamecardBusLock(owner, lock, onLock, strict) > 0)
     {
         do {
-            WaitByLoop(0x400);
+            SVC_WaitByLoop(0x400);
         } while (TryLockGamecardBusLock(owner, lock, onLock, strict) > 0);
     }
 }
 
 // can be static
-int WeakLockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onLock)())
+int OS_LockByWord(unsigned short owner, GamecardBusLock* lock, void (*onLock)())
 {
     return LockGamecardBusLock(owner, lock, onLock, false);
 }
@@ -107,7 +107,7 @@ int UnlockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*on
     if (strict)
         priorState = DisableIRQAndFIQInterrupts();
     else
-        priorState = DisableIRQInterrupts();
+        priorState = OS_DisableInterrupts();
 
     lock->ownerID = 0;
     if (onUnlock != NULL)
@@ -118,12 +118,12 @@ int UnlockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*on
     if (strict)
         SetIRQAndFIQInterruptState(priorState);
     else
-        SetIRQInterruptState(priorState);
+        OS_RestoreInterrupts(priorState);
     return 0;
 }
 
 // can be static
-int WeakUnlockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*onUnlock)())
+int OS_UnlockByWord(unsigned short owner, GamecardBusLock* lock, void (*onUnlock)())
 {
     return UnlockGamecardBusLock(owner, lock, onUnlock, false);
 }
@@ -135,7 +135,7 @@ int TryLockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*o
     if (strict)
         priorState = DisableIRQAndFIQInterrupts();
     else
-        priorState = DisableIRQInterrupts();
+        priorState = OS_DisableInterrupts();
 
     int oldAtomic = MI_SwapWord(owner, &lock->atomic);
     if (oldAtomic == 0)
@@ -148,7 +148,7 @@ int TryLockGamecardBusLock(unsigned short owner, GamecardBusLock* lock, void (*o
     if (strict)
         SetIRQAndFIQInterruptState(priorState);
     else
-        SetIRQInterruptState(priorState);
+        OS_RestoreInterrupts(priorState);
     return oldAtomic;
 }
 
@@ -160,20 +160,20 @@ int InternalReleaseGBABus(unsigned short owner)
 
 // must be exposed
 #ifdef __MWERKS__
-asm int ReleaseGBABus(unsigned short owner)
+asm int OS_UnLockCartridge(unsigned short owner)
 {
     ldr r1, =InternalReleaseGBABus
     bx r1
 }
 #else
-int ReleaseGBABus(unsigned short owner)
+int OS_UnLockCartridge(unsigned short owner)
 {
     return InternalReleaseGBABus(owner);
 }
 #endif
 
 // must be exposed
-int TryAcquireGBABus(unsigned short owner)
+int OS_TryLockCartridge(unsigned short owner)
 {
     return TryLockGamecardBusLock(owner, PTR_GBA_BUS_LOCK, &MarkGBABusAcquired, true);
 }
@@ -193,13 +193,13 @@ void MarkGBABusReleased()
 // must be exposed
 int AcquireNDSBus(unsigned short owner)
 {
-    return WeakLockGamecardBusLock(owner, PTR_NDS_BUS_LOCK, &MarkNDSBusAcquired);
+    return OS_LockByWord(owner, PTR_NDS_BUS_LOCK, &MarkNDSBusAcquired);
 }
 
 // must be exposed
 int ReleaseNDSBus(unsigned short owner)
 {
-    return WeakUnlockGamecardBusLock(owner, PTR_NDS_BUS_LOCK, &MarkNDSBusReleased);
+    return OS_UnlockByWord(owner, PTR_NDS_BUS_LOCK, &MarkNDSBusReleased);
 }
 
 // can be static
@@ -215,7 +215,7 @@ void MarkNDSBusReleased()
 }
 
 // must be exposed
-unsigned short GetLockOwner(GamecardBusLock* lock)
+extern "C" unsigned short OS_ReadOwnerOfLockWord(GamecardBusLock* lock)
 {
     return lock->ownerID;
 }
@@ -227,6 +227,6 @@ inline int leadZeroCount(unsigned int what)
     return ret;
 }
 
-// GenerateLockOwnerID and ReleaseLockOwnerID are the next two functions,
+// OS_GetLockID and ReleaseLockOwnerID are the next two functions,
 // but they appear to be written in assembly (they use clz which the compiler
 // never emits, and more generally are quite weird for compiled code)

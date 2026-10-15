@@ -35,3 +35,52 @@ libs/NitroSDK/src/mb/mb_comm_params.c:
 libs/NitroSDK/src/mb/mb_wm_error.c:
     complete
     .text start:0x021dd0cc end:0x021dd104
+
+libs/NitroSDK/src/mb/mb_parent_comm.c:
+    complete
+    .text start:0x021d8a40 end:0x021d8c94
+
+libs/NitroSDK/src/mb/mb_parent_data.c:
+    complete
+    .text start:0x021d9618 end:0x021d9940
+
+libs/NitroSDK/src/mb/mb_parent_util.c:
+    complete
+    .text start:0x021d9dd8 end:0x021d9e9c
+
+libs/NitroSDK/src/mb/mb_download_info.c:
+    complete
+    .text start:0x021da314 end:0x021dafc0
+
+libs/NitroSDK/src/mb/mb_beacon_fixed.c:
+    complete
+    .text start:0x021dafc0 end:0x021db124
+
+libs/NitroSDK/src/mb/mb_beacon_volat.c:
+    complete
+    .text start:0x021db154 end:0x021db3c0
+
+libs/NitroSDK/src/mb/mb_wm_callbacks.c:
+    complete
+    .text start:0x021db3c0 end:0x021dc680
+
+libs/NitroSDK/src/mb/mb_init.c:
+    complete
+    .text start:0x021dc680 end:0x021dc864
+    .data start:0x021dd8ec end:0x021dd910
+
+libs/NitroSDK/src/mb/mb_parent_start_end.c:
+    complete
+    .text start:0x021dc864 end:0x021dcd5c
+
+libs/NitroSDK/src/mb/mb_cache.c:
+    complete
+    .text start:0x021dd104 end:0x021dd180
+
+libs/NitroSDK/src/mb/mb_task_thread.c:
+    complete
+    .text start:0x021dd180 end:0x021dd3b0
+
+libs/NitroSDK/src/mb/mb_task_piece_buffer.c:
+    complete
+    .text start:0x021dd3b0 end:0x021dd8b8

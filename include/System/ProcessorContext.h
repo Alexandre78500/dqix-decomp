@@ -124,38 +124,38 @@ void SwitchContext();
 
 int IsPrimaryContextSetUp();
 
-void PopulateContext(ProcessorContext* context, unsigned int startAddress, unsigned int userdata,
+extern "C" void OS_CreateThread(ProcessorContext* context, unsigned int startAddress, unsigned int userdata,
     unsigned int stackBottom, unsigned int stackSize, unsigned int priority);
 
-void ContextExecutionReturnProc();
+extern "C" void OS_ExitThread();
 void ExitContext(ProcessorContext* context, int exitCode);
 void ExitCurrentContext(int code);
 void ShutdownCurrentContext();
-void ShutdownContext(ProcessorContext* context);
+extern "C" void OS_DestroyThread(ProcessorContext* context);
 void CancelContextSleepAlarm(ProcessorContext* context);
-void AwaitContextCompletion(ProcessorContext* context);
+extern "C" void OS_JoinThread(ProcessorContext* context);
 
-void BlockCurrentContext(BlockedContextList* blockQueue);
-void UnblockContexts(BlockedContextList* blockQueue);
-void MarkContextReadyAndSwitch(ProcessorContext* context);
+extern "C" void OS_SleepThread(BlockedContextList* blockQueue);
+extern "C" void OS_WakeupThread(BlockedContextList* blockQueue);
+extern "C" void OS_WakeupThreadDirect(ProcessorContext* context);
 ProcessorContext* GetFirstReadyContext();
 
 // Wraps SwitchContext() in calls to disable then enable interrupts
 // (every other use of SwitchContext() does this already)
-void SwitchContextUninterrupted();
+extern "C" void OS_RescheduleThread();
 
 // Reorders the global context list to put the active one at the back of
 // the sublist with equal priority. e.g. if the list is currently 
 // high -> A -> B -> C -> low with A the currently active context, it will be
 // shuffled to high -> B -> C -> A -> low.
-void CycleCurrentPriorityContexts();
+extern "C" void OS_YieldThread();
 
 void MarkContextStackTopUnknownSubspace(ProcessorContext* context, unsigned int size);
 
-bool ChangeContextPriority(ProcessorContext* context, unsigned int newPriority);
-unsigned int GetContextPriority(ProcessorContext* context);
+extern "C" bool OS_SetThreadPriority(ProcessorContext* context, unsigned int newPriority);
+extern "C" unsigned int OS_GetThreadPriority(ProcessorContext* context);
 
-void SleepCurrentContext(unsigned int milliseconds);
+extern "C" void OS_Sleep(unsigned int milliseconds);
 void SleepCompletionProc(ProcessorContext** ppContext);
 
 // Returns the old proc
@@ -163,14 +163,14 @@ PFNSwitchContextProc SetSwitchContextProcB(PFNSwitchContextProc proc);
 // Used by one context to just repeatedly wait for interrupts
 void InterruptWaitLoopFunction(void* unusedUserdata);
 
-unsigned int AddContextSwitchLock();
-unsigned int RemoveContextSwitchLock();
+extern "C" unsigned int OS_DisableScheduler();
+extern "C" unsigned int OS_EnableScheduler();
 
 void SetContextEndProc(ProcessorContext* context, ProcessorContext::ExitRoutine proc);
 
 void InitializeContextRegisters(ProcessorContext* context, unsigned int startAddress, unsigned int stackBottom);
 
 // low level asm stuff, probably not going in decomp
-extern "C" int SaveContext(ProcessorContext* context);
-extern "C" void RestoreContext(ProcessorContext* context);
+extern "C" int OS_SaveContext(ProcessorContext* context);
+extern "C" void OS_LoadContext(ProcessorContext* context);
 

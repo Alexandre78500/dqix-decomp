@@ -7,7 +7,7 @@
 #if defined(jpn)
 #define MIi_CpuClear16 func_020cbe5c
 
-#define data_020f1c74 data_020f1de0
+#define gAnmCalcFuncNsBca data_020f1de0
 #endif
 
 extern "C"
@@ -16,17 +16,17 @@ extern "C"
     void MIi_CpuClear16(int value, void* dst, unsigned len);
 }
 
-void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32_t time, BoneMatrixRenderData* bmrd);
+extern "C" void getJntSRTAnmResult_(NSBXXAnimationJAC* jac, int arg, fix32_t time, BoneMatrixRenderData* bmrd);
 
-void CalculateTranslationAmountFrameAligned(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
-void CalculateTranslationAmountSmooth(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
+extern "C" void getTransData_(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
+extern "C" void getTransDataEx_(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
 
-void CalculateScalingAmountFrameAligned(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
-void CalculateScalingAmountSmooth(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
+extern "C" void getScaleData_(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
+extern "C" void getScaleDataEx_(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
 
-void CalculateRotationFrameAligned(Matrix3x3* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
-void CalculateRotationSmooth(Matrix3x3* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
-bool GetMatrixFromIndex(Matrix3x3* out, intptr_t pivotList, intptr_t basisList, int index);
+extern "C" void getRotData_(Matrix3x3* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
+extern "C" void getRotDataEx_(Matrix3x3* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac);
+extern "C" bool getRotDataByIdx_(Matrix3x3* out, intptr_t pivotList, intptr_t basisList, int index);
 
 static inline void CalculateThirdRowByCrossProduct(Matrix3x3* mat)
 {
@@ -43,13 +43,13 @@ static inline void CalculateThirdRowByCrossProduct(Matrix3x3* mat)
 }
 
 // processing callback for J.AC animations
-extern void (*data_020f1c74)(void*, AnimationData*, int);
+extern void (*gAnmCalcFuncNsBca)(void*, AnimationData*, int);
 
-void InitializeModelAnimationFromJAC(AnimationData* anim, void* pvJAC, NSBXXInternalModel* model)
+extern "C" void NNSi_G3dAnmObjInitNsBca(AnimationData* anim, void* pvJAC, NSBXXInternalModel* model)
 {
     NSBXXAnimationJAC* jac = (NSBXXAnimationJAC*)pvJAC;
     anim->pRawData_ = jac;
-    anim->callback_ = data_020f1c74;
+    anim->callback_ = gAnmCalcFuncNsBca;
     anim->numEntries_ = model->numBoneMatrices_;
     MIi_CpuClear16(0, anim->entries_, 2 * anim->numEntries_);
 
@@ -65,7 +65,7 @@ void InitializeModelAnimationFromJAC(AnimationData* anim, void* pvJAC, NSBXXInte
     }
 }
 
-void JACAnimationProcessingCallback(void* data, AnimationData* anim, int arg)
+extern "C" void NNSi_G3dAnmCalcNsBca(void* data, AnimationData* anim, int arg)
 {
     BoneMatrixRenderData* boneRenderData = (BoneMatrixRenderData*)data;
 
@@ -77,12 +77,12 @@ void JACAnimationProcessingCallback(void* data, AnimationData* anim, int arg)
     else if (time < 0)
         time = 0;
 
-    CalculateBoneMatrixRenderDataFromJAC(jac, arg, time, boneRenderData);
+    getJntSRTAnmResult_(jac, arg, time, boneRenderData);
 }
 
-void ApplyBindPoseTranslation(BoneMatrixRenderData* bmrd)
+extern "C" void getMdlTrans_(BoneMatrixRenderData* bmrd)
 {
-    RenderCommandHandler* handler = data_0210a274;
+    RenderCommandHandler* handler = gCurrentRenderState;
     // this is super cursed, but I guess this executes during command 6 when
     // ip[1] holds the bone index to apply stuff to
     NSBXXBoneMatrix* boneMatrix = handler->boneList_->GetEntryFromu32Offset_v2<NSBXXBoneMatrix>(handler->instructionPointer_[1]);
@@ -99,9 +99,9 @@ void ApplyBindPoseTranslation(BoneMatrixRenderData* bmrd)
     }
 }
 
-void ApplyBindPoseScaling(BoneMatrixRenderData* bmrd)
+extern "C" void getMdlScale_(BoneMatrixRenderData* bmrd)
 {
-    RenderCommandHandler* handler = data_0210a274;
+    RenderCommandHandler* handler = gCurrentRenderState;
     uint8_t* ip = handler->instructionPointer_;
     NSBXXBoneMatrix* boneMatrix = handler->boneList_->GetEntryFromu32Offset_v2<NSBXXBoneMatrix>(ip[1]);
     intptr_t addrScaling = (intptr_t)(boneMatrix + 1);
@@ -119,9 +119,9 @@ void ApplyBindPoseScaling(BoneMatrixRenderData* bmrd)
 }
 
 // not quite a match, some register nonsense
-void ApplyBindPoseRotation(BoneMatrixRenderData* bmrd)
+extern "C" void getMdlRot_(BoneMatrixRenderData* bmrd)
 {  
-    RenderCommandHandler* handler = data_0210a274;
+    RenderCommandHandler* handler = gCurrentRenderState;
     NSBXXBoneMatrix* boneMatrix = handler->boneList_->GetEntryFromu32Offset_v2<NSBXXBoneMatrix>(handler->instructionPointer_[1]);
 
     intptr_t addrRotation = (intptr_t)(boneMatrix + 1);
@@ -138,22 +138,22 @@ void ApplyBindPoseRotation(BoneMatrixRenderData* bmrd)
             fix32_t entryA = pivot->a;
             fix32_t entryB = pivot->b;
 
-            func_020ca7d0(&bmrd->rotationMatrix_);
+            MI_Zero36B(&bmrd->rotationMatrix_);
             fix32_t unit = (boneMatrix->flags_ & 0x100) ? -1 << 12 : 1 << 12;
 
-            int indexA = data_020e9284[pivotForm].a;
-            int indexB = data_020e9284[pivotForm].b;
+            int indexA = gJntAnmPivotMtxIndices[pivotForm].a;
+            int indexB = gJntAnmPivotMtxIndices[pivotForm].b;
             
             bmrd->rotationMatrix_.entries[pivotForm] = unit;
             bmrd->rotationMatrix_.entries[indexA] = entryA;
             bmrd->rotationMatrix_.entries[indexB] = entryB;
 
             fix32_t entryC = (boneMatrix->flags_ & 0x200) ? -entryB : entryB;
-            int indexC = data_020e9284[pivotForm].c;
-            bmrd->rotationMatrix_.entries[data_020e9284[pivotForm].c] = entryC;
+            int indexC = gJntAnmPivotMtxIndices[pivotForm].c;
+            bmrd->rotationMatrix_.entries[gJntAnmPivotMtxIndices[pivotForm].c] = entryC;
 
             fix32_t entryD = (boneMatrix->flags_ & 0x400) ? -entryA : entryA;
-            int indexD = data_020e9284[pivotForm].d;
+            int indexD = gJntAnmPivotMtxIndices[pivotForm].d;
             bmrd->rotationMatrix_.entries[indexD] = entryD;
         }
         else // generic 3x3 matrix format
@@ -176,7 +176,7 @@ void ApplyBindPoseRotation(BoneMatrixRenderData* bmrd)
     }
 }
 
-void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32_t time, BoneMatrixRenderData* bmrd)
+void getJntSRTAnmResult_(NSBXXAnimationJAC* jac, int arg, fix32_t time, BoneMatrixRenderData* bmrd)
 {
     NSBXXAnimationJAC::Track* track = (NSBXXAnimationJAC::Track*)((intptr_t)jac + jac->trackOffsets_[arg]);
 
@@ -202,9 +202,9 @@ void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32
             if (!(trackFlags & 0x08)) // x translation non-const
             {
                 if (smooth)
-                    CalculateTranslationAmountSmooth(&bmrd->translate_.x, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getTransDataEx_(&bmrd->translate_.x, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 else
-                    CalculateTranslationAmountFrameAligned(&bmrd->translate_.x, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getTransData_(&bmrd->translate_.x, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 channelAddr += sizeof(NSBXXAnimationJAC::Track::ChannelNonConst);
             }
             else // x-translation constant
@@ -216,9 +216,9 @@ void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32
             if (!(trackFlags & 0x10)) // y-translation non-const
             {
                 if (smooth)
-                    CalculateTranslationAmountSmooth(&bmrd->translate_.y, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getTransDataEx_(&bmrd->translate_.y, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 else
-                    CalculateTranslationAmountFrameAligned(&bmrd->translate_.y, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getTransData_(&bmrd->translate_.y, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 channelAddr += sizeof(NSBXXAnimationJAC::Track::ChannelNonConst);
             }
             else // y-translation constant
@@ -230,9 +230,9 @@ void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32
             if (!(trackFlags & 0x20)) // z-translation non-const
             {
                 if (smooth)
-                    CalculateTranslationAmountSmooth(&bmrd->translate_.z, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getTransDataEx_(&bmrd->translate_.z, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 else
-                    CalculateTranslationAmountFrameAligned(&bmrd->translate_.z, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getTransData_(&bmrd->translate_.z, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 channelAddr += sizeof(NSBXXAnimationJAC::Track::ChannelNonConst);
             }
             else // z-translation constant
@@ -247,7 +247,7 @@ void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32
         }
         else
         {
-            ApplyBindPoseTranslation(bmrd);
+            getMdlTrans_(bmrd);
         }
 
         if (!(trackFlags & 0xc0))
@@ -255,14 +255,14 @@ void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32
             if (!(trackFlags & 0x100))
             {
                 if (smooth)
-                    CalculateRotationSmooth(&bmrd->rotationMatrix_, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getRotDataEx_(&bmrd->rotationMatrix_, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 else
-                    CalculateRotationFrameAligned(&bmrd->rotationMatrix_, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getRotData_(&bmrd->rotationMatrix_, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 channelAddr += sizeof(NSBXXAnimationJAC::Track::ChannelNonConst);
             }
             else // rotation channel constant
             {
-                if (GetMatrixFromIndex(&bmrd->rotationMatrix_, (intptr_t)jac->GetPivotMatrices(), (intptr_t)jac->GetBasisMatrices(), *(uint32_t*)(channelAddr)))
+                if (getRotDataByIdx_(&bmrd->rotationMatrix_, (intptr_t)jac->GetPivotMatrices(), (intptr_t)jac->GetBasisMatrices(), *(uint32_t*)(channelAddr)))
                 {
                     fix32_t m23 = bmrd->rotationMatrix_.entries[5];
                     fix32_t m11 = bmrd->rotationMatrix_.entries[0];
@@ -287,7 +287,7 @@ void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32
         }
         else
         {
-            ApplyBindPoseRotation(bmrd);
+            getMdlRot_(bmrd);
         }
 
         if (!(trackFlags & 0x600)) // has scaling channels (check both bits)
@@ -297,9 +297,9 @@ void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32
             {
                 fix32_t xscales[2];
                 if (smooth)
-                    CalculateScalingAmountSmooth(xscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getScaleDataEx_(xscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 else
-                    CalculateScalingAmountFrameAligned(xscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getScaleData_(xscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 scaleData.x = xscales[0];
                 scaleData.x_v2 = xscales[1];
             }
@@ -314,9 +314,9 @@ void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32
             {
                 fix32_t yscales[2];
                 if (smooth)
-                    CalculateScalingAmountSmooth(yscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getScaleDataEx_(yscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 else
-                    CalculateScalingAmountFrameAligned(yscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getScaleData_(yscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 scaleData.y = yscales[0];
                 scaleData.y_v2 = yscales[1];
             }
@@ -331,9 +331,9 @@ void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32
             {
                 fix32_t zscales[2];
                 if (smooth)
-                    CalculateScalingAmountSmooth(zscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getScaleDataEx_(zscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 else
-                    CalculateScalingAmountFrameAligned(zscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
+                    getScaleData_(zscales, time, (NSBXXAnimationJAC::Track::ChannelNonConst*)channelAddr, jac);
                 scaleData.z = zscales[0];
                 scaleData.z_v2 = zscales[1];
             }
@@ -349,16 +349,16 @@ void CalculateBoneMatrixRenderDataFromJAC(NSBXXAnimationJAC* jac, int arg, fix32
         }
         else
         {
-            ApplyBindPoseScaling(bmrd);
+            getMdlScale_(bmrd);
             return;
         }
     }
 
     int boneMatrixFlags = (bmrd->flags_ & 1) ? 4 : 0;
-    data_0210a274->boneMatrixRenderDataScalePopulateProc_(bmrd, &scaleData, data_0210a274->instructionPointer_, boneMatrixFlags);
+    gCurrentRenderState->boneMatrixRenderDataScalePopulateProc_(bmrd, &scaleData, gCurrentRenderState->instructionPointer_, boneMatrixFlags);
 }
 
-void CalculateTranslationAmountFrameAligned(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
+void getTransData_(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
 {
     unsigned int highWeightFrame, lowWeightFrame;
     unsigned int metadata;
@@ -462,7 +462,7 @@ compute_directly:
 
 // note: this matches with sp1p5 or pre sp2p2 but does not match with sp2p2
 // combined with the fact we need O2,p I think this was compiled separately
-void CalculateTranslationAmountSmooth(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
+void getTransDataEx_(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
 {
     unsigned int frameIdx = time >> 12;
     fix32_t* samples = (fix32_t*)((intptr_t)jac + channel->samplesOffset_);
@@ -571,7 +571,7 @@ skip_default_values:
     *out = (lerp0 * preMultiply + ((time * (lerp1 - lerp0)) >> 12)) >> rightShift;
 }
 
-void CalculateScalingAmountFrameAligned(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
+void getScaleData_(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
 {
     unsigned int metadata;   
     unsigned int thisFrame = time >> 12;
@@ -701,7 +701,7 @@ compute_average:
     }
 }
 
-void CalculateScalingAmountSmooth(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
+void getScaleDataEx_(fix32_t* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
 {
     NSBXXAnimationJAC::ScaleSample32* samples = (NSBXXAnimationJAC::ScaleSample32*)((intptr_t)jac + channel->samplesOffset_);
     NSBXXAnimationJAC::ScaleSample16* samples16 = (NSBXXAnimationJAC::ScaleSample16*)samples;
@@ -815,7 +815,7 @@ skip_default_values:
     out[1] = (secondaryLerp0 * preMultiply + ((time * (secondaryLerp1 - secondaryLerp0)) >> 12)) >> rightShift;
 }
 
-void CalculateRotationFrameAligned(Matrix3x3* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
+void getRotData_(Matrix3x3* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
 {
     unsigned int flags = channel->metadata_;
     unsigned int frameIdx = time >> 12;
@@ -879,10 +879,10 @@ void CalculateRotationFrameAligned(Matrix3x3* out, fix32_t time, NSBXXAnimationJ
                 }
 
                 
-                anyBasisMatrix |= GetMatrixFromIndex(out, (intptr_t)jac + pivotOffset,
+                anyBasisMatrix |= getRotDataByIdx_(out, (intptr_t)jac + pivotOffset,
                     (intptr_t)jac + basisOffset, samples[highWeightFrame]);
                 Matrix3x3 tempMatrix;
-                anyBasisMatrix |= GetMatrixFromIndex(&tempMatrix, (intptr_t)jac + pivotOffset,
+                anyBasisMatrix |= getRotDataByIdx_(&tempMatrix, (intptr_t)jac + pivotOffset,
                     (intptr_t)jac + basisOffset, samples[lowWeightFrame]);
 
                 out->entries[0] = tempMatrix.entries[0] + out->entries[0] * 3;
@@ -922,9 +922,9 @@ calculate_by_average:
 {
     Matrix3x3 tempMatrix;
     int anyBasisMatrix = 0;
-    anyBasisMatrix |= GetMatrixFromIndex(out, (intptr_t)jac + pivotOffset,
+    anyBasisMatrix |= getRotDataByIdx_(out, (intptr_t)jac + pivotOffset,
         (intptr_t)jac + basisOffset, (samples + averageIdx)[0]);
-    anyBasisMatrix |= GetMatrixFromIndex(&tempMatrix, (intptr_t)jac + pivotOffset,
+    anyBasisMatrix |= getRotDataByIdx_(&tempMatrix, (intptr_t)jac + pivotOffset,
         (intptr_t)jac + basisOffset, (samples + averageIdx)[1]);
 
     out->entries[0] += tempMatrix.entries[0];
@@ -950,7 +950,7 @@ calculate_by_average:
 }
 calculate_exact_frame:
 {
-    bool isBasis = GetMatrixFromIndex(out, (intptr_t)jac + pivotOffset,
+    bool isBasis = getRotDataByIdx_(out, (intptr_t)jac + pivotOffset,
         (intptr_t)jac + basisOffset, samples[frameIdx]);
     if (isBasis)
         CalculateThirdRowByCrossProduct(out);
@@ -959,7 +959,7 @@ calculate_exact_frame:
 }
 }
 
-void CalculateRotationSmooth(Matrix3x3* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
+void getRotDataEx_(Matrix3x3* out, fix32_t time, NSBXXAnimationJAC::Track::ChannelNonConst* channel, NSBXXAnimationJAC* jac)
 {
     unsigned int basisOffset, pivotOffset;
     pivotOffset = jac->pivotDataOffset_;
@@ -993,7 +993,7 @@ void CalculateRotationSmooth(Matrix3x3* out, fix32_t time, NSBXXAnimationJAC::Tr
         }
         else
         {
-            bool isBasis = GetMatrixFromIndex(out, (intptr_t)jac + pivotOffset,
+            bool isBasis = getRotDataByIdx_(out, (intptr_t)jac + pivotOffset,
                 (intptr_t)jac + basisOffset, samples[frameAIdx]);
             if (isBasis)
                 CalculateThirdRowByCrossProduct(out);
@@ -1051,9 +1051,9 @@ skip_default_values:
     Matrix3x3 matrixA;
     Matrix3x3 matrixB;
 
-    anyBasisMatrices |= GetMatrixFromIndex(&matrixA, (intptr_t)jac + pivotOffset,
+    anyBasisMatrices |= getRotDataByIdx_(&matrixA, (intptr_t)jac + pivotOffset,
         (intptr_t)jac + basisOffset, samples[frameAIdx]);
-    anyBasisMatrices |= GetMatrixFromIndex(&matrixB, (intptr_t)jac + pivotOffset,
+    anyBasisMatrices |= getRotDataByIdx_(&matrixB, (intptr_t)jac + pivotOffset,
         (intptr_t)jac + basisOffset, samples[frameBIdx]);
 
     out->entries[0] = matrixA.entries[0] * preMultiply + ((reducedTime * (matrixB.entries[0] - matrixA.entries[0])) >> 12);
@@ -1075,7 +1075,7 @@ skip_default_values:
         CalculateThirdRowByCrossProduct(out);
 }
 
-bool GetMatrixFromIndex(Matrix3x3* out, intptr_t pivotList, intptr_t basisList, int index)
+bool getRotDataByIdx_(Matrix3x3* out, intptr_t pivotList, intptr_t basisList, int index)
 {
     if (index & 0x8000) // pivot matrix
     {
@@ -1089,14 +1089,14 @@ bool GetMatrixFromIndex(Matrix3x3* out, intptr_t pivotList, intptr_t basisList, 
         int form = pivot->flags & 0xf;
         out->entries[form] = (pivot->flags & 0x10) ? -1 << 12 : 1 << 12;
 
-        out->entries[data_020e9284[form].a] = entryA;
-        out->entries[data_020e9284[form].b] = entryB;
+        out->entries[gJntAnmPivotMtxIndices[form].a] = entryA;
+        out->entries[gJntAnmPivotMtxIndices[form].b] = entryB;
 
         fix32_t entryC = (pivot->flags & 0x20) ? -entryB : entryB;
-        out->entries[data_020e9284[form].c] = entryC;
+        out->entries[gJntAnmPivotMtxIndices[form].c] = entryC;
         
         fix32_t entryD = (pivot->flags & 0x40) ? -entryA : entryA;
-        out->entries[data_020e9284[form].d] = entryD;
+        out->entries[gJntAnmPivotMtxIndices[form].d] = entryD;
 
         return false;
     }

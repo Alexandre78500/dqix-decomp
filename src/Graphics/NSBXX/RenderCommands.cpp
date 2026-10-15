@@ -104,15 +104,15 @@ void RenderModelFromRenderData(ModelRenderContext* renderData)
         renderData->flags_ &= ~0x10;
     }
 
-    if (data_0210a274 != NULL)
+    if (gCurrentRenderState != NULL)
     {
-        SetUpRenderCommandHandler(data_0210a274, renderData);
+        SetUpRenderCommandHandler(gCurrentRenderState, renderData);
     }
     else
     {
-        data_0210a274 = &handler;
+        gCurrentRenderState = &handler;
         SetUpRenderCommandHandler(&handler, renderData);
-        data_0210a274 = NULL;
+        gCurrentRenderState = NULL;
     }
 }
 
@@ -578,7 +578,7 @@ void RenderCommand_6(RenderCommandHandler* handler, int modifier)
                         (NSBXXBoneMatrix::PivotMatrixData*)boneMatrixExtraPtr;
                     fix32_t entryA = pivot->a;
                     fix32_t entryB = pivot->b;
-                    func_020ca7d0(&targetData->rotationMatrix_);
+                    MI_Zero36B(&targetData->rotationMatrix_);
                     
                     fix32_t unit;
                     if (boneMatrix->flags_ & 0x100)
@@ -724,7 +724,7 @@ void RenderCommand_7(RenderCommandHandler* handler, int modifier)
         Matrix4x4 clipMatrix;
         // get the current world * view matrix (we set projection matrix to identity, so
         // it doesn't contribute here)
-        while (func_020c54fc(&clipMatrix) != 0) {}
+        while (G3X_GetClipMtx(&clipMatrix) != 0) {}
         if (data_0210a010.flags & (1 << RENDER_CONFIG_FLAG_0))
         {
             const Matrix4x3* worldView4x3 = RenderConfig::GetCombinedWorldViewMatrix();
@@ -745,9 +745,9 @@ void RenderCommand_7(RenderCommandHandler* handler, int modifier)
         pTranslation->z = clipMatrix.entries[14];
 
         // store lengths of first 3 rows
-        pScaling->x = Vector3fix_Length(&clipMatrix.rows[0].xyz);
-        pScaling->y = Vector3fix_Length(&clipMatrix.rows[1].xyz);
-        pScaling->z = Vector3fix_Length(&clipMatrix.rows[2].xyz);
+        pScaling->x = VEC_Mag(&clipMatrix.rows[0].xyz);
+        pScaling->y = VEC_Mag(&clipMatrix.rows[1].xyz);
+        pScaling->z = VEC_Mag(&clipMatrix.rows[2].xyz);
 
         // note: if clipMatrix has a representation as (scaling) * (rotation) * (translation)
         // then the above is extracting the scaling and translation components
@@ -755,28 +755,28 @@ void RenderCommand_7(RenderCommandHandler* handler, int modifier)
         if (data_0210a010.flags & (1 << RENDER_CONFIG_FLAG_0))
         {
             GXFIFO = COMBINE_GXFIFO_COMMANDS3(GXFifoCommand_PopMatrix, GXFifoCommand_SetMatrixMode, GXFifoCommand_LoadMat4x3);
-            func_020ca430(&data_020f1d78.popMatrixParameter, &GXFIFO, 8); // pass pop / matrix mode commands
+            MIi_CpuSend32(&data_020f1d78.popMatrixParameter, &GXFIFO, 8); // pass pop / matrix mode commands
             // load the matrix returned by func_020b3a24(), inverse of func_020b39ec()
-            func_020ca430(RenderConfig::GetInverseCombinedWorldViewMatrix(), &GXFIFO, 4*3 * sizeof(fix32_t));
+            MIi_CpuSend32(RenderConfig::GetInverseCombinedWorldViewMatrix(), &GXFIFO, 4*3 * sizeof(fix32_t));
             // the matrix to multiply by is a translation matrix, so we're composing
             // scaling with translation (remember the final operation represents
             // the first matrix transformation to carry out)
             GXFIFO = COMBINE_GXFIFO_COMMANDS2(GXFifoCommand_MultiplyMat4x3, GXFifoCommand_ScaleMatrix);
-            func_020ca430(&data_020f1d78.rotationTranslation, &GXFIFO, (4*3 + 3) * sizeof(fix32_t));
+            MIi_CpuSend32(&data_020f1d78.rotationTranslation, &GXFIFO, (4*3 + 3) * sizeof(fix32_t));
         }
         else if (data_0210a010.flags & (1 << RENDER_CONFIG_FLAG_1))
         {
             GXFIFO = COMBINE_GXFIFO_COMMANDS3(GXFifoCommand_PopMatrix, GXFifoCommand_SetMatrixMode, GXFifoCommand_LoadMat4x3);
-            func_020ca430(&data_020f1d78.popMatrixParameter, &GXFIFO, 8);
-            func_020ca430(RenderConfig::GetInverseViewMatrix(), &GXFIFO, 4*3 * sizeof(fix32_t));
+            MIi_CpuSend32(&data_020f1d78.popMatrixParameter, &GXFIFO, 8);
+            MIi_CpuSend32(RenderConfig::GetInverseViewMatrix(), &GXFIFO, 4*3 * sizeof(fix32_t));
             GXFIFO = COMBINE_GXFIFO_COMMANDS2(GXFifoCommand_MultiplyMat4x3, GXFifoCommand_ScaleMatrix);
-            func_020ca430(&data_020f1d78.rotationTranslation, &GXFIFO, (4*3 + 3) * sizeof(fix32_t));
+            MIi_CpuSend32(&data_020f1d78.rotationTranslation, &GXFIFO, (4*3 + 3) * sizeof(fix32_t));
         }
         else
         {
             // send all the commands at once: pop the matrix, set matrix mode to 2,
             // then load a translation + scaling matrix
-            func_020ca430(&data_020f1d78, &GXFIFO, sizeof(data_020f1d78));
+            MIi_CpuSend32(&data_020f1d78, &GXFIFO, sizeof(data_020f1d78));
         }
 
     }
@@ -855,7 +855,7 @@ void RenderCommand_8(RenderCommandHandler* handler, int modifier)
         GXFIFO = 0; // matrix mode 0: projection
         GXFIFO = 0; // why is this here?
         Matrix4x4 clipMatrix;
-        while (func_020c54fc(&clipMatrix) != 0) {}
+        while (G3X_GetClipMtx(&clipMatrix) != 0) {}
         if (data_0210a010.flags & (1 << RENDER_CONFIG_FLAG_0))
         {
             const Matrix4x3* worldView4x3 = RenderConfig::GetCombinedWorldViewMatrix();
@@ -876,9 +876,9 @@ void RenderCommand_8(RenderCommandHandler* handler, int modifier)
         pTranslation->z = clipMatrix.entries[14];
 
         // store lengths of first 3 rows
-        pScaling->x = Vector3fix_Length(&clipMatrix.rows[0].xyz);
-        pScaling->y = Vector3fix_Length(&clipMatrix.rows[1].xyz);
-        pScaling->z = Vector3fix_Length(&clipMatrix.rows[2].xyz);
+        pScaling->x = VEC_Mag(&clipMatrix.rows[0].xyz);
+        pScaling->y = VEC_Mag(&clipMatrix.rows[1].xyz);
+        pScaling->z = VEC_Mag(&clipMatrix.rows[2].xyz);
 
         if (clipMatrix.rows[1].y != 0 || clipMatrix.rows[1].z != 0)
         {
@@ -902,30 +902,30 @@ void RenderCommand_8(RenderCommandHandler* handler, int modifier)
         if (data_0210a010.flags & (1 << RENDER_CONFIG_FLAG_0))
         {
             GXFIFO = COMBINE_GXFIFO_COMMANDS3(GXFifoCommand_PopMatrix, GXFifoCommand_SetMatrixMode, GXFifoCommand_LoadMat4x3);
-            func_020ca430(&data_020f1dc0.popMatrixParameter, &GXFIFO, 8); // pass pop / matrix mode commands
-            func_020ca430(RenderConfig::GetInverseCombinedWorldViewMatrix(), &GXFIFO, 3 * 4 * sizeof(fix32_t));
+            MIi_CpuSend32(&data_020f1dc0.popMatrixParameter, &GXFIFO, 8); // pass pop / matrix mode commands
+            MIi_CpuSend32(RenderConfig::GetInverseCombinedWorldViewMatrix(), &GXFIFO, 3 * 4 * sizeof(fix32_t));
             // the 4x3 matrix is a rotate-then-translate matrix. Recall that matrix multiplication
             // commands put the parameter on the inside, so we are actually ending 
             // up with (scale) -> (rotate then translate) -> (apply matrix from above)
             GXFIFO = COMBINE_GXFIFO_COMMANDS2(GXFifoCommand_MultiplyMat4x3, GXFifoCommand_ScaleMatrix);
-            func_020ca430(&data_020f1dc0.rotationTranslation, &GXFIFO, (4*3 + 3) * sizeof(fix32_t));
+            MIi_CpuSend32(&data_020f1dc0.rotationTranslation, &GXFIFO, (4*3 + 3) * sizeof(fix32_t));
         }
         else if (data_0210a010.flags & (1 << RENDER_CONFIG_FLAG_1))
         {
             GXFIFO = COMBINE_GXFIFO_COMMANDS3(GXFifoCommand_PopMatrix, GXFifoCommand_SetMatrixMode, GXFifoCommand_LoadMat4x3);
-            func_020ca430(&data_020f1dc0.popMatrixParameter, &GXFIFO, 8);
-            func_020ca430(RenderConfig::GetInverseViewMatrix(), &GXFIFO, 4*3 * sizeof(fix32_t));
+            MIi_CpuSend32(&data_020f1dc0.popMatrixParameter, &GXFIFO, 8);
+            MIi_CpuSend32(RenderConfig::GetInverseViewMatrix(), &GXFIFO, 4*3 * sizeof(fix32_t));
             // the 4x3 matrix is a rotate-then-translate matrix. Recall that matrix multiplication
             // commands put the parameter on the inside, so we are actually ending 
             // up with (scale) -> (rotate then translate) -> (apply matrix from above)
             GXFIFO = COMBINE_GXFIFO_COMMANDS2(GXFifoCommand_MultiplyMat4x3, GXFifoCommand_ScaleMatrix);
-            func_020ca430(&data_020f1dc0.rotationTranslation, &GXFIFO, (4*3 + 3) * sizeof(fix32_t));
+            MIi_CpuSend32(&data_020f1dc0.rotationTranslation, &GXFIFO, (4*3 + 3) * sizeof(fix32_t));
         }
         else
         {
             // send all the commands at once: pop the matrix, set matrix mode to 2,
             // then pre-apply a translation, then pre-apply a scaling
-            func_020ca430(&data_020f1dc0, &GXFIFO, sizeof(data_020f1dc0));
+            MIi_CpuSend32(&data_020f1dc0, &GXFIFO, sizeof(data_020f1dc0));
         }
     }
 

@@ -18,10 +18,10 @@ void NitroHandle_Initialize(NitroHandle* handle)
     handle->busReleaseBlock.first = NULL;
 }
 
-NitroHandle* NitroHandle_FindBySignature(const char* str, int len)
+NitroHandle* FS_FindArchive(const char* str, int len)
 {
     unsigned int targetSig = Nitro_CalculateSignature(str, len);
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
 
     NitroHandle* handle = data_02111728.firstHandle;
 
@@ -30,15 +30,15 @@ NitroHandle* NitroHandle_FindBySignature(const char* str, int len)
         handle = handle->pNextHandle;
     }
 
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
     return handle;
 }
 
 CBool NitroHandle_AddToHandleList(NitroHandle* handle, const char* str, int len)
 {
     CBool result = false;
-    int oldState = DisableIRQInterrupts();
-    if (NitroHandle_FindBySignature(str, len) == NULL)
+    int oldState = OS_DisableInterrupts();
+    if (FS_FindArchive(str, len) == NULL)
     {
         if (data_02111728.firstHandle == NULL)
         {
@@ -71,7 +71,7 @@ CBool NitroHandle_AddToHandleList(NitroHandle* handle, const char* str, int len)
         handle->flags |= (1 << NITROHANDLE_FLAG_IS_IN_MAIN_LIST);
     }
 
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
     return result;
 }
 
@@ -80,7 +80,7 @@ void NitroHandle_RemoveFromHandleList(NitroHandle* handle)
     if (handle->signature == 0)
         return;
 
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
 
     if (handle->pNextHandle != NULL)
         handle->pNextHandle->pPrevHandle = handle->pPrevHandle;
@@ -101,7 +101,7 @@ void NitroHandle_RemoveFromHandleList(NitroHandle* handle)
         data_02111728.romFSRoot.dirID = 0;
     }
 
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
 }
 
 CBool NitroHandle_Populate(NitroHandle* handle, void* image,
@@ -126,7 +126,7 @@ CBool NitroHandle_Populate(NitroHandle* handle, void* image,
 
 CBool NitroHandle_Destroy(NitroHandle* handle)
 {
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
     
     if (GET_FLAG_BIT(handle->flags, NITROHANDLE_FLAG_IS_POPULATED) != 0)
     {
@@ -158,7 +158,7 @@ CBool NitroHandle_Destroy(NitroHandle* handle)
 
         handle->flags &= ~((1 << NITROHANDLE_FLAG_DESTRUCTION_UNDERWAY) | (1 << NITROHANDLE_FLAG_VM_LIST_DIRTY) | (1 << NITROHANDLE_FLAG_IS_POPULATED));
     }
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
     return true;
 }
 
@@ -170,25 +170,25 @@ unsigned int NitroHandle_LoadFileTables(NitroHandle* handle, void* into, unsigne
     {
         void* alignedPtr = (void*)(((unsigned int)into + 0x1f) & ~0x1f);
         NitroVM vm;
-        NitroVM_Initialize(&vm);
-        if (NitroVM_PrepareRead(&vm, handle, 
+        FS_InitFile(&vm);
+        if (FS_OpenFileDirect(&vm, handle, 
             handle->fatOffsetFast,
             handle->fatOffsetFast + handle->fatSize, -1))
         {
-            if (NitroVM_ReadSync(&vm, alignedPtr, handle->fatSize) < 0)
+            if (FS_ReadFile(&vm, alignedPtr, handle->fatSize) < 0)
                 MI_CpuFill8(alignedPtr, 0, handle->fatSize);
-            NitroVM_FinishRead(&vm);
+            FS_CloseFile(&vm);
         }
         handle->fatOffsetFast = (unsigned int)alignedPtr;
         alignedPtr = (void*)((unsigned int)alignedPtr + handle->fatSize);
 
-        if (NitroVM_PrepareRead(&vm, handle, 
+        if (FS_OpenFileDirect(&vm, handle, 
             handle->nameTableOffsetFast,
             handle->nameTableOffsetFast + handle->nameTableSize, -1))
         {
-            if (NitroVM_ReadSync(&vm, alignedPtr, handle->nameTableSize) < 0)
+            if (FS_ReadFile(&vm, alignedPtr, handle->nameTableSize) < 0)
                 MI_CpuFill8(alignedPtr, 0, handle->nameTableSize);
-            NitroVM_FinishRead(&vm);
+            FS_CloseFile(&vm);
         }
 
         handle->nameTableOffsetFast = (unsigned int)alignedPtr;
@@ -223,7 +223,7 @@ void* NitroHandle_ReleaseFileTables(NitroHandle* handle)
 
 CBool NitroHandle_Pause(NitroHandle* handle)
 {
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
     CBool changeState = GET_FLAG_BIT(handle->flags, NITROHANDLE_FLAG_QUEUE_PAUSED) == 0;
     if (changeState)
     {
@@ -233,7 +233,7 @@ CBool NitroHandle_Pause(NitroHandle* handle)
         {
             handle->flags = oldFlags | (1 << NITROHANDLE_FLAG_AWAITING_BUS_RELEASE);
             do {
-                BlockCurrentContext(&handle->busReleaseBlock);
+                OS_SleepThread(&handle->busReleaseBlock);
             } while (GET_FLAG_BIT(handle->flags, NITROHANDLE_FLAG_AWAITING_BUS_RELEASE));
         }
         else
@@ -242,14 +242,14 @@ CBool NitroHandle_Pause(NitroHandle* handle)
         }
     }
 
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
     return changeState;
 }
 
 CBool NitroHandle_Unpause(NitroHandle* handle)
 {
     NitroVM* machine = NULL;
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
 
     CBool skip = GET_FLAG_BIT(handle->flags, NITROHANDLE_FLAG_QUEUE_PAUSED) == 0;
     if (!skip)
@@ -258,7 +258,7 @@ CBool NitroHandle_Unpause(NitroHandle* handle)
         machine = NitroHandle_AdvanceCommandQueue(handle);
     }
 
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
     if (machine != NULL)
         NitroVM_ProcessReadyCommandQueueEntries(machine);
     return skip;
@@ -290,11 +290,11 @@ void NitroHandle_OnTaskCompletion(NitroHandle* handle, int result)
     else
     {
         NitroVM* firstVM = handle->linkToFirstVM.pNext;
-        int oldState = DisableIRQInterrupts();
+        int oldState = OS_DisableInterrupts();
         firstVM->storedResult = result;
         handle->flags &= ~(1 << NITROHANDLE_FLAG_SYNC_COMMAND_IN_PROGRESS);
-        UnblockContexts(&handle->taskWaitBlock);
-        SetIRQInterruptState(oldState);
+        OS_WakeupThread(&handle->taskWaitBlock);
+        OS_RestoreInterrupts(oldState);
     }
 }
 
@@ -306,7 +306,7 @@ void InitializeROMFilesystem(int dmaChannel)
     InitializeROMFilesystem_Internal(dmaChannel);
 }
 
-void NitroVM_Initialize(NitroVM* vm)
+void FS_InitFile(NitroVM* vm)
 {
     vm->links.pPrev = NULL;
     vm->links.pNext = NULL;
@@ -342,7 +342,7 @@ int NitroVM_SearchFileOrDirectory(NitroVM* vm, const char* inPath,
             if (path[signatureIdx] != ':')
                 continue;
             
-            NitroHandle* handle = NitroHandle_FindBySignature(inPath, signatureIdx);
+            NitroHandle* handle = FS_FindArchive(inPath, signatureIdx);
 
             if (handle == NULL)
                 return false;

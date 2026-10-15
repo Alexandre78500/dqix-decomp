@@ -9,16 +9,16 @@ extern "C"
 void AddMutexToContextLockedList(ProcessorContext* context, Mutex* mutex);
 void RemoveMutexFromContextLockedList(ProcessorContext* context, Mutex* mutex);
 
-void ZeroInitializeMutex(Mutex* mutex)
+void OS_InitMutex(Mutex* mutex)
 {
     mutex->waitingContexts_.first = mutex->waitingContexts_.last = NULL;
     mutex->ownedContext_ = NULL;
     mutex->ownerRefcount_ = 0;
 }
 
-void LockMutex(Mutex* mutex)
+void OS_LockMutex(Mutex* mutex)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     ProcessorContext* thisContext = OSi_ThreadInfo.activeContext;
     while (true)
     {
@@ -37,16 +37,16 @@ void LockMutex(Mutex* mutex)
         else
         {
             thisContext->blockingMutex = mutex;
-            BlockCurrentContext(&mutex->waitingContexts_);
+            OS_SleepThread(&mutex->waitingContexts_);
             thisContext->blockingMutex = NULL;
         }
     }
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
-void UnlockMutex(Mutex* mutex)
+void OS_UnlockMutex(Mutex* mutex)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     ProcessorContext* thisContext = OSi_ThreadInfo.activeContext;
     if (mutex->ownedContext_ == thisContext)
     {
@@ -55,10 +55,10 @@ void UnlockMutex(Mutex* mutex)
         {
             RemoveMutexFromContextLockedList(thisContext, mutex);
             mutex->ownedContext_ = NULL;
-            UnblockContexts(&mutex->waitingContexts_);
+            OS_WakeupThread(&mutex->waitingContexts_);
         }
     }
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 void UnlockAllMutexesLockedByContext(ProcessorContext *context)
@@ -70,14 +70,14 @@ void UnlockAllMutexesLockedByContext(ProcessorContext *context)
             Mutex* mutex = PopFrontMutexFromList(&context->lockedMutexes);
             mutex->ownerRefcount_ = 0;
             mutex->ownedContext_ = NULL;
-            UnblockContexts(&mutex->waitingContexts_);
+            OS_WakeupThread(&mutex->waitingContexts_);
         } while (context->lockedMutexes.pFirst != NULL);
     }
 }
 
-bool TryLockMutex(Mutex* mutex)
+bool OS_TryLockMutex(Mutex* mutex)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     ProcessorContext* thisContext = OSi_ThreadInfo.activeContext;
     bool success;
     if (mutex->ownedContext_ == NULL)
@@ -95,7 +95,7 @@ bool TryLockMutex(Mutex* mutex)
     else
         success = false;
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
     return success;
 }
 

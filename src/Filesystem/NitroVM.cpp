@@ -18,7 +18,7 @@ extern unsigned char data_020f2288[]; // ":/"
 
 extern "C" void NitroVM_UnlinkAndStoreResult(NitroVM* vm, int result)
 {
-    int priorIRQState = DisableIRQInterrupts();
+    int priorIRQState = OS_DisableInterrupts();
 
     NitroVM* prev = vm->links.pPrev;
     NitroVM* next = vm->links.pNext;
@@ -40,9 +40,9 @@ extern "C" void NitroVM_UnlinkAndStoreResult(NitroVM* vm, int result)
         (1 << NITROVM_FLAG_READY_TO_EXECUTE));
     vm->storedResult = result;
 
-    UnblockContexts(&vm->blockedContexts);
+    OS_WakeupThread(&vm->blockedContexts);
 
-    SetIRQInterruptState(priorIRQState);
+    OS_RestoreInterrupts(priorIRQState);
 }
 
 extern "C" int NitroVM_ExecuteCommand(NitroVM* vm, int opcode)
@@ -99,16 +99,16 @@ extern "C" int NitroVM_ExecuteCommand(NitroVM* vm, int opcode)
     {
         if (GET_FLAG_BIT(vm->flags, NITROVM_FLAG_SYNCHRONOUS))
         {
-            int priorIRQState = DisableIRQInterrupts();
+            int priorIRQState = OS_DisableInterrupts();
             if (GET_FLAG_BIT(nitroHandle->flags, NITROHANDLE_FLAG_SYNC_COMMAND_IN_PROGRESS))
             {
                 do
                 {
-                    BlockCurrentContext(&nitroHandle->taskWaitBlock);
+                    OS_SleepThread(&nitroHandle->taskWaitBlock);
                 } while (GET_FLAG_BIT(nitroHandle->flags, NITROHANDLE_FLAG_SYNC_COMMAND_IN_PROGRESS));
             }
             result = vm->storedResult;
-            SetIRQInterruptState(priorIRQState);
+            OS_RestoreInterrupts(priorIRQState);
         }
     }
     else
@@ -169,16 +169,16 @@ int Nitro_ReadMetadataBytes(FSReadDescription* readDesc, void* dst, unsigned int
         break;
     case NITRO_RESULT_TASK_STILL_RUNNING:
     {
-        int priorState = DisableIRQInterrupts();
+        int priorState = OS_DisableInterrupts();
         if (GET_FLAG_BIT(nitroHandle->flags, NITROHANDLE_FLAG_SYNC_COMMAND_IN_PROGRESS))
         {
             do
             {
-                BlockCurrentContext(&nitroHandle->taskWaitBlock);
+                OS_SleepThread(&nitroHandle->taskWaitBlock);
             } while (GET_FLAG_BIT(nitroHandle->flags, NITROHANDLE_FLAG_SYNC_COMMAND_IN_PROGRESS));
         }
 
-        SetIRQInterruptState(priorState);
+        OS_RestoreInterrupts(priorState);
         result = nitroHandle->linkToFirstVM.pNext->storedResult;
     }
     }
@@ -429,7 +429,7 @@ int NitroVM_DefaultCommand_GetPath(NitroVM* vm)
 
     NitroHandle* nitroHandle = vm->linkedHandle;
     // Initialisation function
-    NitroVM_Initialize(&tempVM);
+    FS_InitFile(&tempVM);
     tempVM.linkedHandle = vm->linkedHandle;
     
     unsigned int targetFileID;
@@ -730,7 +730,7 @@ int MemoryMappedMetadataReadProc(NitroHandle* handle, void* dst, unsigned int of
 
 NitroVM* NitroHandle_AdvanceCommandQueue(NitroHandle* handle)
 {
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
     if (GET_FLAG_BIT(handle->flags, NITROHANDLE_FLAG_VM_LIST_DIRTY))
     {
         handle->flags &= ~(1 << NITROHANDLE_FLAG_VM_LIST_DIRTY);
@@ -762,20 +762,20 @@ NitroVM* NitroHandle_AdvanceCommandQueue(NitroHandle* handle)
             int flagCleared = !GET_FLAG_BIT(handle->flags, NITROHANDLE_FLAG_NDS_BUS_HELD);
             if (flagCleared)
                 handle->flags |= (1 << NITROHANDLE_FLAG_NDS_BUS_HELD);
-            SetIRQInterruptState(oldState);
+            OS_RestoreInterrupts(oldState);
             if (flagCleared && (handle->overrideOpcodeFlags & (1 << NITROVM_OPCODE_ACQUIRE_NDS_BUS)))
                 handle->instructionOverride(vm, NITROVM_OPCODE_ACQUIRE_NDS_BUS);
-            oldState = DisableIRQInterrupts();
+            oldState = OS_DisableInterrupts();
             vm->flags |= (1 << NITROVM_FLAG_READY_TO_EXECUTE);
             if (GET_FLAG_BIT(vm->flags, NITROVM_FLAG_SYNCHRONOUS))
             {
-                UnblockContexts(&vm->blockedContexts);
-                SetIRQInterruptState(oldState);
+                OS_WakeupThread(&vm->blockedContexts);
+                OS_RestoreInterrupts(oldState);
                 return NULL;
             }
             else
             {
-                SetIRQInterruptState(oldState);
+                OS_RestoreInterrupts(oldState);
                 return vm;
             }
         }
@@ -787,7 +787,7 @@ NitroVM* NitroHandle_AdvanceCommandQueue(NitroHandle* handle)
         if (handle->overrideOpcodeFlags & (1 << NITROVM_OPCODE_RELEASE_NDS_BUS))
         {
             NitroVM tempVM;
-            NitroVM_Initialize(&tempVM);
+            FS_InitFile(&tempVM);
             tempVM.linkedHandle = handle;
             handle->instructionOverride(&tempVM, NITROVM_OPCODE_RELEASE_NDS_BUS);
         }
@@ -796,10 +796,10 @@ NitroVM* NitroHandle_AdvanceCommandQueue(NitroHandle* handle)
     if (GET_FLAG_BIT(handle->flags, NITROHANDLE_FLAG_AWAITING_BUS_RELEASE))
     {
         handle->flags = (handle->flags & ~(1 << NITROHANDLE_FLAG_AWAITING_BUS_RELEASE)) | (1 << NITROHANDLE_FLAG_QUEUE_PAUSED);
-        UnblockContexts(&handle->busReleaseBlock);
+        OS_WakeupThread(&handle->busReleaseBlock);
     }
 
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
     return NULL;
 }
 
@@ -811,16 +811,16 @@ void NitroVM_ProcessReadyCommandQueueEntries(NitroVM* queueHead)
     {
         do
         {
-            int oldState = DisableIRQInterrupts();
+            int oldState = OS_DisableInterrupts();
             vm->flags |= (1 << NITROVM_FLAG_READY_TO_EXECUTE);
             if (GET_FLAG_BIT(vm->flags, NITROVM_FLAG_SYNCHRONOUS))
             {
-                UnblockContexts(&vm->blockedContexts);
-                SetIRQInterruptState(oldState);
+                OS_WakeupThread(&vm->blockedContexts);
+                OS_RestoreInterrupts(oldState);
                 break;
             }
             vm->flags |= (1 << NITROVM_FLAG_EXECUTING_FROM_QUEUE);
-            SetIRQInterruptState(oldState);
+            OS_RestoreInterrupts(oldState);
 
             if (NitroVM_ExecuteCommand(vm, vm->pendingCommand) == NITRO_RESULT_TASK_STILL_RUNNING)
                 break;
@@ -850,11 +850,11 @@ CBool NitroVM_QueueCommand(NitroVM* vm, int opcode)
     int opcodeMask = 1 << opcode;
     vm->flags |= (1 << NITROVM_FLAG_IN_HANDLE_QUEUE);
 
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
     if (handle->flags & (1 << NITROHANDLE_FLAG_DESTRUCTION_UNDERWAY))
     {
         NitroVM_UnlinkAndStoreResult(vm, NITRO_RESULT_INVALID_HANDLE);
-        SetIRQInterruptState(oldState);
+        OS_RestoreInterrupts(oldState);
         return false;
     }
 
@@ -892,32 +892,32 @@ CBool NitroVM_QueueCommand(NitroVM* vm, int opcode)
     {
         // Claim: if we get here, the queue was empty, so can execute this VM already
         handle->flags |= (1 << NITROHANDLE_FLAG_NDS_BUS_HELD);
-        SetIRQInterruptState(oldState);
+        OS_RestoreInterrupts(oldState);
         if (handle->overrideOpcodeFlags & (1 << NITROVM_OPCODE_ACQUIRE_NDS_BUS))
             handle->instructionOverride(vm, NITROVM_OPCODE_ACQUIRE_NDS_BUS);
-        int oldState = DisableIRQInterrupts();
+        int oldState = OS_DisableInterrupts();
         vm->flags |= (1 << NITROVM_FLAG_READY_TO_EXECUTE);
         if (!GET_FLAG_BIT(vm->flags, NITROVM_FLAG_SYNCHRONOUS))
         {
-            SetIRQInterruptState(oldState);
+            OS_RestoreInterrupts(oldState);
             NitroVM_ProcessReadyCommandQueueEntries(vm);
             return true;
         }
-        SetIRQInterruptState(oldState);
+        OS_RestoreInterrupts(oldState);
     }
     else
     {
         if (!GET_FLAG_BIT(vm->flags, NITROVM_FLAG_SYNCHRONOUS))
         {
-            SetIRQInterruptState(oldState);
+            OS_RestoreInterrupts(oldState);
             return true;
         }
 
         do
         {
-            BlockCurrentContext(&vm->blockedContexts);
+            OS_SleepThread(&vm->blockedContexts);
         } while (!(vm->flags & (1 << NITROVM_FLAG_READY_TO_EXECUTE)));
-        SetIRQInterruptState(oldState);
+        OS_RestoreInterrupts(oldState);
     }
     return NitroVM_ExecuteAndUnlink(vm);
 }

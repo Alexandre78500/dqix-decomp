@@ -3,7 +3,10 @@
 C sources of the Nintendo libraries linked into the game, imported from the
 [pokeheartgold](https://github.com/pret/pokeheartgold) decompilation, which uses the same
 library versions (NitroSDK 4.2, NitroWiFi 2.1, libCPS, NitroSystem, MSL_C).
-Only files that compile to the exact bytes of Dragon Quest IX (USA) are kept.
+Only files that compile to the exact bytes of Dragon Quest IX (USA) are kept. Most files
+are complete copies; the linker drops the functions the game does not contain. A few
+sources are cut down to the functions present in the game, when the missing ones would
+break the link (see `tools/heartgold_import/README.md`).
 
 - `build_settings.json`: compiler version and flags of each file (copied from the
   pokeheartgold Makefile), include paths, the game versions the files are built for, and

@@ -30,7 +30,7 @@ struct AnimationData
     // bone matrix etc). That is, entries[x] = y if track #y in the animation
     // pertains to {material, bone matrix, ...} #x in the model. However, there
     // seems to be a bug with the J.AC functionality: the function populating
-    // this struct (InitializeModelAnimationFromJAC, 020b7840 usa) fills the
+    // this struct (NNSi_G3dAnmObjInitNsBca, 020b7840 usa) fills the
     // list with entries[y] = x instead. All other usage of the array is consistent
     // with the previous description. In practice we seem to always have x = y
     // and so this never becomes an issue.

@@ -8,11 +8,11 @@
 unsigned int SetReadContextPriority(unsigned int priority)
 {
     CardReadManager* manager = (CardReadManager*)&cardi_common;
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     unsigned int oldPrio = manager->contextPriority_108;
     manager->contextPriority_108 = priority;
-    ChangeContextPriority(&manager->cartridgeReadContext, priority);
-    SetIRQInterruptState(priorState);
+    OS_SetThreadPriority(&manager->cartridgeReadContext, priority);
+    OS_RestoreInterrupts(priorState);
     return oldPrio;
 }
 

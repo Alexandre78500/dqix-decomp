@@ -530,17 +530,17 @@ void Object3D::ApplyTextures()
 
 void CreateRotationX(Matrix3x3* out, fix32_t s, fix32_t c)
 {
-    Mat3x3_WriteRotationX(out, s, c);
+    MTX_RotX33_(out, s, c);
 }
 
 void CreateRotationY(Matrix3x3* out, fix32_t s, fix32_t c)
 {
-    Mat3x3_WriteRotationY(out, s, c);
+    MTX_RotY33_(out, s, c);
 }
 
 void CreateRotationZ(Matrix3x3* out, fix32_t s, fix32_t c)
 {
-    Mat3x3_WriteRotationZ(out, s, c);
+    MTX_RotZ33_(out, s, c);
 }
 
 void Object3D::PopulateRenderConfigWorld()
@@ -583,7 +583,7 @@ void Object3D::PopulateRenderConfigWorld()
         RenderConfig::SetObjectScale(&multipliedScale);
         Vector3fix multipliedPosition;
         Vector3fixMultiply(&position_, &multipliedScale, &multipliedPosition);
-        Vector3fix_Add(&data_0210a010.objectRotationPosition.translation, &multipliedPosition, &multipliedPosition);
+        VEC_Add(&data_0210a010.objectRotationPosition.translation, &multipliedPosition, &multipliedPosition);
         RenderConfig::SetObjectPosition(&multipliedPosition);
     }
     else
@@ -848,7 +848,7 @@ void Object3D::MaybeUpdateBonePositions()
     fix32_t sine = fix32sin(rotation_.y);
 
     Matrix3x3 rotationMatrix;
-    Mat3x3_WriteRotationY(&rotationMatrix, sine, cosine);
+    MTX_RotY33_(&rotationMatrix, sine, cosine);
     func_02016d8c(&rotationMatrix);
     Vector3fix scale = { 0x1000, 0x1000, 0x1000 };
     RenderConfig::SetObjectScale(&scale);
@@ -1038,7 +1038,7 @@ bool Object3D::InternalLoadFromCHRArchive(ObjectArchiveLoadInfo* loadInfo)
         return false;
     NitroVM machine;
     SafeAllocator* allocator = loadInfo->allocator;
-    NitroVM_Initialize(&machine);
+    FS_InitFile(&machine);
     // Search the archive for an nsbmd file
     unsigned int fileID;
     for (fileID = 0; PrepareReadFileInNARCByID(&machine, &narc, fileID); fileID++)
@@ -1059,7 +1059,7 @@ bool Object3D::InternalLoadFromCHRArchive(ObjectArchiveLoadInfo* loadInfo)
                 void* allocation = allocator->Allocate(allocSize);
                 if (allocation == NULL)
                 {
-                    NitroVM_FinishRead(&machine);
+                    FS_CloseFile(&machine);
                     narc.Destroy();
                     return false;
                 }
@@ -1071,21 +1071,21 @@ bool Object3D::InternalLoadFromCHRArchive(ObjectArchiveLoadInfo* loadInfo)
             // rather than actually dangerous
             if (!SetModelFromFile(allocator, const_cast<void*>(fileBytes), fileLength, Model3D::TextureStagingMode_Normal))
             {
-                NitroVM_FinishRead(&machine);
+                FS_CloseFile(&machine);
                 narc.Destroy();
                 return false;
             }
-            NitroVM_FinishRead(&machine);
+            FS_CloseFile(&machine);
             break;
         }
-        NitroVM_FinishRead(&machine);
+        FS_CloseFile(&machine);
     }
     unsigned int fileLength;
     const void* fileBytes;
     AnimationPackage* animPackage = CreateType0AnimationPackage(allocator);
     if (animPackage == NULL)
     {
-        NitroVM_FinishRead(&machine);
+        FS_CloseFile(&machine);
         narc.Destroy();
         return false;
     }
@@ -1118,7 +1118,7 @@ bool Object3D::InternalLoadFromCHRArchive(ObjectArchiveLoadInfo* loadInfo)
                 void* allocation = allocator->Allocate(fileLength);
                 if (allocation == NULL)
                 {
-                    NitroVM_FinishRead(&machine);
+                    FS_CloseFile(&machine);
                     narc.Destroy();
                     return false;
                 }
@@ -1131,13 +1131,13 @@ bool Object3D::InternalLoadFromCHRArchive(ObjectArchiveLoadInfo* loadInfo)
             // see comments on earlier const casts for why this is not totally evil
             if (!anim3D->SetRawFile(const_cast<NSBXXContainer*>((const NSBXXContainer*)fileBytes)))
             {
-                NitroVM_FinishRead(&machine);
+                FS_CloseFile(&machine);
                 narc.Destroy();
                 return false;
             }
             if (!anim3D->CreateData(pModel_, allocator, NULL))
             {
-                NitroVM_FinishRead(&machine);
+                FS_CloseFile(&machine);
                 narc.Destroy();
                 return false;
             }
@@ -1149,7 +1149,7 @@ bool Object3D::InternalLoadFromCHRArchive(ObjectArchiveLoadInfo* loadInfo)
             animPackage->bcfgData.Reset();
             animPackage->bcfgData.LoadFromScript(allocator, scriptData, fileLength);
         }
-        NitroVM_FinishRead(&machine);
+        FS_CloseFile(&machine);
     }
     narc.Destroy();
     AnimationPackageListInsert(&loadedAnimationPackageList_, animPackage);
@@ -1212,7 +1212,7 @@ bool Object3D::LoadFromCCHROrCMOTArchive(ObjectArchiveLoadInfo *loadInfo, int (*
     NarcHandle narc;
     if (narc.Initialize("ARC", (const unsigned char*)narcBuffer))
     {
-        NitroVM_Initialize(&machine);
+        FS_InitFile(&machine);
         lookup.valid = true;
         ChecksumLookup::Entry* entry;
         int idx = 0;
@@ -1220,7 +1220,7 @@ bool Object3D::LoadFromCCHROrCMOTArchive(ObjectArchiveLoadInfo *loadInfo, int (*
         {
             if (idx >= 80)
             {
-                NitroVM_FinishRead(&machine);
+                FS_CloseFile(&machine);
                 lookup.valid = false;
                 break;
             }
@@ -1236,7 +1236,7 @@ bool Object3D::LoadFromCCHROrCMOTArchive(ObjectArchiveLoadInfo *loadInfo, int (*
             unsigned short invChecksum = 0;
             func_020d1d1c(&invChecksum, filename + 5, reducedNameLength);
             entry->checksum = ~invChecksum;
-            NitroVM_FinishRead(&machine);
+            FS_CloseFile(&machine);
         }
         lookup.numEntries = idx;
         narc.Destroy();
@@ -1293,7 +1293,7 @@ bool Object3D::LoadFromCCHROrCMOTArchive(ObjectArchiveLoadInfo *loadInfo, int (*
                         NarcHandle narc;
                         if (narc.Initialize("ARC", (const unsigned char*)archiveData))
                         {
-                            NitroVM_Initialize(&machine);
+                            FS_InitFile(&machine);
                             PrepareReadFileInNARCByID(&machine, &narc, k);
                             
                             NitroVM_WriteOutFilePath(&machine, filename, sizeof(filename));
@@ -1303,7 +1303,7 @@ bool Object3D::LoadFromCCHROrCMOTArchive(ObjectArchiveLoadInfo *loadInfo, int (*
                                 foundFileLength = machine.fileInfo.endOffset - machine.fileInfo.startOffset;
                                 foundInLookup_inner = true;
                             }
-                            NitroVM_FinishRead(&machine);
+                            FS_CloseFile(&machine);
                             narc.Destroy();
                         }
                         UnlockResourceMutex();
@@ -2066,6 +2066,6 @@ Vector3fix Object3D::GetPointInFront(fix32_t distance) const
     forward.z = fix32cos(ownRot.y);
     Vector3fix output;
     Vector3fixMultiplyScalar(&forward, distance, &output);
-    Vector3fix_Add(&output, &ownPos, &output);
+    VEC_Add(&output, &ownPos, &output);
     return output;
 }

@@ -56,7 +56,7 @@ extern "C" void RenderCommand_9(RenderCommandHandler* handler, int modifier)
             }
             if (!inBitfield)
             {
-                while (func_020c54fc(&ptr_r7->mat4x4) != 0) {}
+                while (G3X_GetClipMtx(&ptr_r7->mat4x4) != 0) {}
                 GXFIFO_MATRIX_MODE = 2; // position+vector
                 G3_MultMtx33(invBindMatrices[inverseBindIndex].mat3x3.entries);
             }
@@ -80,7 +80,7 @@ extern "C" void RenderCommand_9(RenderCommandHandler* handler, int modifier)
             mat3x3_unaffr8 = (fix32_t*)((intptr_t)&data_0210b678[0].mat3x3.entries[0] + offset);
             if (!inBitfield)
             {
-                while (func_020c552c(mat3x3_unaffr8) != 0) {}
+                while (G3X_GetVectorMtx(mat3x3_unaffr8) != 0) {}
             }
             termCounter++;
             

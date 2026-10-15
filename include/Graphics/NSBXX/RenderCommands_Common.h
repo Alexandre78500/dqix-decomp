@@ -17,15 +17,15 @@
 #if defined(jpn)
 #define data_020e9240 data_020e934c
 #define data_020e9260 data_020e936c
-#define data_020e9284 data_020e9390
+#define gJntAnmPivotMtxIndices data_020e9390
 #define data_020f1ce0 data_020f1e4c
 #define data_020f1cec data_020f1e58
 #define data_020f1cf8 data_020f1e64
 #define data_020f1d08 data_020f1e74
 #define data_020f1d78 data_020f1ee4
-#define data_020f1dc0 data_020f1f2c
+#define data_020f1dc0 gFrmTexVramRegion1
 #define data_020f1e08 data_020f1f74
-#define data_0210a274 data_02109f2c
+#define gCurrentRenderState data_02109f2c
 #define data_0210a278 data_02109f30
 #define data_0210b078 data_0210ad30
 
@@ -35,12 +35,12 @@
 #define func_020c2cf0 func_020c47bc
 #define func_020c2eb8 func_020c4984
 #define func_020c2f18 func_020c49e4
-#define func_020c54fc func_020c6fc8
+#define G3X_GetClipMtx func_020c6fc8
 #define MIi_CpuClear32 func_020cbeb8
-#define func_020ca408 func_020cbed4
-#define func_020ca430 func_020cbefc
+#define MIi_CpuCopy32 func_020cbed4
+#define MIi_CpuSend32 func_020cbefc
 #define MIi_CpuClearFast func_020cbf24
-#define func_020ca7d0 func_020cc29c
+#define MI_Zero36B func_020cc29c
 #endif
 
 // holds values:
@@ -60,7 +60,7 @@ extern unsigned int const data_020e9240[];
 // both arrays are identical
 extern struct {
     uint8_t a, b, c, d;
-} const data_020e9260[], data_020e9284[];
+} const data_020e9260[], gJntAnmPivotMtxIndices[];
 
 // Holds { func_020b9a2c, func_020b9b30, func_020ba390 }.
 // Called by command 6 to populate scaling data for the bone matrix
@@ -113,7 +113,7 @@ struct Struct_020f1d78 {
 // render command lookup
 extern void (*data_020f1e08[])(RenderCommandHandler*, int);
 
-extern struct RenderCommandHandler* data_0210a274;
+extern struct RenderCommandHandler* gCurrentRenderState;
 // sizeof == 0x38
 MaterialRenderData extern data_0210a278[64];
 
@@ -158,18 +158,18 @@ extern "C"
     void G3_MultMtx33(const fix32_t*);
     // try to get the clip matrix into the pointer specified (4x4 fix32_t matrix)
     // returns -1 if still waiting, 0 if done
-    int func_020c54fc(void*);
+    int G3X_GetClipMtx(void*);
     // try to get the result matrix (current directional vector matrix)
     // returns -1 if still waiting, 0 if done
-    int func_020c552c(void*);
+    int G3X_GetVectorMtx(void*);
     // memset via u32 values
     void MIi_CpuClear32(int value, void* dst, unsigned int len);
     // memcpy via u32 values
-    void func_020ca408(const void* src, void* dst, unsigned int numBytes);
+    void MIi_CpuCopy32(const void* src, void* dst, unsigned int numBytes);
     // repeatedly write u32s to dst (useful for hardware registers)
-    void func_020ca430(const void* src, volatile void* dst, unsigned int numBytes);
+    void MIi_CpuSend32(const void* src, volatile void* dst, unsigned int numBytes);
     // aligned 32-byte-looped memset
     void MIi_CpuClearFast(int value, void* dst, unsigned int len);
     // zero-initialize matrix
-    void func_020ca7d0(void*);
+    void MI_Zero36B(void*);
 }

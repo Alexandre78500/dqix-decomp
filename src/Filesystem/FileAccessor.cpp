@@ -16,12 +16,12 @@ extern char data_020f228c[]; // "rom"
 CBool CreateFileAccessor(NitroFileAccessor* outAccessor, const char* path)
 {
     NitroVM machine;
-    NitroVM_Initialize(&machine);
+    FS_InitFile(&machine);
 
     return NitroVM_SearchFileOrDirectory(&machine, path, outAccessor, NULL) != false;
 }
 
-CBool NitroVM_PrepareRead(NitroVM* vm, NitroHandle* handle,
+CBool FS_OpenFileDirect(NitroVM* vm, NitroHandle* handle,
     unsigned int start, unsigned int end, unsigned int fileID)
 {
     vm->linkedHandle = handle;
@@ -55,7 +55,7 @@ bool NitroVM_PrepareReadFileByID(NitroVM* vm, NitroFileAccessor volatile accesso
     return true;
 }
 
-bool NitroVM_PrepareReadFileByPath(NitroVM* vm, const char* path)
+bool FS_OpenFile(NitroVM* vm, const char* path)
 {
     NitroFileAccessor accessor;
     if (CreateFileAccessor(&accessor, path))
@@ -67,7 +67,7 @@ bool NitroVM_PrepareReadFileByPath(NitroVM* vm, const char* path)
     return false;
 }
 
-CBool NitroVM_FinishRead(NitroVM* vm)
+CBool FS_CloseFile(NitroVM* vm)
 {
     // this opcode executes synchronously, so when control returns here all
     // VMs before it will have executed their instructions
@@ -98,7 +98,7 @@ CBool NitroVM_AwaitCommandCompletion(NitroVM* vm)
 {
     CBool executionPending = false;
 
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
 
     if (GET_FLAG_BIT(vm->flags, NITROVM_FLAG_IN_HANDLE_QUEUE))
     {
@@ -109,18 +109,18 @@ CBool NitroVM_AwaitCommandCompletion(NitroVM* vm)
         {
             vm->flags |= (1 << NITROVM_FLAG_SYNCHRONOUS);
             do {
-                BlockCurrentContext(&vm->blockedContexts);
+                OS_SleepThread(&vm->blockedContexts);
             } while (!(vm->flags & (1 << NITROVM_FLAG_READY_TO_EXECUTE))); // why the different format here?
         }
         else
         {
             do {
-                BlockCurrentContext(&vm->blockedContexts);
+                OS_SleepThread(&vm->blockedContexts);
             } while (GET_FLAG_BIT(vm->flags, NITROVM_FLAG_IN_HANDLE_QUEUE));
         }
     }
 
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
 
     if (executionPending)
         return NitroVM_ExecuteAndUnlink(vm);
@@ -130,7 +130,7 @@ CBool NitroVM_AwaitCommandCompletion(NitroVM* vm)
 
 void NitroVM_CancelCommand(NitroVM* vm)
 {
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
 
     if (GET_FLAG_BIT(vm->flags, NITROVM_FLAG_IN_HANDLE_QUEUE))
     {
@@ -138,7 +138,7 @@ void NitroVM_CancelCommand(NitroVM* vm)
         vm->flags |= (1 << NITROVM_FLAG_MARKED_FOR_UNLINK_FROM_HANDLE);
         vm->linkedHandle->flags |= (1 << NITROHANDLE_FLAG_VM_LIST_DIRTY);
     }
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
 }
 
 int NitroVM_ReadAsync(NitroVM* vm, void* dst, int capacity)
@@ -146,12 +146,12 @@ int NitroVM_ReadAsync(NitroVM* vm, void* dst, int capacity)
     return NitroVM_Read(vm, dst, capacity, true);
 }
 
-int NitroVM_ReadSync(NitroVM* vm, void* dst, int capacity)
+int FS_ReadFile(NitroVM* vm, void* dst, int capacity)
 {
     return NitroVM_Read(vm, dst, capacity, false);
 }
 
-CBool NitroVM_Seek(NitroVM* vm, int offset, int whence)
+CBool FS_SeekFile(NitroVM* vm, int offset, int whence)
 {
     switch (whence)
     {
@@ -180,7 +180,7 @@ CBool NitroVM_Seek(NitroVM* vm, int offset, int whence)
 CBool SetROMFilesystemRoot(const char* path)
 {
     NitroVM vm;
-    NitroVM_Initialize(&vm);
+    FS_InitFile(&vm);
     NitroDirectoryAccessor accessor;
     if (!NitroVM_SearchFileOrDirectory(&vm, path, NULL, &accessor))
         return false;
@@ -240,7 +240,7 @@ int UnsupportedFilesystemOpcodeOverride(NitroVM*, int)
 void InitializeROMFilesystem_Internal(unsigned int channel)
 {
     data_0211173c.dmaChannel = channel;
-    data_0211173c.busHolderID = GenerateLockOwnerID();
+    data_0211173c.busHolderID = OS_GetLockID();
     data_0211173c.arm9Data.start = NULL;
     data_0211173c.arm9Data.size = 0;
     data_0211173c.arm7Data.start = NULL;
@@ -284,13 +284,13 @@ void InitializeROMFilesystem_Internal(unsigned int channel)
 
 unsigned int ChangeROMLoadDMAChannel(unsigned int newChannel)
 {
-    int oldState = DisableIRQInterrupts();
+    int oldState = OS_DisableInterrupts();
     unsigned int oldChannel = data_0211173c.dmaChannel;
     CBool destructionResult = NitroHandle_Pause(&data_02111754);
     data_0211173c.dmaChannel = newChannel;
     if (destructionResult)
         NitroHandle_Unpause(&data_02111754);
-    SetIRQInterruptState(oldState);
+    OS_RestoreInterrupts(oldState);
     return oldChannel;
 }
 

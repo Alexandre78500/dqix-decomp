@@ -15,12 +15,12 @@ struct Mutex
 };
 
 // usa: func_020c805c
-void ZeroInitializeMutex(Mutex* mutex);
+extern "C" void OS_InitMutex(Mutex* mutex);
 // usa: func_020c8074
-void LockMutex(Mutex* mutex);
+extern "C" void OS_LockMutex(Mutex* mutex);
 // usa: func_020c80f8
-void UnlockMutex(Mutex* mutex);
+extern "C" void OS_UnlockMutex(Mutex* mutex);
 // usa: func_020c8154
 void UnlockAllMutexesLockedByContext(ProcessorContext* context);
 // usa: func_020c8190
-bool TryLockMutex(Mutex* mutex);
+extern "C" bool OS_TryLockMutex(Mutex* mutex);

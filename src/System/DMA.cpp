@@ -14,7 +14,7 @@ extern "C"
     void OS_Terminate();
 }
 
-void VerifyDMASource(int channel, unsigned int source, unsigned int length, unsigned int sourceCtrlFlags);
+void MIi_CheckDma0SourceAddress(int channel, unsigned int source, unsigned int length, unsigned int sourceCtrlFlags);
 
 #define DMA_REGISTER_ADDR_BASE 0x040000b0
 #define DMA_REGISTER_FILL_BASE 0x040000e0
@@ -77,25 +77,25 @@ inline volatile unsigned int& DMARegisterFill(int n)
     return *(volatile unsigned int*)(n * 4 + DMA_REGISTER_FILL_BASE);
 }
 
-void DMAMemsetSynchronous(int channel, unsigned int dst, unsigned int value, unsigned int len)
+void MI_DmaFill32(int channel, unsigned int dst, unsigned int value, unsigned int len)
 {
     if (len == 0)
         return;
     while (DMARegisterControl(channel) & DMA_CONTROL_ENABLE) {}
 
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     DMARegisterFill(channel) = value;
     ConfigureDMATransferSafe(channel, (unsigned int)&DMARegisterFill(channel), dst, 
         (len >> 2) | DMA_CONTROL_ENABLE | DMA_CONTROL_TRANSFER_32_BIT |
         DMA_CONTROL_SRC_ADDR_FIXED | DMA_CONTROL_DST_ADDR_INCREMENT);
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 
     while (DMARegisterControl(channel) & DMA_CONTROL_ENABLE) {}
 }
 
 void DMAMemcpySynchronous(int channel, unsigned int src, unsigned int dst, unsigned int len)
 {
-    VerifyDMASource(channel, src, len, DMA_CONTROL_SRC_ADDR_INCREMENT);
+    MIi_CheckDma0SourceAddress(channel, src, len, DMA_CONTROL_SRC_ADDR_INCREMENT);
     if (len == 0)
         return;
 
@@ -110,11 +110,11 @@ void DMAMemcpySynchronous(int channel, unsigned int src, unsigned int dst, unsig
     while (DMARegisterControl(channel) & DMA_CONTROL_ENABLE) {}
 }
 
-void DMAMemcpySynchronous16Bit(int channel, unsigned int src, unsigned int dst, unsigned int len)
+void MI_DmaCopy16(int channel, unsigned int src, unsigned int dst, unsigned int len)
 {
     if (len == 0)
         return;
-    VerifyDMASource(channel, src, len, DMA_CONTROL_SRC_ADDR_INCREMENT);
+    MIi_CheckDma0SourceAddress(channel, src, len, DMA_CONTROL_SRC_ADDR_INCREMENT);
 
     // Wait for previous operation to finish
     while (DMARegisterControl(channel) & DMA_CONTROL_ENABLE) {}
@@ -126,7 +126,7 @@ void DMAMemcpySynchronous16Bit(int channel, unsigned int src, unsigned int dst, 
     while (DMARegisterControl(channel) & DMA_CONTROL_ENABLE) {}
 }
 
-void DMAMemsetAsync(int channel, unsigned int dst, unsigned int value, unsigned int len,
+void MI_DmaFill32Async(int channel, unsigned int dst, unsigned int value, unsigned int len,
     DMACompletionCallback onCompletion, int callbackUserdata)
 {
     if (len == 0)
@@ -140,22 +140,22 @@ void DMAMemsetAsync(int channel, unsigned int dst, unsigned int value, unsigned 
         if (onCompletion != NULL)
         {
             SetDMACompletionCallback(channel, onCompletion, callbackUserdata);
-            int priorState = DisableIRQInterrupts();
+            int priorState = OS_DisableInterrupts();
             DMARegisterFill(channel) = value;
             ConfigureDMATransfer(channel, (unsigned int)&DMARegisterFill(channel), dst,
                 (len >> 2) | DMA_CONTROL_ENABLE |
                 DMA_CONTROL_IRQ_AT_END | DMA_CONTROL_TRANSFER_32_BIT |
                 DMA_CONTROL_SRC_ADDR_FIXED | DMA_CONTROL_DST_ADDR_INCREMENT);
-            SetIRQInterruptState(priorState);
+            OS_RestoreInterrupts(priorState);
         }
         else
         {
-            int priorState = DisableIRQInterrupts();
+            int priorState = OS_DisableInterrupts();
             DMARegisterFill(channel) = value;
             ConfigureDMATransfer(channel, (unsigned int)&DMARegisterFill(channel), dst,
                 (len >> 2) | DMA_CONTROL_ENABLE | DMA_CONTROL_TRANSFER_32_BIT |
                 DMA_CONTROL_SRC_ADDR_FIXED | DMA_CONTROL_DST_ADDR_INCREMENT);
-            SetIRQInterruptState(priorState);
+            OS_RestoreInterrupts(priorState);
         }
     }
 }
@@ -163,7 +163,7 @@ void DMAMemsetAsync(int channel, unsigned int dst, unsigned int value, unsigned 
 void DMAMemcpyAsync(int channel, unsigned int src, unsigned int dst, unsigned int len,
     DMACompletionCallback onCompletion, int callbackUserdata)
 {
-    VerifyDMASource(channel, src, len, DMA_CONTROL_SRC_ADDR_INCREMENT);
+    MIi_CheckDma0SourceAddress(channel, src, len, DMA_CONTROL_SRC_ADDR_INCREMENT);
     if (len == 0)
     {
         if (onCompletion != NULL)
@@ -175,14 +175,14 @@ void DMAMemcpyAsync(int channel, unsigned int src, unsigned int dst, unsigned in
         if (onCompletion != NULL)
         {
             SetDMACompletionCallback(channel, onCompletion, callbackUserdata);
-            ConfigureDMATransferAtomic(channel, src, dst,
+            MIi_DmaSetParams(channel, src, dst,
                 (len >> 2) | DMA_CONTROL_ENABLE |
                 DMA_CONTROL_IRQ_AT_END | DMA_CONTROL_TRANSFER_32_BIT |
                 DMA_CONTROL_SRC_ADDR_INCREMENT | DMA_CONTROL_DST_ADDR_INCREMENT);
         }
         else
         {
-            ConfigureDMATransferAtomic(channel, src, dst,
+            MIi_DmaSetParams(channel, src, dst,
                 (len >> 2) | DMA_CONTROL_ENABLE | DMA_CONTROL_TRANSFER_32_BIT |
                 DMA_CONTROL_SRC_ADDR_INCREMENT | DMA_CONTROL_DST_ADDR_INCREMENT);
         }
@@ -191,7 +191,7 @@ void DMAMemcpyAsync(int channel, unsigned int src, unsigned int dst, unsigned in
 
 void AwaitDMACompletion(int id)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     while (DMARegisterControl(id) & DMA_CONTROL_ENABLE) {}
 
     if (id == 0)
@@ -201,12 +201,12 @@ void AwaitDMACompletion(int id)
         regs.destAddr = 0;
         regs.controlAndSize.u32 = DMA_CONTROL_ENABLE | DMA_CONTROL_SRC_ADDR_FIXED | DMA_CONTROL_DST_ADDR_FIXED | 1;
     }
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
-void ResetDMAChannel(int id)
+void MI_StopDma(int id)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     DMARegisterControlHigh(id) &= ~((DMA_CONTROL_MASK_START_TIMING | DMA_CONTROL_REPEAT) >> 16);
     DMARegisterControlHigh(id) &= ~(DMA_CONTROL_ENABLE >> 16);
@@ -223,15 +223,15 @@ void ResetDMAChannel(int id)
         regs.controlAndSize.u32 = DMA_CONTROL_ENABLE | DMA_CONTROL_SRC_ADDR_FIXED | DMA_CONTROL_DST_ADDR_FIXED | 1;
     }
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
 void ResetAllDMAChannels()
 {
-    ResetDMAChannel(0);
-    ResetDMAChannel(1);
-    ResetDMAChannel(2);
-    ResetDMAChannel(3);
+    MI_StopDma(0);
+    MI_StopDma(1);
+    MI_StopDma(2);
+    MI_StopDma(3);
 }
 
 // Speculative: checks if swapping the specified channel's timing is going to
@@ -241,7 +241,7 @@ void ResetAllDMAChannels()
 //     - if newTiming = VBlank, then HBlank timing is permitted 
 //     - if newTiming = HBlank, then VBlank timing is permitted
 // Note that only channels 0, 1, 2 are checked.
-void VerifyDMATimingChangePermitted_020c9fd0(int channel, unsigned int newTimingFlags)
+void MIi_CheckAnotherAutoDMA(int channel, unsigned int newTimingFlags)
 {
     int loopChannel = 0;
     volatile unsigned int* pControl = &DMARegisterControl(0);
@@ -283,7 +283,7 @@ void VerifyDMATimingChangePermitted_020c9fd0(int channel, unsigned int newTiming
 // This function doesn't place restrictions on the other channels, and in fact
 // doing DMA from GAMECARD_RECEIVED_DATA (0x04100010) is one way to load
 // from the gamecard
-void VerifyDMASource(int channel, unsigned int source, unsigned int length, unsigned int sourceCtrlFlags)
+void MIi_CheckDma0SourceAddress(int channel, unsigned int source, unsigned int length, unsigned int sourceCtrlFlags)
 {
     if (channel != 0)
         return;

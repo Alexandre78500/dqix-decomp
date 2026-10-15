@@ -80,7 +80,7 @@ void NitroVM_Command_AcquireCardReadResources(unsigned short ownerID);
 void NitroVM_Command_ReleaseCardReadResources(unsigned short ownerID);
 
 #if defined(jpn)
-#define func_020d0f28 func_020d29f4
+#define func_020d0f28 SND_GetPlayerStatus
 #endif
 
 void SendGamecardBusCommand(unsigned int firstWord, unsigned int secondWord);

@@ -54,14 +54,14 @@ struct Unknown_027ffc00
     unsigned int ipcHandlersRegistered[2];
 };
 
-void InitializeInterProcessorCommunication()
+void PXI_Init()
 {
     ZeroInitializeIPCCommandHandling();
 }
 
 void ZeroInitializeIPCCommandHandling()
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     if (!isIPCCommunicationInitialized)
     {
@@ -109,12 +109,12 @@ void ZeroInitializeIPCCommandHandling()
         }
     }
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
-void SetArm9IPCCommandHandler(int command, IPCCommandHandler handler)
+void PXI_SetFifoRecvCallback(int command, IPCCommandHandler handler)
 {
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
     
     Unknown_027ffc00* data = (Unknown_027ffc00*)0x027ffc00;
     ipcArm9HandlerTable[command] = handler;
@@ -123,16 +123,16 @@ void SetArm9IPCCommandHandler(int command, IPCCommandHandler handler)
     else
         data->ipcHandlersRegistered[IPCSide_Arm9] &= ~(1 << command);
     
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
 }
 
-bool IsIPCCommandHandlerRegistered(int command, IPCSide side)
+bool PXI_IsCallbackReady(int command, IPCSide side)
 {
     Unknown_027ffc00* data = (Unknown_027ffc00*)0x027ffc00;
     return data->ipcHandlersRegistered[side] & (1 << command);
 }
 
-IPCResult SendCommandToArm7(int channel, int argument, bool flag)
+IPCResult PXI_SendWordByFifo(int channel, int argument, bool flag)
 {
     IPCCommand command;
     command.parts.channel = channel;
@@ -148,17 +148,17 @@ IPCResult SendCommandToArm7(int channel, int argument, bool flag)
         return IPC_Result_SendError;
     }
 
-    int priorState = DisableIRQInterrupts();
+    int priorState = OS_DisableInterrupts();
 
     if (IPC_FIFO_CONTROL & FIFO_CONTROL_MASK_SEND_FULL)
     {
-        SetIRQInterruptState(priorState);
+        OS_RestoreInterrupts(priorState);
         return IPCResult_SendQueueFull;
     }
 
     IPC_FIFO_SEND = command.word;
 
-    SetIRQInterruptState(priorState);
+    OS_RestoreInterrupts(priorState);
     return IPCResult_Success;
 }
 
@@ -177,16 +177,16 @@ void HandleCommandReceivedFromArm7()
         }
         else
         {
-            int priorState = DisableIRQInterrupts();
+            int priorState = OS_DisableInterrupts();
             if (IPC_FIFO_CONTROL & FIFO_CONTROL_MASK_RECEIVE_EMPTY)
             {
-                SetIRQInterruptState(priorState);
+                OS_RestoreInterrupts(priorState);
                 result = IPCResult_ReceiveQueueEmpty;
             }
             else
             {
                 command.word = IPC_FIFO_RECEIVE;
-                SetIRQInterruptState(priorState);
+                OS_RestoreInterrupts(priorState);
                 result = IPCResult_Success;
             }
         }
@@ -212,15 +212,15 @@ void HandleCommandReceivedFromArm7()
             }
             else
             {
-                int priorState = DisableIRQInterrupts();
+                int priorState = OS_DisableInterrupts();
                 if (IPC_FIFO_CONTROL & FIFO_CONTROL_MASK_SEND_FULL)
                 {
-                    SetIRQInterruptState(priorState);
+                    OS_RestoreInterrupts(priorState);
                 }
                 else
                 {
                     IPC_FIFO_SEND = command.word;
-                    SetIRQInterruptState(priorState);
+                    OS_RestoreInterrupts(priorState);
                 }
             }
         }

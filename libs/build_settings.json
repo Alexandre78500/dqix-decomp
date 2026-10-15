@@ -10,8 +10,46 @@
   "-i libs/_headers/sdk_pokediamond"
  ],
  "force_active": [
+  "AllocFunc_SOCL",
+  "BankDisposeCallback",
+  "BeginSleep",
+  "CARD_SetSpiWriteWaitCycles",
+  "CARD_TerminateForPulledOut",
   "CARDi_IdentifyBackupCore",
+  "CPS_CalmDown",
+  "CPS_Cleanup",
+  "CPS_GetSslHandshakePriority",
   "CPS_Resolve",
+  "CPS_SetRootCa",
+  "CPS_SetScavengerCallback",
+  "CPS_SetSslHandshakePriority",
+  "CPS_SetThreadPriority",
+  "CPS_SetUdpCallback",
+  "CPS_SocBind",
+  "CPS_SocConsume",
+  "CPS_SocDatagramMode",
+  "CPS_SocDup",
+  "CPS_SocFlush",
+  "CPS_SocGetEport",
+  "CPS_SocGetLength",
+  "CPS_SocRead",
+  "CPS_SocRegister",
+  "CPS_SocRelease",
+  "CPS_SocUnRegister",
+  "CPS_SocUse",
+  "CPS_SocWrite",
+  "CPS_SslAddRandomSeed",
+  "CPS_TcpClose",
+  "CPS_TcpConnect",
+  "CPS_TcpShutdown",
+  "CPSi_RecvCallbackFunc",
+  "CPSi_SocConsumeRaw",
+  "CPSi_SocWrite2",
+  "CPSi_SslConnect",
+  "CPSi_TcpConnectRaw",
+  "CPSi_TcpReadRaw",
+  "CPSi_TcpShutdownRaw",
+  "CPSi_TcpWrite2Raw",
   "CPSi_big_add",
   "CPSi_big_add_part",
   "CPSi_big_add_small",
@@ -44,6 +82,22 @@
   "CP_SaveContext",
   "CPi_RestoreContext",
   "CRYPTO_RC4Encrypt",
+  "CRYPTO_RC4Init",
+  "CTRDG_Enable",
+  "CTRDG_IsExisting",
+  "CTRDG_IsOptionCartridge",
+  "CTRDGi_ChangeLatestAccessCycle",
+  "CTRDGi_InitCommon",
+  "CTRDGi_InitTaskInfo",
+  "CTRDGi_InitTaskThread",
+  "CTRDGi_IsAgbCartridgeAtInit",
+  "CTRDGi_LockByProcessor",
+  "CTRDGi_RestoreAccessCycle",
+  "CTRDGi_SendtoPxi",
+  "CTRDGi_TaskThread",
+  "CTRDGi_UnlockByProcessor",
+  "CTRDGi_Work",
+  "Callback_NVRAM",
   "ClearArea1D",
   "ClearAreaLine",
   "ClearChar",
@@ -56,43 +110,245 @@
   "DGT_Hash2GetDigest",
   "DGT_Hash2Reset",
   "DGT_Hash2SetSource",
+  "DLExtract",
+  "DLInsert",
+  "DWC_Auth_CheckPseudoWiFiID",
+  "DWC_Auth_GetId",
+  "DWC_BM_Init",
+  "DWCi_AUTH_GetNewWiFiInfo",
+  "DWCi_AUTH_MakeWiFiID",
+  "DWCi_AUTH_RemakeWiFiID",
+  "DWCi_AUTH_UpDateWiFiID",
+  "DWCi_Auth_Abort",
+  "DWCi_Auth_Destroy",
+  "DWCi_Auth_GetResult",
+  "DWCi_Auth_GetState",
+  "DWCi_Auth_Join",
+  "DWCi_Auth_SendRequest",
+  "DWCi_Auth_Start",
+  "DWCi_Auth_StartThread",
+  "DWCi_BACKUPlConvWifiInfo",
+  "DWCi_BACKUPlGetWifi",
+  "DWCi_Http_Abort",
+  "DWCi_Http_AddEntry",
+  "DWCi_Http_AddHeaderItem",
+  "DWCi_Http_AddPostItem",
+  "DWCi_Http_AddRequestLine",
+  "DWCi_Http_AddString",
+  "DWCi_Http_AllocBuffer",
+  "DWCi_Http_CheckAbort",
+  "DWCi_Http_CheckContentLength",
+  "DWCi_Http_Destroy",
+  "DWCi_Http_FinishHeader",
+  "DWCi_Http_FreeBuffer",
+  "DWCi_Http_GrowBuffer",
+  "DWCi_Http_ParseResponse",
+  "DWCi_Http_ParseUrl",
+  "DWCi_Http_RegisterSocket",
+  "DWCi_Http_Resolve",
+  "DWCi_Http_SslCheckCallback",
+  "DWCi_Http_StartThread",
+  "DWCi_Http_Thread",
+  "DWCi_Util_WiFiId_scrambleUid",
+  "DisposeCallback",
+  "DoTransfer2dBG0CharMain",
+  "DoTransfer2dBG0CharSub",
+  "DoTransfer2dBG0ScrMain",
+  "DoTransfer2dBG0ScrSub",
+  "DoTransfer2dBG1CharMain",
+  "DoTransfer2dBG1CharSub",
+  "DoTransfer2dBG1ScrMain",
+  "DoTransfer2dBG1ScrSub",
+  "DoTransfer2dBG2BmpMain",
+  "DoTransfer2dBG2BmpSub",
+  "DoTransfer2dBG2CharMain",
+  "DoTransfer2dBG2CharSub",
+  "DoTransfer2dBG2ScrMain",
+  "DoTransfer2dBG2ScrSub",
+  "DoTransfer2dBG3BmpMain",
+  "DoTransfer2dBG3BmpSub",
+  "DoTransfer2dBG3CharMain",
+  "DoTransfer2dBG3CharSub",
+  "DoTransfer2dBG3ScrMain",
+  "DoTransfer2dBG3ScrSub",
+  "DoTransfer2dBGExtPlttMain",
+  "DoTransfer2dBGExtPlttSub",
+  "DoTransfer2dBGPlttMain",
+  "DoTransfer2dBGPlttSub",
+  "DoTransfer2dObjCharMain",
+  "DoTransfer2dObjCharSub",
+  "DoTransfer2dObjExtPlttMain",
+  "DoTransfer2dObjExtPlttSub",
+  "DoTransfer2dObjOamMain",
+  "DoTransfer2dObjOamSub",
+  "DoTransfer2dObjPlttMain",
+  "DoTransfer2dObjPlttSub",
+  "DoTransfer3dClearImageColor",
+  "DoTransfer3dClearImageDepth",
+  "DoTransfer3dTex",
+  "DoTransfer3dTexPltt",
+  "DoTransfer_",
   "DrawGlyph1D",
   "DrawGlyphLine",
+  "EndSleep",
   "FX_Atan2Idx",
   "FX_CosFx64c",
   "FX_CosFx64c_internal",
+  "FX_Div",
+  "FX_DivAsync",
+  "FX_DivS32",
+  "FX_GetDivResult",
+  "FX_GetDivResultFx64c",
+  "FX_GetSqrtResult",
+  "FX_InvAsync",
+  "FX_ModS32",
   "FX_SinFx64c",
   "FX_SinFx64c_internal",
+  "FX_Sqrt",
+  "FreeFunc_SOCL",
+  "G3X_ClearFifo",
+  "G3X_GetBoxTestResult",
+  "G3X_GetClipMtx",
+  "G3X_GetMtxStackLevelPJ",
+  "G3X_GetMtxStackLevelPV",
+  "G3X_GetVectorMtx",
+  "G3X_Init",
+  "G3X_InitMtxStack",
+  "G3X_InitTable",
+  "G3X_Reset",
+  "G3X_ResetMtxStack",
+  "G3X_SetClearColor",
+  "G3X_SetEdgeColorTable",
+  "G3X_SetFog",
+  "G3X_SetFogTable",
   "G3_LoadMtx43",
   "G3_LoadMtx44",
   "G3_MultMtx33",
   "G3_MultMtx43",
+  "G3i_LookAt_",
+  "G3i_OrthoW_",
   "GX_SendFifo48B",
   "GX_SendFifo64B",
   "GXi_NopClearFifo128_",
   "GetCharIndex1D",
   "GetGlyphIndex",
+  "GetNextIndex_",
   "HmacCalc",
   "InitCharCanvas",
+  "IsAbleToLoad",
+  "IsChildAidValid",
+  "IsGetAllRequestData",
+  "IsVramTransferTaskQueueEmpty_",
   "LetterChar",
+  "LoadSingleWave",
+  "LoadSingleWaves",
+  "MATH_CalcCRC16",
+  "MATH_CalcCRC32",
+  "MATH_CalcCRC8",
   "MATH_CountPopulation",
+  "MATHi_CRC16InitTableRev",
+  "MATHi_CRC16UpdateRev",
+  "MATHi_CRC32InitTableRev",
+  "MATHi_CRC32UpdateRev",
+  "MATHi_CRC8InitTable",
+  "MATHi_CRC8Update",
+  "MB_AddGameInfo",
+  "MB_CommGetChildUser",
+  "MB_CommIsBootable",
+  "MB_CommResponseRequest",
+  "MB_CommSetParentStateCallback",
   "MB_DisconnectChild",
+  "MB_End",
+  "MB_GetSegmentLength",
+  "MB_Init",
+  "MB_InitSendGameInfoStatus",
+  "MB_RegisterFile",
+  "MB_SendGameInfoBeacon",
+  "MB_SetParentCommParam",
+  "MB_StartParentFromIdle",
+  "MB_UpdateGameInfoMember",
+  "MBi_AttachCacheBuffer",
+  "MBi_BlockHeaderEnd",
+  "MBi_CallReset",
   "MBi_CheckWmErrcode",
+  "MBi_ChildCallback",
+  "MBi_ChildPortCallback",
+  "MBi_ClearParentPieceBuffer",
+  "MBi_ClearSendStatus",
+  "MBi_CommCallParentError",
+  "MBi_CommChangeParentState",
+  "MBi_CommChangeParentStateCallbackOnly",
+  "MBi_CommEnd",
+  "MBi_CommParentRecvData",
   "MBi_CommParentRecvDataPerChild",
   "MBi_CommParentSendBlock",
+  "MBi_CommParentSendDLFileInfo",
   "MBi_CommParentSendData",
+  "MBi_CommParentSendMsg",
+  "MBi_EndCommon",
+  "MBi_EndTaskThread",
   "MBi_GetAttribute",
+  "MBi_GetBeaconPeriodDispersion",
   "MBi_GetGgid",
   "MBi_GetTgid",
+  "MBi_InitCache",
+  "MBi_InitSendFixedBeacon",
   "MBi_InitSendVolatBeacon",
+  "MBi_InitTaskInfo",
+  "MBi_InitTaskThread",
+  "MBi_IsAbleToRecv",
+  "MBi_IsCommSizeValid",
+  "MBi_IsSendEnabled",
   "MBi_IsStarted",
+  "MBi_IsTaskAvailable",
+  "MBi_IsTaskBusy",
+  "MBi_MakeBlockInfoTable",
+  "MBi_MakeDownloadFileInfo",
+  "MBi_MakeGameInfo",
+  "MBi_MakeParentSendBuffer",
+  "MBi_OnInitializeDone",
+  "MBi_OnReset",
+  "MBi_ParentCallback",
+  "MBi_ReadFromCache",
+  "MBi_ReadIconInfo",
+  "MBi_ReadSegmentHeader",
+  "MBi_ReadyBeaconSendStatus",
+  "MBi_ReceiveRequestDataPiece",
+  "MBi_ReloadCache",
+  "MBi_SendFixedBeacon",
   "MBi_SendMP",
+  "MBi_SendVolatBeacon",
+  "MBi_SetChildMPMaxSize",
   "MBi_SetMPData",
   "MBi_SetMaxScanTime",
+  "MBi_SetParentPieceBuffer",
+  "MBi_SetRecvBufferFromChild",
+  "MBi_SetSegmentInfo",
+  "MBi_SetTask",
+  "MBi_StartCommon",
+  "MBi_StartParentCore",
+  "MBi_TaskThread",
+  "MBi_calc_cksum",
+  "MBi_calc_nextsendblock",
   "MBi_calc_sendblock",
+  "MBi_get_blockinfo",
+  "MI_Copy32B",
+  "MI_Copy36B",
+  "MI_Copy48B",
+  "MI_Copy64B",
+  "MI_CpuCopy8",
+  "MI_CpuFill8",
   "MI_SetWramBank",
   "MI_SwapWord",
   "MI_UncompressLZ8",
+  "MIi_CardDmaCopy32",
+  "MIi_CpuClear16",
+  "MIi_CpuClear32",
+  "MIi_CpuClearFast",
+  "MIi_CpuCopy16",
+  "MIi_CpuCopy32",
+  "MIi_CpuCopyFast",
+  "MIi_CpuSend32",
   "MTX_Concat33",
   "MTX_Concat43",
   "MTX_Concat44",
@@ -108,17 +364,85 @@
   "MTX_MultVec43",
   "MTX_OrthoW",
   "MTX_PerspectiveW",
+  "MTX_Rot22_",
+  "MTX_RotX33_",
+  "MTX_RotY33_",
+  "MTX_RotZ33_",
+  "MTX_ScaleApply22",
+  "MTX_ScaleApply33",
   "MTX_ScaleApply43",
   "MTX_TransApply43",
+  "NHTTP_AddHeaderField",
+  "NHTTP_AddPostDataAscii",
+  "NHTTP_CleanupAsync",
+  "NHTTP_CreateRequest",
+  "NHTTP_DestroyResponse",
+  "NHTTP_GetBodyAll",
+  "NHTTP_GetHeaderField",
+  "NHTTP_SendRequestAsync",
+  "NHTTP_Startup",
+  "NHTTPi_AddJob",
+  "NHTTPi_AddSslRandomSeed",
+  "NHTTPi_BufferedSend",
+  "NHTTPi_CancelAllQueuedJobs",
+  "NHTTPi_CancelAllRequests",
+  "NHTTPi_CancelQueuedJob",
+  "NHTTPi_CleanupThread",
+  "NHTTPi_CloseDeferredSockets",
+  "NHTTPi_CloseSocket",
+  "NHTTPi_CloseSocketWait",
   "NHTTPi_CompareFieldName",
+  "NHTTPi_CompareHeader",
+  "NHTTPi_CompareString",
+  "NHTTPi_CompareStringNoCase",
+  "NHTTPi_Connect",
+  "NHTTPi_CopyHeader",
+  "NHTTPi_CreateSocket",
+  "NHTTPi_DeferSocketClose",
+  "NHTTPi_DestroyLock",
+  "NHTTPi_DestroyRequest",
+  "NHTTPi_DestroyRequestAndResponse",
   "NHTTPi_FindBytes",
+  "NHTTPi_FindHeaderField",
+  "NHTTPi_FindJob",
+  "NHTTPi_FindNextLine",
   "NHTTPi_FormatDecimal",
+  "NHTTPi_FreeFieldList",
+  "NHTTPi_FreeSslConnection",
+  "NHTTPi_InitLock",
+  "NHTTPi_IsBodyFull",
+  "NHTTPi_Lock",
+  "NHTTPi_MemClear",
+  "NHTTPi_MemCopy",
+  "NHTTPi_NextBoundaryChar",
   "NHTTPi_ParseDecimal",
   "NHTTPi_ParseHex",
   "NHTTPi_ParsePort",
+  "NHTTPi_PopJob",
+  "NHTTPi_PopListHead",
+  "NHTTPi_ReadResponseByte",
+  "NHTTPi_Recv",
+  "NHTTPi_RecvBody",
+  "NHTTPi_RecvBodySize",
+  "NHTTPi_ResolveHost",
+  "NHTTPi_SeekResponse",
+  "NHTTPi_Send",
+  "NHTTPi_SetField",
+  "NHTTPi_SetSslCaInfo",
+  "NHTTPi_ShutdownSocket",
+  "NHTTPi_SkipLine",
+  "NHTTPi_SkipSpaces",
+  "NHTTPi_SslCheckCallback",
+  "NHTTPi_StartThread",
+  "NHTTPi_StopThread",
+  "NHTTPi_StrLen",
   "NHTTPi_ThreadMain",
+  "NHTTPi_Unlock",
+  "NHTTPi_UpdateBoundary",
   "NHTTPi_UrlEncodeChar",
   "NHTTPi_UrlEncodedLength",
+  "NHTTPi_WaitForJob",
+  "NHTTPi_WakeThread",
   "NNS_G2dArrangeOBJ1D",
   "NNS_G2dCharCanvasDrawChar",
   "NNS_G2dCharCanvasInitForBG",
@@ -126,11 +450,28 @@
   "NNS_G2dFontFindGlyphIndex",
   "NNS_G2dFontGetCharWidthsFromIndex",
   "NNS_G2dFontInitUTF16",
+  "NNS_G2dGetRendererPaletteTbl",
   "NNS_G2dMapScrToChar256x16Pltt",
   "NNS_G2dMapScrToCharText",
+  "NNS_GfdAllocFrmPlttVram",
+  "NNS_GfdAllocFrmTexVram",
+  "NNS_GfdDoVramTransfer",
+  "NNS_GfdFreeFrmPlttVram",
+  "NNS_GfdFreeFrmTexVram",
+  "NNS_GfdGetFrmPlttVramState",
+  "NNS_GfdGetFrmTexVramState",
+  "NNS_GfdInitFrmPlttVramManager",
+  "NNS_GfdInitFrmTexVramManager",
+  "NNS_GfdResetFrmPlttVramState",
+  "NNS_GfdResetFrmTexVramState",
+  "NNS_GfdSetFrmPlttVramState",
+  "NNS_GfdSetFrmTexVramState",
   "NNS_SndAllocAlarm",
   "NNS_SndFreeAlarm",
+  "NNS_SndInit",
   "NNS_SndLockChannel",
+  "NNS_SndMain",
+  "NNS_SndSetMasterVolume",
   "NNS_SndUnlockCapture",
   "NNS_SndUnlockChannel",
   "NNSi_G2dBitReaderRead",
@@ -145,6 +486,11 @@
   "NNSi_G2dTextCanvasDrawTextAlign",
   "NNSi_G2dTextCanvasDrawTextRect",
   "NNSi_G2dUnpackNFT",
+  "NNSi_G3dAnmCalcNsBca",
+  "NNSi_G3dAnmObjInitNsBca",
+  "NNSi_GfdGetFrontVramTransferTaskQueue",
+  "NNSi_GfdPopVramTransferTaskQueue",
+  "NNSi_GfdSetTexNrmSearchArray",
   "NNSi_SndFaderGet",
   "NNSi_SndFaderInit",
   "NNSi_SndFaderIsFinished",
@@ -152,14 +498,49 @@
   "NNSi_SndFaderUpdate",
   "NNSi_SndInitResourceMgr",
   "NNSi_SndSeqArcGetSeqInfo",
+  "NVRAMm_ExecuteCommand",
+  "NdEngine_Base64CharValue",
+  "NdEngine_Base64Decode",
+  "NdEngine_Base64DecodedSize",
+  "NdEngine_Base64Encode",
+  "NdEngine_Base64EncodedSize",
+  "NdEngine_CleanupAsync",
+  "NdEngine_CleanupFinish",
+  "NdEngine_CopyPadded",
+  "NdEngine_FormatApInfo",
+  "NdEngine_FreeAttrs",
+  "NdEngine_Init",
+  "NdEngine_StrDup",
   "OBJSizeToShape",
+  "OS_AllocFromHeap",
   "OS_DisableProtectionUnit",
   "OS_EnableProtectionUnit",
+  "OS_FreeToHeap",
+  "OS_GetConsoleType",
   "OS_GetDTCMAddress",
+  "OS_GetLowEntropyData",
+  "OS_GetMacAddress",
+  "OS_GetOwnerInfo",
   "OS_Halt",
+  "OS_InitLock",
+  "OS_InitMessageQueue",
+  "OS_IsRunOnEmulator",
+  "OS_JamMessage",
+  "OS_LoadContext",
+  "OS_ReadMessage",
+  "OS_ReceiveMessage",
+  "OS_SaveContext",
+  "OS_SendMessage",
   "OS_SetDPermissionsForProtectionRegion",
   "OS_SetProtectionRegion1",
   "OS_SetProtectionRegion2",
+  "OS_Terminate",
+  "OS_WaitIrq",
+  "OS_YieldThread__",
+  "OSiHeapInfo",
+  "OSi_ContextTypeCache",
+  "OSi_InitVramExclusive",
+  "OSi_UnlockVram",
   "OSi_WaitVCount0",
   "ProcessBlock",
   "R",
@@ -167,16 +548,237 @@
   "RTC_ConvertDateToDay",
   "RTC_ConvertDayToDate",
   "RTC_ConvertSecondToDateTime",
+  "RTC_GetDate",
+  "RTC_GetDateAsync",
+  "RTC_GetDateTime",
+  "RTC_GetDateTimeAsync",
   "RTC_GetDayOfWeek",
+  "RTC_GetTime",
+  "RTC_GetTimeAsync",
+  "RTC_Init",
   "RTCi_ConvertSecondToTime",
   "RTCi_ConvertTimeToSecond",
+  "RTCi_ReadRawDateAsync",
+  "RTCi_ReadRawDateTimeAsync",
+  "RTCi_ReadRawTimeAsync",
+  "RTCi_WriteRawStatus2Async",
+  "RtcBCD2HEX",
+  "RtcCommonCallback",
+  "RtcGetResultCallback",
+  "RtcSendPxiCommand",
+  "RtcWaitBusy",
   "SND_AlarmInit",
+  "SND_CalcChannelVolume",
+  "SND_DestroyBank",
+  "SND_FlushCommand",
   "SND_GetNextInstData",
+  "SND_GetPlayerStatus",
+  "SND_Init",
   "SND_SetMasterVolume",
   "SNDi_CallAlarmHandler",
+  "SNDi_GetFinishedCommandTag",
   "SNDi_IncAlarmId",
+  "SNDi_InitSharedWork",
+  "SNDi_LockMutex",
   "SNDi_SetAlarmHandler",
+  "SNDi_SharedWork",
+  "SNDi_UnlockMutex",
+  "SOCL_Bind",
+  "SOCL_CalmDown",
+  "SOCL_Cleanup",
+  "SOCL_Close",
+  "SOCL_CloseAll",
+  "SOCL_Connect",
+  "SOCL_CreateSocket",
+  "SOCL_EnableSsl",
+  "SOCL_GetHostID",
+  "SOCL_GetStatus",
+  "SOCL_InetAtoH",
+  "SOCL_IsClosed",
+  "SOCL_ReadFrom",
+  "SOCL_Resolve",
+  "SOCL_SetResolver",
+  "SOCL_Shutdown",
+  "SOCL_SocketIsInTrash",
+  "SOCL_SocketIsInvalid",
+  "SOCL_WriteTo",
+  "SOCLi_AllocCommandPacket",
+  "SOCLi_AllocWriteBuffer",
+  "SOCLi_BindCallBack",
+  "SOCLi_CleanupCommandPacketQueue",
+  "SOCLi_CleanupSocket",
+  "SOCLi_CloseCallBack",
+  "SOCLi_ConsumeBuffer",
+  "SOCLi_ConsumeCPSBuffer",
+  "SOCLi_ConsumeCallBack",
+  "SOCLi_CopyCPSBuffer",
+  "SOCLi_CreateCommandPacket",
+  "SOCLi_CreateSocketCallBack",
+  "SOCLi_EnableSslCallBack",
+  "SOCLi_ExecBindCommand",
+  "SOCLi_ExecCommandPacket",
+  "SOCLi_ExecCommandPacketInCtrlPipe",
+  "SOCLi_ExecCommandPacketInRecvPipe",
+  "SOCLi_ExecCommandPacketInSendPipe",
+  "SOCLi_ExecEnableSslCommand",
+  "SOCLi_ExecReadCommand",
+  "SOCLi_ExecWriteCommand",
+  "SOCLi_FreeCommandPacket",
+  "SOCLi_FreeCommandPipe",
+  "SOCLi_GetCtrlPipe",
+  "SOCLi_GetOptimumSendBufLen",
+  "SOCLi_GetReadBufferOccpiedSize",
+  "SOCLi_GetSizeCommandPipe",
+  "SOCLi_GetSizeSocket",
+  "SOCLi_GetWriteBufferFreeSize",
+  "SOCLi_InitCommandPipe",
+  "SOCLi_InitSocket",
+  "SOCLi_InitSocketBuffer",
+  "SOCLi_MemCpy",
+  "SOCLi_ReadAndConsumeBuffer",
+  "SOCLi_ReadBuffer",
+  "SOCLi_ReadCPSBuffer",
+  "SOCLi_ReadCallBack",
+  "SOCLi_ReadUdpBuffer",
+  "SOCLi_RoundUp4",
+  "SOCLi_SendCommandPacket",
+  "SOCLi_SendCommandPacketToCtrlPipe",
+  "SOCLi_ShutdownCallBack",
+  "SOCLi_SocketGetNextPtr",
+  "SOCLi_SocketRegister",
+  "SOCLi_SocketRegisterList",
+  "SOCLi_SocketRegisterTrash",
+  "SOCLi_SocketUnregister",
+  "SOCLi_SocketUnregisterList",
+  "SOCLi_SocketUnregisterTrash",
+  "SOCLi_StartupCommandPacketQueue",
+  "SOCLi_StartupSocket",
+  "SOCLi_TrashSocket",
+  "SOCLi_UdpRecvCallback",
+  "SOCLi_WriteBuffer",
+  "SOCLi_WriteCallBack",
+  "SOC_Cleanup",
+  "SOC_Fcntl",
+  "SOC_GetHostID",
+  "SOC_InetAtoN",
+  "SOC_Poll",
+  "SOC_SetResolver",
+  "SOC_Startup",
+  "SOC_U32to4U8",
   "STD_TVSNPrintf",
+  "SeqDisposeCallback",
+  "SingleWaveDisposeCallback",
+  "VEC_Add",
+  "VEC_CrossProduct",
+  "VEC_Distance",
+  "VEC_DotProduct",
+  "VEC_Mag",
+  "VEC_Normalize",
+  "VEC_Subtract",
+  "WCM_BeginSearchAsync",
+  "WCM_CleanupAsync",
+  "WCM_ClearApList",
+  "WCM_CompareBssID",
+  "WCM_ConnectAsync",
+  "WCM_CountApList",
+  "WCM_DisconnectAsync",
+  "WCM_EndSearchAsync",
+  "WCM_Finish",
+  "WCM_GetApEssid",
+  "WCM_GetApMacAddress",
+  "WCM_GetPhase",
+  "WCM_Init",
+  "WCM_LockApList",
+  "WCM_PointApList",
+  "WCM_SearchAsync",
+  "WCM_SendDCFDataEx",
+  "WCM_SetRecvDCFCallback",
+  "WCM_StartupAsync",
+  "WCM_TerminateAsync",
+  "WCM_UpdateOption",
+  "WCMi_CpsifRecvCallback",
+  "WCMi_CpsifSendNullPacket",
+  "WCMi_EntryApList",
+  "WCMi_GetSystemWork",
+  "WCMi_InitCpsif",
+  "WCMi_ResetKeepAliveAlarm",
+  "WCMi_ShelterRssi",
+  "WM_EndDataSharing",
+  "WM_EndKeySharing",
+  "WM_Finish",
+  "WM_GetAID",
+  "WM_GetAllowedChannel",
+  "WM_GetConnectedAIDs",
+  "WM_GetDispersionBeaconPeriod",
+  "WM_GetDispersionScanPeriod",
+  "WM_GetLinkLevel",
+  "WM_GetMPReceiveBufferSize",
+  "WM_GetMPSendBufferSize",
+  "WM_GetOtherElements",
+  "WM_GetSharedDataAddress",
+  "WM_Init",
+  "WM_MeasureChannel",
+  "WM_ReadMPData",
+  "WM_ReadStatus",
+  "WM_SetBeaconIndication",
+  "WM_SetGameInfo",
+  "WM_SetIndCallback",
+  "WM_SetLifeTime",
+  "WM_SetPortCallback",
+  "WM_SetWEPKey",
+  "WM_SetWEPKeyEx",
+  "WM_StartDataSharing",
+  "WM_StartKeySharing",
+  "WM_StepDataSharing",
+  "WMi_CheckIdle",
+  "WMi_CheckInitialized",
+  "WMi_CheckStateEx",
+  "WMi_GetStatusAddress",
+  "WMi_GetSystemWork",
+  "WMi_SendCommand",
+  "WMi_SendCommandDirect",
+  "WMi_SetCallbackTable",
+  "WaveArcDisposeCallback",
+  "WaveArcTableDisposeCallback",
+  "WcmAllocApList",
+  "WcmAppendApList",
+  "WcmConfigure",
+  "WcmCountBits",
+  "WcmCountLeadingZero",
+  "WcmCpsifKACallback",
+  "WcmCpsifTryLockMutexInIRQ",
+  "WcmCpsifUnlockMutexInIRQ",
+  "WcmCpsifWmCallback",
+  "WcmEditScanExParam",
+  "WcmGetNextScanChannel",
+  "WcmGetOldestApList",
+  "WcmInitOption",
+  "WcmKeepAliveAlarm",
+  "WcmNotify",
+  "WcmNotifyEx",
+  "WcmSearchApList",
+  "WcmSearchIndexedApList",
+  "WcmSetPhase",
+  "WcmWmReset",
+  "WcmWmcbCommon",
+  "WcmWmcbConnect",
+  "WcmWmcbDisconnect",
+  "WcmWmcbEndDCF",
+  "WcmWmcbEndScan",
+  "WcmWmcbIndication",
+  "WcmWmcbReset",
+  "WcmWmcbScanEx",
+  "WcmWmcbStartDCF",
+  "WmClearFifoRecvFlag",
+  "WmDataSharingReceiveCallback_Child",
+  "WmDataSharingReceiveCallback_Parent",
+  "WmDataSharingReceiveData",
+  "WmDataSharingSendDataSet",
+  "WmDataSharingSetDataCallback",
+  "WmGetCommandBuffer4Arm7",
+  "WmGetSharedDataAddress",
+  "WmInitCore",
+  "WmReceiveFifo",
   "_Z10NextActionP14ActionIterator",
   "_Z12BinarySearchP19ExceptionTableIndexmPc",
   "_Z13CurrentActionPK14ActionIterator",
@@ -190,71 +792,232 @@
   "_Z23FindMostRecentExceptionP12ThrowContextP13ExceptionInfo",
   "__StringRead",
   "__call_static_initializers",
+  "__close_console",
+  "__convert_from_newlines",
   "__dec2num",
   "__destroy_global_chain",
+  "__dorounddecup",
   "__end__catch",
   "__equals_dec",
+  "__exit",
   "__fill_mem",
+  "__flush_buffer",
   "__fpclassifyd",
   "__less_dec",
+  "__mbtowc_noconv",
   "__minus_dec",
   "__msl_generic_count_bits64",
+  "__must_round",
   "__num2dec",
   "__num2dec_internal",
+  "__prep_buffer",
+  "__read_console",
+  "__rethrow",
+  "__rounddec",
   "__signbitd",
   "__str2dec",
   "__strtold",
   "__timesdec",
   "__two_exp",
+  "__ull2dec",
+  "__wctomb_noconv",
+  "__write_console",
   "abort",
+  "add1_be8",
+  "arprequest",
+  "atod",
   "atol",
+  "auth_cert",
+  "cache_session",
+  "calc_checksum",
+  "calc_checksum_do",
+  "cert_item",
+  "cert_item_len",
+  "changeScanChannel",
   "char_from_long__sha1",
+  "chars_till_end",
+  "checkAp",
+  "check_frag",
+  "check_listener",
+  "check_socket",
+  "check_tcpudpsum",
   "client_hello",
   "client_hello_v2",
+  "compare_fqdn",
   "copysign",
   "count_digits",
   "create_key_block",
   "create_master_secret",
   "create_ms_sub",
+  "date2sec",
+  "decrypt",
   "decrypt_premaster_secret",
+  "dhcp_analyze_response",
+  "dhcp_discover_server",
+  "dhcp_release_server",
+  "dhcp_request_server",
+  "dhcp_send_discover",
+  "dhcp_send_request",
+  "dhcp_setcommon",
+  "dispatch_arp",
+  "dispatch_icmp",
   "dispatch_ip",
+  "dispatch_tcp",
+  "dispatch_udp",
+  "dns_skipname",
+  "dt_ack",
+  "dt_fin",
+  "dt_rst",
+  "dt_syn",
+  "dt_syn_LISTEN",
+  "dt_synack",
+  "enter_computebound",
   "exit",
+  "exit_computebound",
   "fabs",
+  "fflush",
+  "find_session_from_IP",
+  "find_session_from_id",
+  "find_socket",
+  "find_specific_socket",
   "finished_md5",
   "finished_sha1",
+  "gVramTransferTaskQueue",
   "get48bits_1",
   "get48bits_2",
   "get48bits_3",
   "get64bits",
+  "getJntSRTAnmResult_",
+  "getMdlRot_",
+  "getMdlScale_",
+  "getMdlTrans_",
+  "getRotDataByIdx_",
+  "getRotDataEx_",
+  "getRotData_",
+  "getScaleDataEx_",
+  "getScaleData_",
+  "getTransDataEx_",
+  "getTransData_",
+  "get_rootCA",
+  "get_seqno",
+  "get_targetip",
+  "gt2SetUnrecognizedMessageCallback",
+  "gti2Listen",
   "has_method",
+  "init",
+  "initPage",
+  "inq_arpcache",
+  "invert_checksum",
+  "ip_islocal",
+  "ip_isme",
+  "is_broadcast",
+  "is_multicast",
   "long_from_char__sha1",
+  "maccmp",
+  "make_ciphertext",
+  "make_dn",
+  "make_plaintext",
+  "memchr",
+  "memcmp",
+  "memcpy",
+  "memmove",
+  "memset",
+  "mustget_change_cipher_spec_and_finished",
+  "mystrlen",
   "nan",
+  "no_need_inq",
+  "ov00_02216420",
+  "ov13_0224598C",
+  "ov13_0224598E",
+  "ov13_02245990",
+  "ov13_02245992",
+  "ov13_02245998",
+  "ov13_0224599C",
+  "ov38_022260FC",
+  "pad_mem",
+  "parse_mss",
+  "parse_record",
+  "parse_record_in_buf",
+  "parse_time",
+  "process_icmp_reply",
+  "purge_session",
+  "put_in_buffer",
+  "raise",
+  "rand",
+  "rawip",
+  "rcv_certificate",
   "rcv_client_key_exchange",
   "rcv_finished",
   "rcv_server_hello",
+  "readNvram",
+  "receive_packet",
+  "reg_arpcache",
+  "reply_arp",
+  "reply_icmp",
+  "reset_network_vars",
+  "resolve_common",
+  "resolve_sub",
   "sCallbackTable",
   "sDayOfYear",
+  "sSndInitialized",
+  "sSndMutex",
+  "sVolumeTable",
   "scalbn",
+  "scavenger",
   "select_method",
+  "send_arprequest",
+  "send_change_cipher_spec_and_finished",
+  "send_client_hello",
+  "send_client_key_exchange",
+  "send_ether",
+  "send_ip",
+  "send_ip_frag",
+  "send_packet",
   "send_ping",
   "send_tcp",
   "send_udp",
+  "set_fixed_ip",
+  "set_random",
+  "srand",
   "sscanf",
+  "ssl_connect_try",
+  "strcat",
+  "strchr",
   "strcmp",
   "strcpy",
   "string_fill_char",
   "string_put_char",
   "string_put_string",
   "strlen",
+  "strncmp",
+  "strncpy",
   "strstr",
   "strtol",
+  "strtol10",
+  "strtold",
   "sys_exit",
   "sys_readc",
   "sys_writec",
+  "tcp_read_raw_nbytes",
+  "tcp_send_ack",
+  "tcp_send_finack",
+  "tcp_send_handshake",
+  "tcp_send_rst",
+  "tcp_write_do",
+  "tcp_write_do2",
   "tcpip",
+  "throw_packet",
+  "udp_read_raw",
+  "update_digest",
+  "valid_IP",
+  "validate_signature",
+  "verify",
   "version_ok",
   "wcslen",
-  "wcstombs"
+  "wcstombs",
+  "wctomb",
+  "writeDisable",
+  "writeNvram"
  ],
  "versions": [
   "usa"
@@ -264,7 +1027,19 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/MSL_C/src/msl_abort_exit_core.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/MSL_C/src/msl_arm_math.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/MSL_C/src/msl_buffer_io.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/MSL_C/src/msl_console_io.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -277,6 +1052,10 @@
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
   "libs/MSL_C/src/msl_exception_throw.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/MSL_C/src/msl_file_io.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -300,6 +1079,10 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/MSL_C/src/msl_fp_ansi_rounddec.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/MSL_C/src/msl_fp_ansi_str2dec.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
@@ -316,7 +1099,15 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/MSL_C/src/msl_mbstring.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/MSL_C/src/msl_mbstring_wcstombs.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/MSL_C/src/msl_mem.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -344,6 +1135,10 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/MSL_C/src/msl_signal.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/MSL_C/src/msl_static_init.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
@@ -360,6 +1155,14 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/MSL_C/src/msl_string_strncmp_strchr.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/MSL_C/src/msl_string_strncpy_strcat.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/MSL_C/src/msl_string_strstr.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
@@ -368,12 +1171,64 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/MSL_C/src/msl_strtold.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/MSL_C/src/msl_strtold_core.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/MSL_C/src/msl_throw.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
   "libs/MSL_C/src/msl_wstring_wcslen.c": {
    "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/MSL_C/src/rand.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroDWC/src/auth_client.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroDWC/src/auth_http.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroDWC/src/dwc_auth_wifi_id.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroDWC/src/dwc_bm_init.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroDWC/src/dwc_nvram.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroDWC/src/gt_connection.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroDWC/src/gt_socket.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroDWC/src/http_engine_init.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroDWC/src/http_socket_queue.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroDWC/src/http_socket_request.c": {
+   "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
   "libs/NitroDWC/src/http_socket_worker.c": {
@@ -384,7 +1239,23 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/card/card_spi_wait_cycles.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/card/card_terminate_pulled_out.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/cp/CP_context.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/ctrdg/CTRDG_common.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/ctrdg/ctrdg_task.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -396,11 +1267,27 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/fx/fx_cp.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/fx/fx_mtx22.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/fx/fx_mtx33_identity.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
   "libs/NitroSDK/src/fx/fx_mtx33_inverse_concat.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/fx/fx_mtx33_rot_yz.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/fx/fx_mtx33_scale_rot_x.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -444,7 +1331,27 @@
    "mwcc": "2.0/sp2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/fx/fx_vec.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/fx/fx_vec_mult_add.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/fx/fx_vec_normalize.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/gx/g3_util.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/gx/g3imm.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/gx/g3x.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -456,11 +1363,27 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/math/MATH_crc.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/math/MATH_pop.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/mb/mb_beacon_fixed.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mb/mb_beacon_volat.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/mb/mb_beacon_volat_init.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mb/mb_cache.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -472,7 +1395,23 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/mb/mb_download_info.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mb/mb_init.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/mb/mb_parent_calc_block.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mb/mb_parent_comm.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mb/mb_parent_data.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -488,7 +1427,35 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/mb/mb_parent_start_end.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mb/mb_parent_util.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mb/mb_task_piece_buffer.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mb/mb_task_thread.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mb/mb_wm_callbacks.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/mb/mb_wm_error.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mi/mi_dma_card.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/mi/mi_memory.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -504,7 +1471,31 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/os/os_alloc.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/os/os_context.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/os/os_emulator.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/os/os_entropy.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/os/os_init.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/os/os_message.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/os/os_ownerInfo.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -516,11 +1507,31 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/os/os_spinLock.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/os/os_tcm.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/os/os_terminate_arm9.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/os/os_terminate_proc.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/os/os_vramExclusive.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/os/os_wait_irq.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/rtc/rtc_api.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -536,7 +1547,31 @@
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSDK/src/rtc/rtc_internal.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSDK/src/snd/SND_alarm.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/snd/SND_main.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/snd/SND_util.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/snd/SND_work.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/snd/snd_destroy_bank.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/snd/snd_flush_command.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -553,6 +1588,18 @@
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
   "libs/NitroSDK/src/std_sprintf_writer.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/wm_core.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/wm_data_sharing.c": {
+   "mwcc": "2.0/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSDK/src/wm_settings.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -584,7 +1631,47 @@
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSystem/src/g2d_renderer_transform.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/NitroSystem/src/g2d_text_canvas.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSystem/src/g3d_anm_bca.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSystem/src/g3d_anm_bca_data.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSystem/src/g3d_anm_bca_scale.c": {
+   "mwcc": "2.0/sp1p5",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off"
+  },
+  "libs/NitroSystem/src/g3d_anm_bca_trans.c": {
+   "mwcc": "2.0/sp1p5",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSystem/src/g3d_anm_bca_trans_ex.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSystem/src/gfd_frame_pltt_vram_man.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSystem/src/gfd_frame_tex_vram_man.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSystem/src/gfd_vram_transfer_manager.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroSystem/src/snd_arc_loader_wave.c": {
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -600,6 +1687,74 @@
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/NitroSystem/src/snd_system.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/soc_inet.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/socl_close.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/socl_command.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/socl_list.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/socl_read.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/socl_resolver.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/socl_socket.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/socl_ssl.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/socl_status.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/socl_write.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/wcm.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/wcm_aplist.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/wcm_callback.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/wcm_control.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/NitroWiFi/src/wcm_cpsif.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_arp.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/libCPS/src/cps_bignum.c": {
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
@@ -608,7 +1763,27 @@
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/libCPS/src/cps_control.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_dhcp.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_dns.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/libCPS/src/cps_ip.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_ip_frag.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off"
+  },
+  "libs/libCPS/src/cps_link.c": {
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -624,7 +1799,23 @@
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/libCPS/src/cps_recv.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_reset.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off"
+  },
   "libs/libCPS/src/cps_resolve.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_scavenger.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_send.c": {
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
@@ -636,6 +1827,18 @@
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/libCPS/src/cps_socket.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_ssl_cert.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_ssl_handshake.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/libCPS/src/cps_ssl_hello.c": {
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
@@ -644,9 +1847,45 @@
    "mwcc": "2.0/sp2p2",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
   },
+  "libs/libCPS/src/cps_ssl_random.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_ssl_record.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_ssl_session.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_ssl_util.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_tcp.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_tcp_write.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_udp.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/libCPS/src/cps_util.c": {
+   "mwcc": "2.0/sp2p2",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
   "libs/misc/src/nitrocrypto_rc4.c": {
    "mwcc": "2.0/sp2p3",
    "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off -ipa file"
+  },
+  "libs/misc/src/nitrocrypto_rc4_init.c": {
+   "mwcc": "1.2/sp2p3",
+   "flags": "-DSDK_ARM9 -DSDK_CODE_ARM -DSDK_FINALROM -sym on -enum int -lang c99 -gccext,on -proc arm946e -msgstyle gcc -gccinc -interworking -inline on,noauto -char signed -O4,p -Cpp_exceptions off"
   }
  }
 }

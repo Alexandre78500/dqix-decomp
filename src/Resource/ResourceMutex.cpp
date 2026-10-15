@@ -2,7 +2,7 @@
 
 #ifdef jpn
 #define func_020c745c func_020c8f28
-#define func_020c75a4 func_020c9070
+#define OS_IsThreadAvailable func_020c9070
 #endif
 
 struct ResourceMutex
@@ -22,15 +22,15 @@ extern "C"
     // set up the main context
     void func_020c745c();
     // check if the main context has been set up
-    bool func_020c75a4();
+    bool OS_IsThreadAvailable();
 }
 
 void InitializeResourceMutex()
 {
-    if (!func_020c75a4())
+    if (!OS_IsThreadAvailable())
         func_020c745c();
 
-    ZeroInitializeMutex(&s_resourceMutex.mutex_);
+    OS_InitMutex(&s_resourceMutex.mutex_);
     s_resourceMutex.lockPrerequisiteB_ = true;
     s_resourceMutex.unknown_0 = 1;
     s_resourceMutex.lockPrerequisiteA_ = true;
@@ -48,7 +48,7 @@ void LockResourceMutex()
 {
     if (s_resourceMutex.lockPrerequisiteB_ && s_resourceMutex.lockPrerequisiteA_)
     {
-        LockMutex(&s_resourceMutex.mutex_);
+        OS_LockMutex(&s_resourceMutex.mutex_);
         s_resourceMutex.lockCount_++;
     }
 }
@@ -58,12 +58,12 @@ void UnlockResourceMutex()
     if (s_resourceMutex.lockPrerequisiteB_ && s_resourceMutex.lockPrerequisiteA_)
     {
         s_resourceMutex.lockCount_--;
-        UnlockMutex(&s_resourceMutex.mutex_);
+        OS_UnlockMutex(&s_resourceMutex.mutex_);
     }
 }
 
 void SleepIfResourceMutexNotLocked(unsigned int milliseconds)
 {
     if (s_resourceMutex.lockCount_ == 0)
-        SleepCurrentContext(milliseconds);
+        OS_Sleep(milliseconds);
 }

@@ -286,7 +286,7 @@ void RenderCommand_13(RenderCommandHandler* handler, int modifier)
             GXFIFO_MATRIX_PUSH = 0;
             GXFIFO_MATRIX_IDENTITY = 0;
             Matrix4x4 worldViewAgain;
-            while (func_020c54fc(&worldViewAgain) != 0) {}
+            while (G3X_GetClipMtx(&worldViewAgain) != 0) {}
             GXFIFO_MATRIX_POP = 1;
             GXFIFO_MATRIX_MODE = 3; // texture matrix
             SubmitCommandToGeometryFifo(GXFifoCommand_LoadMat4x4, (uint32_t*)worldViewAgain.entries, 16);

@@ -106,7 +106,7 @@ extern "C"
     //      ( 1  0  0 )
     //  M = ( 0  c  s )
     //      ( 0 -s  c )
-    void Mat3x3_WriteRotationX(Matrix3x3* out, fix32_t sine, fix32_t cosine);
+    void MTX_RotX33_(Matrix3x3* out, fix32_t sine, fix32_t cosine);
     // usa: func_020c1280
     // writes a y-axis rotation into the matrix specified. Instead
     // of providing the angle of rotation, you specify the sine/cosine
@@ -114,7 +114,7 @@ extern "C"
     //     ( c  0 -s )
     // M = ( 0  1  0 )
     //     ( s  0  c )
-    void Mat3x3_WriteRotationY(Matrix3x3* out, fix32_t sine, fix32_t cosine);
+    void MTX_RotY33_(Matrix3x3* out, fix32_t sine, fix32_t cosine);
     // usa: func_020c129c
     // writes a z-axis rotation into the matrix specified. Instead
     // of providing the angle of rotation, you specify the sine/cosine
@@ -122,7 +122,7 @@ extern "C"
     //     (  c  s  0 )
     // M = ( -s  c  0 )
     //     (  0  0  1 )
-    void Mat3x3_WriteRotationZ(Matrix3x3* out, fix32_t sine, fix32_t cosine);
+    void MTX_RotZ33_(Matrix3x3* out, fix32_t sine, fix32_t cosine);
     // usa: func_020c12b4
     // calculates the inverse of the input matrix.
     // returns 0 if the process succeeded (i.e. the input matrix was invertible)
@@ -223,14 +223,14 @@ extern "C"
     fix32_t FX_Div(fix32_t num, fix32_t denom);
     // usa: func_020c2c04
     // calculates square root for a fixed-point number using the hardware sqrt register
-    fix32_t fix32_Sqrt(fix32_t x);
+    fix32_t FX_Sqrt(fix32_t x);
 
     // usa: func_020c2c38
     int64_t FX_GetDivResultFx64c();
     // usa: func_020c2c5c
     // gets the hardware divider result right shifted 20 places.
     // use this in conjunction with FX_InvAsync
-    // or fix32_QueueComputeQuotient for async division of fix32 values.
+    // or FX_DivAsync for async division of fix32 values.
     fix32_t FX_GetDivResult();
     // usa: func_020c2c94
     // primes the hardware divider to compute 2^44 / n, where n is an integer.
@@ -243,40 +243,40 @@ extern "C"
     // usa: func_020c2cc4
     // not used outside of this library
     // gets the hardware sqrt result right shifted 10 places.
-    fix32_t fix32_GetSqrtResult();
+    fix32_t FX_GetSqrtResult();
     // usa: func_020c2cf0
     // primes the hardware divider to compute the integer (2^32*a) / b, where
     // a and b are integers. thus for fixed-point numbers x and y, the hardware
     // divider will compute the fixed-point representation of 2^20*(x/y).
     // use in conjunction with FX_GetDivResult to get the fixed point
     // representation of x/y.
-    void fix32_QueueComputeQuotient(fix32_t num, fix32_t denom);
+    void FX_DivAsync(fix32_t num, fix32_t denom);
 
     // usa: func_020c2d18
     // computes a/b using the hardware divider and returns the result.
     // only used in overlay 31
-    int32_t FastIntDivide(int32_t a, int32_t b);
+    int32_t FX_DivS32(int32_t a, int32_t b);
     // usa: func_020c2d54
     // computes a%b using the hardware divider and returns the result.
     // only used in overlay 31
-    int32_t FastIntModulus(int32_t a, int32_t b);
+    int32_t FX_ModS32(int32_t a, int32_t b);
 
 
     // usa: func_020c2d90
-    void Vector3fix_Add(const Vector3fix* a, const Vector3fix* b, Vector3fix* out);
+    void VEC_Add(const Vector3fix* a, const Vector3fix* b, Vector3fix* out);
     // usa: func_020c2dc4
-    void Vector3fix_Subtract(const Vector3fix* a, const Vector3fix* b, Vector3fix* out);
+    void VEC_Subtract(const Vector3fix* a, const Vector3fix* b, Vector3fix* out);
     // usa: func_020c2df8
     fix32_t VEC_DotProduct(const Vector3fix* a, const Vector3fix* b);
     // usa: func_020c2e34
     void VEC_CrossProduct(const Vector3fix* a, const Vector3fix* b, Vector3fix* out);
     // usa: func_020c2eb8
-    fix32_t Vector3fix_Length(const Vector3fix* vec);
+    fix32_t VEC_Mag(const Vector3fix* vec);
     // usa: func_020c2f18
     void VEC_Normalize(const Vector3fix* in, Vector3fix* out);
     // usa: func_020c3030
     // computes the length of the vector a-b
-    fix32_t Vector3fix_Distance(const Vector3fix* a, const Vector3fix* b);
+    fix32_t VEC_Distance(const Vector3fix* a, const Vector3fix* b);
 
     // 0x020c30ac - 0x020c36ec: functions that compute stuff with a ton of
     // magic constants. Possibly software implementations of trig functions?

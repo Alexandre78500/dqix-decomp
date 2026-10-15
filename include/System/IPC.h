@@ -17,11 +17,11 @@ enum IPCSide
 
 typedef void (*IPCCommandHandler)(unsigned int, unsigned int, unsigned int);
 
-void InitializeInterProcessorCommunication();
+extern "C" void PXI_Init();
 void ZeroInitializeIPCCommandHandling();
 
-void SetArm9IPCCommandHandler(int command, IPCCommandHandler handler);
-bool IsIPCCommandHandlerRegistered(int command, IPCSide side);
+extern "C" void PXI_SetFifoRecvCallback(int command, IPCCommandHandler handler);
+extern "C" bool PXI_IsCallbackReady(int command, IPCSide side);
 
-IPCResult SendCommandToArm7(int command, int argument, bool flag);
+extern "C" IPCResult PXI_SendWordByFifo(int command, int argument, bool flag);
 void HandleCommandReceivedFromArm7(); // used as IRQ 18 handler

@@ -53,27 +53,27 @@ extern ActiveAlarmList data_02111648;
 
 void MarkAlarmInitializationFlagBit(int);
 
-void Initialize64BitTimer();
-int Is64BitTimerInitialized();
+extern "C" void OS_InitTick();
+extern "C" int OS_IsTickAvailable();
 void On16BitTimerOverflow(int);
 
-uint64_t GetCurrentTimestamp();
-unsigned short GetMain16BitTimerCounter();
+extern "C" uint64_t OS_GetTick();
+extern "C" unsigned short OS_GetTickLo();
 
 void MarkNextAlarmToSound(Alarm* timing);
 
-void InitializeActiveAlarmList();
-int IsAlarmListInitialized();
-void ZeroInitializeAlarm(Alarm* alarm);
+extern "C" void OS_InitAlarm();
+extern "C" int OS_IsAlarmAvailable();
+extern "C" void OS_CreateAlarm(Alarm* alarm);
 // Registers for a single activation, so interval alarms will have to repeatedly
 // call this (the interrupt handler sorts this out). ringTime is ignored for
 // interval alarms.
 void RegisterAlarm(Alarm* alarm, uint64_t ringTime);
 
-void SetTimeout(Alarm* alarm, uint64_t delay, Alarm::PFNCompletion callback, ProcessorContext** ppContext);
+extern "C" void OS_SetAlarm(Alarm* alarm, uint64_t delay, Alarm::PFNCompletion callback, ProcessorContext** ppContext);
 void SetInterval(Alarm* alarm, uint64_t residue, uint64_t interval,
     Alarm::PFNCompletion callback, ProcessorContext** ppContext);
-void CancelAlarm(Alarm* alarm);
+extern "C" void OS_CancelAlarm(Alarm* alarm);
 
 void Timer1OverflowInterruptRoutine(int); // not sure if void() or void(int) or int(int)
 void HandleTimer1Overflow();

@@ -34,7 +34,7 @@ extern "C"
 
     // Populates context with priority = relPrio + 16
     void func_020d97a8(ProcessorContext* context, void* stackSpace, unsigned stackSize, int relPrio, const void* entry, int arg);
-    void func_020d9828(ProcessorContext* context); // thunk for MarkContextReadyAndSwitch
+    void func_020d9828(ProcessorContext* context); // thunk for OS_WakeupThreadDirect
 
     char* data_020ef8a4[]; // array of subdirectories within data/
 
