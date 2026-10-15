@@ -2,10 +2,11 @@
 """Donne leur nom Nintendo (liaison C) à des fonctions du SDK que le jeu a décompilées en C++.
 
 Usage : renommer_cpp.py <worktree DQ9> <correspondances>
-Chaque ligne du fichier de correspondances : « _Z20DisableIRQInterruptsv -> OS_DisableInterrupts ».
-Le code HeartGold importé appelle ces fonctions sous leur nom C : leur première déclaration
-(en-tête du jeu, sinon la source qui les définit) passe en extern "C", le nom C++ est remplacé
-partout dans src/ et include/, et symbols.txt (USA et JPN) suit.
+Chaque ligne du fichier de correspondances : « _Z20DisableIRQInterruptsv -> OS_DisableInterrupts »
+(nom décoré d'une fonction libre) ou « MemoryMapSubBGExtendedPalette -> GXS_BeginLoadBGExtPltt »
+(fonction déjà en liaison C). Le code HeartGold importé appelle ces fonctions sous leur nom C :
+la première déclaration d'un nom décoré (en-tête du jeu, sinon la source qui le définit) passe
+en extern "C", le nom est remplacé partout dans src/ et include/, et symbols.txt (USA et JPN) suit.
 """
 import re
 import sys
@@ -18,9 +19,9 @@ SYMBOLES = sorted((wt / "config").rglob("symbols.txt"))
 
 
 def nom_simple(decore):
-    """_Z20DisableIRQInterruptsv -> DisableIRQInterrupts (fonctions libres seulement)."""
+    """_Z20DisableIRQInterruptsv -> DisableIRQInterrupts (fonctions libres seulement) ; nom C inchangé."""
     m = re.match(r"_Z(\d+)", decore)
-    return decore[m.end():m.end() + int(m.group(1))] if m else None
+    return decore[m.end():m.end() + int(m.group(1))] if m else decore
 
 
 paires = []
@@ -40,16 +41,20 @@ for decore, ancien, nouveau in paires:
             cible = (f, m.start())
             break
     if not cible:
+        if decore == ancien:
+            print(f"{ancien} -> {nouveau} : absent du code du jeu, symboles seulement")
+            continue
         sys.exit(f"{ancien} : déclaration introuvable")
     f, pos = cible
-    if not textes[f][pos:].startswith('extern "C"'):
+    if decore != ancien and not textes[f][pos:].startswith('extern "C"'):
         textes[f] = textes[f][:pos] + 'extern "C" ' + textes[f][pos:]
     mot = re.compile(r"(?<![\w.>:])" + re.escape(ancien) + r"(?!\w)")
     total = 0
     for g in SOURCES:
         textes[g], n = mot.subn(nouveau, textes[g])
         total += n
-    print(f"{ancien} -> {nouveau} : extern \"C\" dans {f.relative_to(wt)}, {total} occurrences")
+    lieu = f'extern "C" dans {f.relative_to(wt)}' if decore != ancien else "liaison C"
+    print(f"{ancien} -> {nouveau} : {lieu}, {total} occurrences")
 
 for f in SOURCES:
     if textes[f] != f.read_text(errors="surrogateescape"):

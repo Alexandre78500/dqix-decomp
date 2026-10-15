@@ -18,6 +18,7 @@ exclus = set(a for a in sys.argv[4:] if a != "--essai")
 cfgdir = wt / "config/usa/arm9"
 plan = [p for p in json.load(open(planf)) if p["fichier"] not in exclus]
 AUTO = re.compile(r"^(func|data|\.L)_")
+RESERVES_DSD = {"AutoloadCallback", "BuildInfo"}
 DECORE = re.compile(r"^_Z|^__(ct|dt)__|__(\d+\w+?)?F")
 
 # ---------- symboles DQ9 ----------
@@ -53,6 +54,7 @@ def symbols_at(mod):
     return d
 
 # ---------- cohérence globale, en écartant les fichiers fautifs jusqu'à stabilité ----------
+a_renommer = {}  # noms du jeu à passer au nom Nintendo (voir renommer_cpp.py)
 while True:
     ranges = {p["fichier"]: [(p["module"], s["debut"], s["fin"]) for s in p["sections"]] for p in plan}
     def owner(mod, a):
@@ -77,6 +79,7 @@ while True:
         for frm, to, tmod in M["relocs"]:
             tmod = reloc_module(tmod)
             f = owner(tmod, to)
+            if (tmod, to) not in globaux and to & 1: to &= ~1  # pointeur vers une fonction Thumb
             if f and owner(mod, frm) != f and (tmod, to) not in globaux:
                 mauvais[f].add(f"0x{to:x} visé depuis {mod}:0x{frm:x} sans symbole global")
     # adresses visées à l'intérieur d'un fichier sans symbole HeartGold à cet endroit :
@@ -86,6 +89,7 @@ while True:
         for frm, to, tmod in M["relocs"]:
             tmod = reloc_module(tmod)
             f = owner(tmod, to)
+            if (tmod, to) not in definis and to & 1: to &= ~1
             if f and (tmod, to) not in definis:
                 mauvais[f].add(f"adresse interne 0x{to:x} sans symbole (depuis {mod}:0x{frm:x})")
     # anciens noms C++ décorés (CodeWarrior : nom__F..., nom__5ClasseF...) : le code du jeu les appelle
@@ -96,7 +100,17 @@ while True:
         for mod, adr, nom in cibles_p:
             for i in symbols_at(mod).get(adr, []):
                 old = parse(mods[mod]["lines"][i])[0]
-                if old != nom and DECORE.search(old): mauvais[p["fichier"]].add(f"nom décoré {old} -> {nom}")
+                if old != nom and DECORE.search(old):
+                    mauvais[p["fichier"]].add(f"nom décoré {old} -> {nom}")
+                    if re.match(r"_Z\d", old): a_renommer[old] = nom  # fonction libre : renommer_cpp.py
+    # noms dont dsd se sert pour construire la ROM (rom config cherche BuildInfo via AutoloadCallback)
+    for p in plan:
+        cibles_p = [(p["module"], d["adresse"], d["nom"]) for d in p["definis"]]
+        cibles_p += [(mod, adr, nom) for nom, (mod, adr) in p["externes"].items() if mod in mods]
+        for mod, adr, nom in cibles_p:
+            for i in symbols_at(mod).get(adr, []):
+                old = parse(mods[mod]["lines"][i])[0]
+                if old != nom and old in RESERVES_DSD: mauvais[p["fichier"]].add(f"nom réservé par dsd {old} -> {nom}")
     # appels vers du code déjà décompilé par DQ9 sous un autre nom : on ne peut pas le renommer
     for p in plan:
         for nom, (mod, adr) in p["externes"].items():
@@ -104,6 +118,8 @@ while True:
                 olds = [parse(mods[mod]["lines"][i])[0] for i in symbols_at(mod).get(adr, [])]
                 if olds != [nom]:
                     mauvais[p["fichier"]].add(f"appel vers code DQ9 déjà décompilé : {nom} (DQ9 : {olds})")
+                    if len(olds) == 1 and (re.match(r"_Z\d", olds[0]) or not DECORE.search(olds[0]) and not AUTO.match(olds[0])):
+                        a_renommer[olds[0]] = nom
     # fichier retrouvé en partie : les fonctions absentes de DQ9 sont compilées puis jetées par -dead,
     # sauf celles qui visent un symbole introuvable, dont le nom est déjà pris ou que la source garde
     # (#pragma force_active) : elles sont coupées de la source, avec celles qui les appellent
@@ -134,7 +150,12 @@ while True:
         print("  ", f, "|", "; ".join(sorted(mauvais[f])))
     plan = [p for p in plan if p["fichier"] not in mauvais]
 print(f"fichiers retenus : {len(plan)}, dont {len(coupes)} découpés")
-if essai: sys.exit(0)
+if essai:
+    if a_renommer:
+        sortie = wt.parent / f"renommages_{wt.name}.txt"
+        sortie.write_text("".join(f"{o} -> {n}\n" for o, n in sorted(a_renommer.items())))
+        print(f"{len(a_renommer)} noms du jeu à renommer pour débloquer des fichiers : {sortie}")
+    sys.exit(0)
 
 # ---------- réglages de compilation repris du Makefile HeartGold ----------
 rules = []
@@ -303,12 +324,15 @@ for mod, cib in cibles.items():
 # anciens noms explicites utilisés dans le code du jeu
 remplaces = 0
 explicites = {o: n for o, n in renommes.items() if not AUTO.match(o)}
-if renommes:
-    pat = re.compile(r"(?<![\w.])(" + "|".join(map(re.escape, sorted(renommes, key=len, reverse=True))) + r")(?![\w])")
+# statiques locales (isInitialized$2443) : pas d'identifiant C possible, le code du jeu ne les vise
+# que dans des blocs désactivés (les références compilées sont vérifiées plus haut)
+dans_code = {o: n for o, n in renommes.items() if re.fullmatch(r"[A-Za-z_]\w*", n)}
+if dans_code:
+    pat = re.compile(r"(?<![\w.])(" + "|".join(map(re.escape, sorted(dans_code, key=len, reverse=True))) + r")(?![\w])")
     for f in list((wt / "src").rglob("*")) + list((wt / "include").rglob("*")):
         if f.is_file() and f.suffix in (".c", ".cpp", ".h", ".hpp", ".inc", ".s"):
             t = f.read_text(errors="surrogateescape")
-            t2, n = pat.subn(lambda m: renommes[m.group(1)], t)
+            t2, n = pat.subn(lambda m: dans_code[m.group(1)], t)
             if n: f.write_text(t2, errors="surrogateescape"); remplaces += n
 # version japonaise : le code partagé utilise désormais les nouveaux noms ; on renomme aussi
 # les symboles JPN qui portent encore l'ancien nom explicite (fix32_Sqrt...). Les noms automatiques
