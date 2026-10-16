@@ -402,6 +402,7 @@ def cmd_squelette(args):
     lignes += [f'extern "C" void {cible.nom}()', "{", "}", ""]
     texte = "\n".join(lignes)
     if args.o:
+        Path(args.o).parent.mkdir(parents=True, exist_ok=True)
         Path(args.o).write_text(texte)
         print(f"Écrit {args.o}")
     else:
@@ -452,6 +453,11 @@ def faux_positif(a: dict, b: dict) -> bool:
     if not ia or not ib or (a.get("diff_kind") or b.get("diff_kind")) != "DIFF_ARG_MISMATCH":
         return False
     ra, rb = ia.get("relocation", {}).get("target", {}), ib.get("relocation", {}).get("target", {})
+    # numéro d'overlay : symbole absolu OVERLAY_<n>_ID défini par le .lcf ; le délinkage n'en garde
+    # que la valeur dans le pool (.word n), l'éditeur de liens redonnera les mêmes octets
+    m = re.fullmatch(r"OVERLAY_(\d+)_ID", rb.get("symbol", {}).get("name", ""))
+    if m and not ra and ia["mnemonic"] == ib["mnemonic"] == ".word" and rb.get("addend", "0") == "0":
+        return ia.get("formatted") == f".word #{int(m.group(1)):#x}"
     if not ra or not rb:
         return False
     # l'immédiat affiché d'un bl relogé dépend de l'addende implicite : on compare la relocation

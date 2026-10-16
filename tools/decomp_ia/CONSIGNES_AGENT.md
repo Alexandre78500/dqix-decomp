@@ -10,6 +10,8 @@ Le code de jeu a été écrit en C++ par Level-5 ; il n'existe aucune source de 
   **rien** dans `src/`, `include/`, `config/`, `tools/` ; pas de `git`, pas de `ninja`.
 - Les commandes se lancent depuis la racine du dépôt, avec `.venv/bin/python`.
 - Limite : **40 essais** (`essai`) au maximum. Arrête dès 100 %.
+- Lance tes commandes au premier plan, jamais en arrière-plan : ta réponse finale doit venir après
+  ton dernier essai, et donner le score réellement obtenu.
 
 ## Outil
 
@@ -78,6 +80,22 @@ Appris sur l'overlay 14 (voir `tools/decomp_ia/pilote_ov014/notes_ov014.md`) :
   une table `static` locale. Garde la donnée `extern` et déclare-la une deuxième fois dans un
   `namespace` pour l'écriture d'initialisation (voir `BestiaryScreen::Update`).
 - `char buf[0x40] = {0};` produit l'appel à `__clear`.
+- Un écart d'ordonnancement inexpliqué (un `mov r0, rX` déplacé), même loin de la ligne en cause :
+  chercher un masque de plusieurs bits (`flags |= 0x120`) et le découper en `|=` successifs
+  (`flags |= 0x20; flags |= 0x100;`). mwcc les fusionne en un seul `orr`, mais l'ordonnancement change
+  (appris sur l'overlay 6, trois fonctions débloquées de 97–99 % à 100 %).
+- Un champ relu à chaque test d'une chaîne `else if` alors que mwcc le garde en registre : le lire
+  par un cast volatile local (`*(volatile short*)&self->rate`) ou déclarer le champ `volatile`.
+- Une adresse calculée avant un branchement et recopiée dans une branche (`add r1, r9, #0x40` …
+  `mov r6, r1`) : passer par un accesseur inline qui prend un paramètre
+  (`inline T* Get(int i) { return &tab[i]; }` puis `alt = base->Get(1);` avant le `if`).
+- `x = x + 1;` et `x++` ne donnent pas toujours le même code sur un champ d'octet lointain
+  (`add rX, r10, #0xdd` en trop) : essayer les deux.
+- Registres non volatils échangés entre deux variables : déclarer en tête de fonction une locale
+  qui ne sert que plus loin (elle prend un registre et décale les autres).
+- Un numéro d'overlay chargé depuis le pool (`.word 8` alors que mwcc émettrait `mov r0, #8`) est
+  le symbole absolu du `.lcf` : `extern "C" char OVERLAY_8_ID[];` puis `(int)OVERLAY_8_ID`.
+  `essai` accepte cette relocation.
 
 ## Partage avec les autres agents
 
@@ -85,6 +103,13 @@ D'autres agents décompilent en parallèle les fonctions voisines du même modul
 Lis `build/ia/notes_<module>.md` s'il existe (découvertes des autres : structures, rôles).
 À la fin, ajoute-y 1 à 5 lignes utiles (structure et décalages établis, rôle de la fonction)
 avec `cat >> build/ia/notes_<module>.md <<'EOF'` … `EOF` (ajout seulement, jamais d'écrasement).
+
+## Lot de plusieurs fonctions
+
+On peut te confier un **lot** de petites fonctions voisines (`lots.py`). Traite-les l'une après
+l'autre, chacune dans son propre dossier `build/ia/<FONCTION>/` avec son `resultat.json`,
+40 essais au plus par fonction. Ce que tu établis sur l'une (structures, signatures) sert aux
+suivantes. Réponds à la fin avec une ligne par fonction.
 
 ## Rendu
 

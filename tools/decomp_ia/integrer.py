@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Place dans le build un fichier source dont toutes les fonctions correspondent.
 
-  integrer.py src/Bestiary/MonsterList.cpp ov014:0x021842a0 [--partiel]
+  integrer.py src/Bestiary/MonsterList.cpp ov014:0x021842a0 [autre.cpp ADRESSE ...] [--partiel]
+
+Plusieurs fichiers qui s'appellent les uns les autres s'intègrent ensemble, en une fois.
 
 1. compile le fichier et vérifie chaque fonction, dans l'ordre, contre le jeu (comme
    `decomp.py verifier`) ; s'arrête si une seule diffère ;
@@ -23,22 +25,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import decomp  # noqa: E402
 
 
-def main():
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("source")
-    p.add_argument("adresse")
-    p.add_argument("--partiel", action="store_true", help="ne pas marquer le fichier complete")
-    args = p.parse_args()
-
-    source = Path(args.source)
+def integrer(source: Path, adresse: str, partiel: bool):
     rel = source.resolve().relative_to(decomp.RACINE)
-    r = subprocess.run([sys.executable, str(Path(__file__).with_name("decomp.py")), "verifier",
-                        str(source), args.adresse], capture_output=True, text=True)
-    print(r.stdout.rstrip())
-    if r.returncode != 0:
-        sys.exit("Vérification en échec : rien n'est modifié.\n" + r.stderr)
-
-    depart = decomp.trouver(args.adresse)
+    depart = decomp.trouver(adresse)
     _, _, objet = decomp.compiler(source.resolve(), decomp.IA / "_verifier" / source.stem)
     nos = decomp.fonctions_texte(objet)
     jeu = sorted((x for x in decomp.symboles() if x.module == depart.module and x.genre == "function"
@@ -61,7 +50,7 @@ def main():
     contenu = delinks.read_text()
     if f"{rel}:" in contenu:
         sys.exit(f"{rel} est déjà dans {delinks} : mettre la plage à jour à la main.")
-    entree = f"{rel}:\n" + ("" if args.partiel else "    complete\n") + \
+    entree = f"{rel}:\n" + ("" if partiel else "    complete\n") + \
         f"    .text start:{depart.adresse:#010x} end:{fin:#010x}"
     # les fichiers restent rangés par adresse de .text
     blocs = contenu.strip("\n").split("\n\n")
@@ -72,6 +61,26 @@ def main():
     blocs.insert(pos, entree)
     delinks.write_text("\n\n".join(blocs) + "\n")
     print(f"ajouté à {delinks.relative_to(decomp.RACINE)} : .text {depart.adresse:#010x}-{fin:#010x}")
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("paires", nargs="+", metavar="SOURCE ADRESSE",
+                   help="un ou plusieurs couples fichier source / adresse de début")
+    p.add_argument("--partiel", action="store_true", help="ne pas marquer les fichiers complete")
+    args = p.parse_args()
+    if len(args.paires) % 2:
+        p.error("il faut des couples SOURCE ADRESSE")
+    paires = [(Path(args.paires[i]), args.paires[i + 1]) for i in range(0, len(args.paires), 2)]
+
+    # vérification commune : les appels entre fichiers qui s'appellent les uns les autres sont acceptés
+    r = subprocess.run([sys.executable, str(Path(__file__).with_name("decomp.py")), "verifier",
+                        *args.paires], capture_output=True, text=True)
+    print(r.stdout.rstrip())
+    if r.returncode != 0:
+        sys.exit("Vérification en échec : rien n'est modifié.\n" + r.stderr)
+    for source, adresse in paires:
+        integrer(source, adresse, args.partiel)
 
 
 if __name__ == "__main__":

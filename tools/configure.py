@@ -226,7 +226,7 @@ def main():
             mwcc_lib_cmd += f" && $python {transform_dep} $basefile.d $basefile.d"
         n.rule(
             name="lcf_force_active",
-            command=f"{PYTHON} tools/lcf_force_active.py $in $settings $out",
+            command=f"{PYTHON} tools/lcf_force_active.py $in $settings $out $game_force_active",
         )
         n.newline()
 
@@ -376,12 +376,14 @@ def add_mwld_and_rom_builds(n: ninja_syntax.Writer, project: Project):
     if load_lib_build_settings()[0]:
         # Keep library symbols that the original game contains without any caller (see tools/lcf_force_active.py)
         forced_lcf_file = str(project.game_build / "arm9_force_active.lcf")
+        game_force_active = project.game_config / "arm9" / "force_active.txt"
         n.build(
             inputs=lcf_file,
-            implicit=[str(lib_settings), "tools/lcf_force_active.py"],
+            implicit=[str(lib_settings), "tools/lcf_force_active.py"]
+            + ([str(game_force_active)] if game_force_active.exists() else []),
             rule="lcf_force_active",
             outputs=forced_lcf_file,
-            variables={"settings": str(lib_settings)},
+            variables={"settings": str(lib_settings), "game_force_active": str(game_force_active)},
         )
         n.newline()
         lcf_file = forced_lcf_file

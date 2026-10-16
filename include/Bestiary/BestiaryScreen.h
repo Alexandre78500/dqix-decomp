@@ -22,11 +22,18 @@ struct UiElement {
     short height;           // 0xaa
     short x;                // 0xac
     short y;                // 0xae
+    u8 unk_b0[0x8];
+    short unk_b8;
+    short unk_ba;
+    u8 unk_bc[0xc];
+    u8 tiles[0x4];          // 0xc8
 };
 
 // Background layer (init func_0204af64). sizeof == 0x20.
 struct BgLayer {
-    u8 unk_0[0x1c];
+    u8 unk_0[0x14];
+    u32 screenBase;         // 0x14
+    u8 unk_18[0x4];
     u8 unk_1c_0 : 4;
     u8 index : 4;
     u8 unk_1d[0x3];
