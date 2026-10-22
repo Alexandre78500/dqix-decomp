@@ -1,5 +1,8 @@
 # Dragon Quest IX: Sentinels of the Starry Skies Decompilation Project
 
+> **This fork** (Alexandre78500/dqix-decomp) is ahead of the original project: 15.54% of USA functions and 12.92% of the code
+> (the badges below are the original project's). Status, setup and how to continue, in French: [REPRENDRE.md](REPRENDRE.md).
+
 [![USA functions](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FDQIX%2Fdqix-decomp%2Fbadges%2Fusa%2Ffunctions.json)](https://github.com/DQIX/dqix-decomp/actions/workflows/match.yml)
 [![USA bytes](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FDQIX%2Fdqix-decomp%2Fbadges%2Fusa%2Fbytes.json)](https://github.com/DQIX/dqix-decomp/actions/workflows/match.yml)
 [![JPN functions](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FDQIX%2Fdqix-decomp%2Fbadges%2Fjpn%2Ffunctions.json)](https://github.com/DQIX/dqix-decomp/actions/workflows/match.yml)
